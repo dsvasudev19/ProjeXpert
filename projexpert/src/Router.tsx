@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import NotFound from "./pages/NotFound";
 import DashboardLayout from "./layout/DashboardLayout";
 import Analytics from "./pages/Analytics";
@@ -38,7 +38,7 @@ const AppRoutes = () => {
           <Route path="*" element={<NotFound />} />
         </Route>
         <Route path="*" element={<NotFound />} />
-        {/* <Route path="/" element={<Navigate to="/auth/login" />} /> */}
+        <Route path="/" element={<Navigate to="/auth/login" />} />
       </Routes>
     </BrowserRouter>
   );
