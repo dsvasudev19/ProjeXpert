@@ -21,4 +21,10 @@ router.use("/project",projectRoutes)
 const roleRoutes=require("./admin/roleRoutes")
 router.use("/role",roleRoutes)
 
+const fileRoutes=require("./admin/fileRoutes")
+router.use("/file",fileRoutes)
+
+const taskRoutes=require("./admin/taskRoutes")
+router.use("/task",taskRoutes)
+
 module.exports=router;
