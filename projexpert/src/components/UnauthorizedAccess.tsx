@@ -1,4 +1,4 @@
-import { ShieldBan, ArrowLeft, LifeBuoy, KeyRound } from 'lucide-react';
+import { ShieldBan, LifeBuoy, KeyRound } from 'lucide-react';
 
 const UnauthorizedAccess = () => {
   return (

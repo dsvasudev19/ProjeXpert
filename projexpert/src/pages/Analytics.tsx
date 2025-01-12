@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Users, Briefcase, DollarSign, Clock, CheckCircle, AlertTriangle, Calendar, TrendingUp, BarChart2, Target, PieChart, List, LayoutDashboard, FileText, Clock8 } from 'lucide-react';
+import { Users, Briefcase, DollarSign,  CheckCircle, AlertTriangle, Calendar, TrendingUp, BarChart2, Target,  List, LayoutDashboard, FileText, Clock8 } from 'lucide-react';
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 
@@ -50,29 +50,29 @@ const Analytics = () => {
     }
   ];
 
-  const upcomingDeadlines = [
-    {
-      id: 1,
-      project: 'E-commerce Platform',
-      deadline: '2024-02-15',
-      progress: 65,
-      priority: 'High'
-    },
-    {
-      id: 2,
-      project: 'Mobile App Phase 2',
-      deadline: '2024-02-20',
-      progress: 40,
-      priority: 'Medium'  
-    },
-    {
-      id: 3,
-      project: 'Dashboard Redesign',
-      deadline: '2024-02-25',
-      progress: 85,
-      priority: 'Low'
-    }
-  ];
+  // const upcomingDeadlines = [
+  //   {
+  //     id: 1,
+  //     project: 'E-commerce Platform',
+  //     deadline: '2024-02-15',
+  //     progress: 65,
+  //     priority: 'High'
+  //   },
+  //   {
+  //     id: 2,
+  //     project: 'Mobile App Phase 2',
+  //     deadline: '2024-02-20',
+  //     progress: 40,
+  //     priority: 'Medium'  
+  //   },
+  //   {
+  //     id: 3,
+  //     project: 'Dashboard Redesign',
+  //     deadline: '2024-02-25',
+  //     progress: 85,
+  //     priority: 'Low'
+  //   }
+  // ];
 
   const teamPerformance = [
     {

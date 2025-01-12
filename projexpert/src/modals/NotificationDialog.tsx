@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Bell, X, CheckCircle2, AlertCircle, Clock, MessageSquare, Users } from 'lucide-react';
 
 const NotificationPopup = () => {
