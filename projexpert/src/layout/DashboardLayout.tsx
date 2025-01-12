@@ -1,7 +1,9 @@
 
 import { useEffect, useState } from 'react';
-import { Home, LogOut, ChevronLeft, ChevronRight, UserCog, BadgeIndianRupee, Bell, Search, Settings, HelpCircle, AlertCircle, Clock, CheckCircle2, FolderGit2, CalendarCheck2, FileCog, SquareKanban } from 'lucide-react';
+import { Home, LogOut, ChevronLeft, ChevronRight, UserCog, BadgeIndianRupee, Search, Settings, HelpCircle, AlertCircle, Clock, CheckCircle2, FolderGit2, CalendarCheck2, FileCog, SquareKanban } from 'lucide-react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
+import NotificationPopup from '../modals/NotificationDialog';
+import { useAuth } from '../AuthContext';
 
 const DashboardLayout = () => {
     const [sidebarOpen, setSidebarOpen] = useState(() => {
@@ -10,6 +12,7 @@ const DashboardLayout = () => {
     });
     const [activeItem, setActiveItem] = useState("");
     const location = useLocation();
+    const {user,logout} = useAuth()
 
     const menuItems = [
         { icon: Home, label: 'Overview', href: '/dashboard/analytics' },
@@ -61,7 +64,7 @@ const DashboardLayout = () => {
                     <div className="flex items-center gap-2">
                         <div className="flex items-center mr-4 gap-1">
                             <button className="p-2 rounded-lg hover:bg-slate-100 text-slate-600 hover:text-green-600 transition-all duration-300">
-                                <Bell className="w-5 h-5" />
+                                <NotificationPopup />
                             </button>
                             <button className="p-2 rounded-lg hover:bg-slate-100 text-slate-600 hover:text-blue-600 transition-all duration-300">
                                 <Settings className="w-5 h-5" />
@@ -69,21 +72,31 @@ const DashboardLayout = () => {
                             <button className="p-2 rounded-lg hover:bg-slate-100 text-slate-600 hover:text-purple-600 transition-all duration-300">
                                 <HelpCircle className="w-5 h-5" />
                             </button>
+                            <button 
+                                className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-gradient-to-r from-amber-100 to-yellow-100 hover:from-amber-200 hover:to-yellow-200 text-amber-700 border border-amber-200 transition-all duration-300 shadow-sm hover:shadow-md" 
+                                onClick={() => window.location.href = '/dashboard/todo'}
+                            >
+                                <CheckCircle2 className="w-4 h-4" />
+                                <span className="text-sm font-medium">Todo</span>
+                                <div className="w-5 h-5 rounded-full bg-amber-500 flex items-center justify-center ml-1">
+                                    <span className="text-xs font-bold text-white">3</span>
+                                </div>
+                            </button>
                         </div>
 
                         {/* User Profile */}
                         <div className="flex items-center gap-3">
                             <button className="flex items-center gap-3 p-1.5 pl-3 rounded-xl transition-all duration-300 hover:bg-slate-100 group">
                                 <div className="flex flex-col items-end">
-                                    <span className="text-sm font-semibold text-slate-700 group-hover:text-slate-900">Admin User</span>
-                                    <span className="text-xs text-slate-500">Administrator</span>
+                                    <span className="text-sm font-semibold text-slate-700 group-hover:text-slate-900">{user?.user?.name}</span>
+                                    <span className="text-xs text-slate-500">{user?.user?.Roles[0]?.name.toUpperCase()}</span>
                                 </div>
                                 <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-green-500 to-blue-500 flex items-center justify-center shadow-lg shadow-blue-200/50">
-                                    <span className="text-sm font-medium text-white">AU</span>
+                                    <span className="text-sm font-medium text-white">{user?.user?.name?.charAt(0)}</span>
                                 </div>
                             </button>
                             <div className="h-8 w-px bg-slate-200"></div>
-                            <button className="p-2 rounded-lg text-red-500 hover:bg-red-50 hover:text-red-600 transition-all duration-300">
+                            <button className="p-2 rounded-lg text-red-500 hover:bg-red-50 hover:text-red-600 transition-all duration-300" onClick={()=>{logout()}}>
                                 <LogOut className="w-5 h-5" />
                             </button>
                         </div>

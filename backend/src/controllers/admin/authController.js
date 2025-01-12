@@ -57,7 +57,7 @@ const login = async (req, res) => {
         }
 
         // Generate a JWT token
-        const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
         return res.status(200).json({ message: 'Login successful.', token, user });
     } catch (error) {
@@ -72,8 +72,33 @@ const logout = (req, res) => {
     return res.status(200).json({ message: 'Logout successful.' });
 }
 
+const getUserByToken = async (req, res) => {
+    try {
+        const token = req.headers.authorization?.split(' ')[1];
+        if (!token) {
+            return res.status(401).json({ message: 'Unauthorized: No token provided.' });
+        }
+
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const user = await User.findByPk(decoded.id);
+        
+        if (!user) {
+            return res.status(404).json({ message: 'User not found.' });
+        }
+
+        return res.status(200).json({ user });
+    } catch (error) {
+        console.error('Error in getUserByToken:', error);
+        if (error instanceof jwt.JsonWebTokenError) {
+            return res.status(401).json({ message: 'Unauthorized: Invalid token.' });
+        }
+        return res.status(500).json({ message: 'Internal server error.' });
+    }
+}
+
 module.exports = {
     register,
     login,
-    logout
+    logout,
+    getUserByToken
 }

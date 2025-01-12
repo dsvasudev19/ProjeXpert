@@ -1,201 +1,340 @@
 import { useState } from 'react';
-import {  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,  Area, AreaChart } from 'recharts';
-import { Users, CalendarDays, DollarSign, TrendingUp, Clock, ChevronRight } from 'lucide-react';
+import { Users, Briefcase, DollarSign, Clock, CheckCircle, AlertTriangle, Calendar, TrendingUp, BarChart2, Target, PieChart, List, LayoutDashboard, FileText, Clock8 } from 'lucide-react';
+import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
+import 'react-circular-progressbar/dist/styles.css';
 
 const Analytics = () => {
-  const [selectedPeriod, setSelectedPeriod] = useState<any>('7days');
-  const [activeMetric, setActiveMetric] = useState<any>(null);
-  console.log("its rendering")
-  const bookingData = [
-    { name: 'Mon', bookings: 24, revenue: 12000, occupancy: 75 },
-    { name: 'Tue', bookings: 18, revenue: 9000, occupancy: 65 },
-    { name: 'Wed', bookings: 32, revenue: 16000, occupancy: 85 },
-    { name: 'Thu', bookings: 28, revenue: 14000, occupancy: 78 },
-    { name: 'Fri', bookings: 35, revenue: 17500, occupancy: 90 },
-    { name: 'Sat', bookings: 42, revenue: 21000, occupancy: 95 },
-    { name: 'Sun', bookings: 38, revenue: 19000, occupancy: 88 },
-  ];
+  const [selectedView, setSelectedView] = useState('overview');
 
-  const upcomingBookings = [
-    { id: 1, turf: 'Turf A', time: '14:00', customer: 'John Doe', status: 'Confirmed', sport: 'Football', duration: '2 hours' },
-    { id: 2, turf: 'Turf B', time: '15:30', customer: 'Jane Smith', status: 'Pending', sport: 'Cricket', duration: '3 hours' },
-    { id: 3, turf: 'Turf A', time: '17:00', customer: 'Mike Johnson', status: 'Confirmed', sport: 'Football', duration: '1 hour' },
-  ];
+  const projectStats = {
+    totalProjects: 24,
+    completedProjects: 18,
+    activeProjects: 6,
+    totalTasks: 156,
+    completedTasks: 89,
+    overdueProjects: 3,
+    teamMembers: 12,
+    budget: '₹450,000',
+    timeSpent: '234h',
+    resourceUtilization: 78,
+    projectROI: 125,
+    riskScore: 'Low',
+    documentsShared: 45,
+    upcomingDeadlines: 5
+  };
 
-  const metrics = [
+  const recentActivities = [
     {
-      title: 'Projects',
-      value: '217',
-      trend: '+12%',
-      icon: CalendarDays,
-      color: 'blue',
-      detailData: 'bookings'
+      id: 1,
+      type: 'task_completed',
+      user: 'Rahul Sharma',
+      project: 'Website Redesign',
+      time: '2h ago',
+      description: 'Completed homepage mockups'
     },
     {
-      title: 'Total Revenue',
-      value: '₹21,500',
-      trend: '+8%',
-      icon: DollarSign,
-      color: 'green',
-      detailData: 'revenue'
+      id: 2, 
+      type: 'project_milestone',
+      user: 'Priya Singh',
+      project: 'Mobile App',
+      time: '4h ago',
+      description: 'Beta testing phase completed'
     },
     {
-      title: 'Active Clients',
-      value: '154',
-      trend: '-3%',
-      icon: Users,
-      color: 'purple',
-      detailData: 'customers'
-    },
-    {
-      title: 'Team',
-      value: '78%',
-      trend: '+5%',
-      icon: TrendingUp,
-      color: 'orange',
-      detailData: 'occupancy'
+      id: 3,
+      type: 'new_task',
+      user: 'Amit Kumar',
+      project: 'CRM Integration',
+      time: '6h ago',
+      description: 'Added API integration tasks'
     }
   ];
 
-  const MetricCard = ({ metric, isActive, onClick }:any) => (
-    <div
-      onClick={() => onClick(metric)}
-      className={`bg-white p-6 rounded-xl shadow-sm transition-all duration-200 cursor-pointer 
-        ${isActive ? 'ring-2 ring-blue-500 transform scale-[1.02]' : 'hover:shadow-md hover:scale-[1.01]'}`}
-    >
-      <div className="flex justify-between items-start">
-        <div className="space-y-2">
-          <p className="text-sm text-gray-500">{metric.title}</p>
-          <h3 className="text-2xl font-bold">{metric.value}</h3>
-        </div>
-        <div className={`bg-${metric.color}-50 p-3 rounded-xl`}>
-          <metric.icon className={`h-6 w-6 text-${metric.color}-600`} />
-        </div>
-      </div>
-    </div>
-  );
+  const upcomingDeadlines = [
+    {
+      id: 1,
+      project: 'E-commerce Platform',
+      deadline: '2024-02-15',
+      progress: 65,
+      priority: 'High'
+    },
+    {
+      id: 2,
+      project: 'Mobile App Phase 2',
+      deadline: '2024-02-20',
+      progress: 40,
+      priority: 'Medium'  
+    },
+    {
+      id: 3,
+      project: 'Dashboard Redesign',
+      deadline: '2024-02-25',
+      progress: 85,
+      priority: 'Low'
+    }
+  ];
 
-  return (
-    <div className="space-y-6">
-      {/* Header Section */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center space-y-4 md:space-y-0">
-        <div>
-          <h1 className="text-2xl font-bold">Dashboard Overview</h1>
-          {/* <p className="text-gray-500 mt-1">Welcome back, Admin</p> */}
-        </div>
-        <div className="flex items-center space-x-4">
-          <select 
-            value={selectedPeriod}
-            onChange={(e) => setSelectedPeriod(e.target.value)}
-            className="bg-white border border-gray-200 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-          >
-            <option value="7days">Last 7 days</option>
-            <option value="30days">Last 30 days</option>
-            <option value="3months">Last 3 months</option>
-          </select>
-          <button className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors">
-            Generate Report
-          </button>
-        </div>
-      </div>
+  const teamPerformance = [
+    {
+      id: 1,
+      name: 'Design Team',
+      tasksCompleted: 45,
+      efficiency: 92,
+      activeTasks: 8
+    },
+    {
+      id: 2,
+      name: 'Development Team',
+      tasksCompleted: 78,
+      efficiency: 88,
+      activeTasks: 12
+    },
+    {
+      id: 3,
+      name: 'QA Team',
+      tasksCompleted: 34,
+      efficiency: 95,
+      activeTasks: 5
+    }
+  ];
 
-      {/* Metrics Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {metrics.map((metric) => (
-          <MetricCard
-            key={metric.title}
-            metric={metric}
-            isActive={activeMetric?.title === metric.title}
-            onClick={setActiveMetric}
-          />
-        ))}
-      </div>
-
-      {/* Charts Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Main Chart */}
-        <div className="bg-white p-6 rounded-xl shadow-sm">
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="text-lg font-semibold">Performance Overview</h3>
-            <div className="flex space-x-2">
-              {['Daily', 'Weekly', 'Monthly'].map((period) => (
-                <button
-                  key={period}
-                  className="px-3 py-1 rounded-lg text-sm hover:bg-gray-100 transition-colors"
-                >
-                  {period}
-                </button>
-              ))}
-            </div>
-          </div>
-          <div className="h-80">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={bookingData}>
-                <defs>
-                  <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.1}/>
-                    <stop offset="95%" stopColor="#3B82F6" stopOpacity={0}/>
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip 
-                  contentStyle={{ 
-                    backgroundColor: '#fff',
-                    border: 'none',
-                    borderRadius: '8px',
-                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-                  }}
-                />
-                <Area 
-                  type="monotone" 
-                  dataKey={activeMetric?.detailData || 'bookings'} 
-                  stroke="#3B82F6" 
-                  fill="url(#colorRevenue)"
-                  strokeWidth={2}
-                />
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-
-        {/* Upcoming Bookings Card */}
-        <div className="bg-white rounded-xl shadow-sm">
-          <div className="p-6">
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-lg font-semibold">Upcoming Bookings</h3>
-              <button className="text-blue-500 hover:text-blue-600 text-sm font-medium flex items-center">
-                View All <ChevronRight className="h-4 w-4 ml-1" />
-              </button>
-            </div>
-            <div className="space-y-4">
-              {upcomingBookings.map((booking) => (
-                <div key={booking.id} className="flex items-center p-4 hover:bg-gray-50 rounded-lg transition-colors">
-                  <div className="flex-1">
-                    <div className="flex items-center">
-                      <span className="font-medium">{booking.customer}</span>
-                      <span className={`ml-2 px-2 py-1 rounded-full text-xs ${
-                        booking.status === 'Confirmed' 
-                          ? 'bg-green-100 text-green-800' 
-                          : 'bg-yellow-100 text-yellow-800'
-                      }`}>
-                        {booking.status}
-                      </span>
-                    </div>
-                    <div className="text-sm text-gray-500 mt-1">
-                      {booking.turf} • {booking.sport} • {booking.duration}
-                    </div>
+  const renderContent = () => {
+    switch(selectedView) {
+      case 'overview':
+        return (
+          <>
+            {/* Top Stats Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-4">
+              <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-6 text-white">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-blue-100">Total Projects</p>
+                    <h3 className="text-3xl font-bold mt-1">{projectStats.totalProjects}</h3>
                   </div>
-                  <div className="flex items-center text-gray-500">
-                    <Clock className="h-4 w-4 mr-1" />
-                    <span className="text-sm">{booking.time}</span>
+                  <Briefcase className="h-12 w-12 opacity-50" />
+                </div>
+                <div className="mt-4 flex items-center text-sm">
+                  <span className="bg-blue-400/30 px-2 py-1 rounded">
+                    {projectStats.activeProjects} Active
+                  </span>
+                  <span className="ml-2 bg-blue-400/30 px-2 py-1 rounded">
+                    {projectStats.completedProjects} Completed
+                  </span>
+                </div>
+              </div>
+
+              <div className="bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl p-6 text-white">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-emerald-100">Task Completion</p>
+                    <h3 className="text-3xl font-bold mt-1">{Math.round((projectStats.completedTasks/projectStats.totalTasks) * 100)}%</h3>
+                  </div>
+                  <CheckCircle className="h-12 w-12 opacity-50" />
+                </div>
+                <div className="mt-4 text-sm">
+                  <span className="bg-emerald-400/30 px-2 py-1 rounded">
+                    {projectStats.completedTasks}/{projectStats.totalTasks} Tasks Done
+                  </span>
+                </div>
+              </div>
+
+              <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl p-6 text-white">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-purple-100">Team Members</p>
+                    <h3 className="text-3xl font-bold mt-1">{projectStats.teamMembers}</h3>
+                  </div>
+                  <Users className="h-12 w-12 opacity-50" />
+                </div>
+                <div className="mt-4 text-sm">
+                  <span className="bg-purple-400/30 px-2 py-1 rounded">
+                    8 Active Now
+                  </span>
+                </div>
+              </div>
+
+              <div className="bg-gradient-to-br from-amber-500 to-amber-600 rounded-2xl p-6 text-white">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-amber-100">Total Budget</p>
+                    <h3 className="text-3xl font-bold mt-1">{projectStats.budget}</h3>
+                  </div>
+                  <DollarSign className="h-12 w-12 opacity-50" />
+                </div>
+                <div className="mt-4 text-sm">
+                  <span className="bg-amber-400/30 px-2 py-1 rounded">
+                    {projectStats.timeSpent} Total Hours
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Additional KPI Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+              <div className="bg-white rounded-2xl shadow-sm p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold">Resource Utilization</h3>
+                  <BarChart2 className="h-6 w-6 text-blue-500" />
+                </div>
+                <div className="w-24 h-24 mx-auto">
+                  <CircularProgressbar
+                    value={projectStats.resourceUtilization}
+                    text={`${projectStats.resourceUtilization}%`}
+                    styles={buildStyles({
+                      pathColor: '#3b82f6',
+                      textColor: '#1e40af'
+                    })}
+                  />
+                </div>
+              </div>
+
+              <div className="bg-white rounded-2xl shadow-sm p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold">Project ROI</h3>
+                  <TrendingUp className="h-6 w-6 text-green-500" />
+                </div>
+                <div className="text-center">
+                  <h4 className="text-3xl font-bold text-green-600">{projectStats.projectROI}%</h4>
+                  <p className="text-sm text-gray-500 mt-2">Return on Investment</p>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-2xl shadow-sm p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold">Risk Assessment</h3>
+                  <Target className="h-6 w-6 text-red-500" />
+                </div>
+                <div className="text-center">
+                  <h4 className="text-3xl font-bold text-blue-600">{projectStats.riskScore}</h4>
+                  <p className="text-sm text-gray-500 mt-2">Overall Risk Score</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Project Management Metrics */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="bg-white rounded-2xl shadow-sm p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold">Document Management</h3>
+                  <FileText className="h-6 w-6 text-indigo-500" />
+                </div>
+                <div className="text-center">
+                  <h4 className="text-3xl font-bold text-indigo-600">{projectStats.documentsShared}</h4>
+                  <p className="text-sm text-gray-500 mt-2">Documents Shared This Week</p>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-2xl shadow-sm p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold">Upcoming Deadlines</h3>
+                  <Clock8 className="h-6 w-6 text-orange-500" />
+                </div>
+                <div className="text-center">
+                  <h4 className="text-3xl font-bold text-orange-600">{projectStats.upcomingDeadlines}</h4>
+                  <p className="text-sm text-gray-500 mt-2">Tasks Due This Week</p>
+                </div>
+              </div>
+            </div>
+          </>
+        );
+      
+      case 'activity':
+        return (
+          <div className="bg-white rounded-2xl shadow-sm p-6">
+            <h3 className="text-lg font-semibold mb-4">Recent Activity</h3>
+            <div className="space-y-4">
+              {recentActivities.map(activity => (
+                <div key={activity.id} className="flex items-start p-4 bg-gray-50 rounded-xl">
+                  <div className="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                    {activity.type === 'task_completed' && <CheckCircle className="h-5 w-5 text-blue-600" />}
+                    {activity.type === 'project_milestone' && <Calendar className="h-5 w-5 text-blue-600" />}
+                    {activity.type === 'new_task' && <AlertTriangle className="h-5 w-5 text-blue-600" />}
+                  </div>
+                  <div className="ml-4 flex-1">
+                    <p className="text-sm font-medium text-gray-900">{activity.user}</p>
+                    <p className="text-sm text-gray-500">{activity.description} in {activity.project}</p>
+                    <span className="text-xs text-gray-400 mt-1">{activity.time}</span>
                   </div>
                 </div>
               ))}
             </div>
           </div>
+        );
+
+      case 'team':
+        return (
+          <div className="bg-white rounded-2xl shadow-sm p-6">
+            <h3 className="text-lg font-semibold mb-6">Team Performance</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {teamPerformance.map(team => (
+                <div key={team.id} className="bg-gray-50 rounded-xl p-4">
+                  <h4 className="font-medium text-lg mb-3">{team.name}</h4>
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-gray-500">Tasks Completed</span>
+                      <span className="font-medium">{team.tasksCompleted}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-500">Efficiency Rate</span>
+                      <span className="font-medium text-green-600">{team.efficiency}%</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-500">Active Tasks</span>
+                      <span className="font-medium text-blue-600">{team.activeTasks}</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div className="h-screen overflow-y-auto bg-gray-50 rounded">
+      <div className="p-6 pb-24">
+        {/* View Selection Tabs */}
+        <div className="flex space-x-4 mb-6">
+          <button
+            onClick={() => setSelectedView('overview')}
+            className={`flex items-center px-4 py-2 rounded-lg ${
+              selectedView === 'overview' 
+                ? 'bg-blue-600 text-white' 
+                : 'bg-white text-gray-600 hover:bg-gray-100'
+            }`}
+          >
+            <LayoutDashboard className="h-5 w-5 mr-2" />
+            Overview
+          </button>
+          <button
+            onClick={() => setSelectedView('activity')}
+            className={`flex items-center px-4 py-2 rounded-lg ${
+              selectedView === 'activity' 
+                ? 'bg-blue-600 text-white' 
+                : 'bg-white text-gray-600 hover:bg-gray-100'
+            }`}
+          >
+            <List className="h-5 w-5 mr-2" />
+            Activity
+          </button>
+          <button
+            onClick={() => setSelectedView('team')}
+            className={`flex items-center px-4 py-2 rounded-lg ${
+              selectedView === 'team' 
+                ? 'bg-blue-600 text-white' 
+                : 'bg-white text-gray-600 hover:bg-gray-100'
+            }`}
+          >
+            <Users className="h-5 w-5 mr-2" />
+            Team
+          </button>
         </div>
+
+        {renderContent()}
       </div>
     </div>
   );

@@ -1,56 +1,61 @@
 import { Formik, Field, Form } from 'formik';
 import * as Yup from 'yup';
-import { axiosInstance } from '../../axiosIntance'; // Make sure to adjust the import path
-import { Mail, Lock, ArrowRight, Building2 } from 'lucide-react';
+import { axiosInstance } from '../../axiosIntance';
+import { Mail, Lock, ArrowRight, Briefcase } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 const SignInPage = () => {
-  const initialValues = { username: '', password: '' };
+  const initialValues = { email: '', password: '' };
 
   const validationSchema = Yup.object({
-    username: Yup.string().email('Invalid email address').required('Required'),
-    password: Yup.string()
-    // .min(6, 'Password must be at least 6 characters')
-    .required('Required'),
+    email: Yup.string().email('Invalid email address').required('Required'),
+    password: Yup.string().required('Password is required'),
   });
 
   const handleSubmit = async (values: any, { setSubmitting }: any) => {
     try {
       const res = await axiosInstance.post('/auth/login', values);
       if (res.status === 200) {
-        localStorage.setItem("accessToken", res.data.accessToken)
+        localStorage.setItem("__auth", res.data.token)
         localStorage.setItem("refreshToken", res.data.refreshToken)
-        console.log('Login successful:', res.data);
+        toast.success("Welcome back to ProjeXpert!");
+        window.location.href = "/dashboard/analytics";
       }
     } catch (error: any) {
-      console.error('Login failed:', error);
+      toast.error(error.response?.data?.message || "Invalid credentials");
     } finally {
       setSubmitting(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex bg-white">
+    <div className="min-h-screen flex bg-gradient-to-br from-blue-50 to-white">
       {/* Left Section */}
-      <div className="hidden lg:flex lg:w-1/2 bg-indigo-50 items-center justify-center p-12">
+      <div className="hidden lg:flex lg:w-1/2 items-center justify-center p-12 bg-gradient-to-br from-blue-100 to-blue-50">
         <div className="max-w-lg">
-          <Building2 className="w-16 h-16 text-indigo-600 mb-8" />
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">ProjeXpert</h2>
-          <p className="text-lg text-gray-600">
-            Optimize your turf management with our cutting-edge technology.
-            Join the thousands of groundskeepers and superintendents who rely on ProjeXpert.
+          <div className="flex items-center gap-3 mb-8">
+            <Briefcase className="w-12 h-12 text-blue-600" />
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
+              ProjeXpert
+            </h1>
+          </div>
+          <h2 className="text-4xl font-bold text-gray-900 mb-6 leading-tight">
+            Welcome Back to Your Project Command Center
+          </h2>
+          <p className="text-lg text-gray-600 mb-10">
+            Access your projects, collaborate with your team, and drive success with our powerful project management platform.
           </p>
-          <div className="mt-8 space-y-4">
-            <div className="flex items-center space-x-3">
-              <div className="w-2 h-2 bg-indigo-600 rounded-full"></div>
-              <p className="text-gray-600">Advanced Analytics Dashboard</p>
-            </div>
-            <div className="flex items-center space-x-3">
-              <div className="w-2 h-2 bg-indigo-600 rounded-full"></div>
-              <p className="text-gray-600">Secure Cloud Integration</p>
-            </div>
-            <div className="flex items-center space-x-3">
-              <div className="w-2 h-2 bg-indigo-600 rounded-full"></div>
-              <p className="text-gray-600">24/7 Premium Support</p>
+          <div className="space-y-6">
+            <div className="flex items-center space-x-4 p-4 bg-white rounded-xl shadow-sm">
+              <div className="p-2 bg-blue-100 rounded-lg">
+                <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+              </div>
+              <div>
+                <h3 className="font-semibold text-gray-900">Real-time Analytics</h3>
+                <p className="text-sm text-gray-500">Track project progress instantly</p>
+              </div>
             </div>
           </div>
         </div>
@@ -58,13 +63,13 @@ const SignInPage = () => {
 
       {/* Right Section */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8">
-        <div className="max-w-md w-full">
-          <div className="text-center mb-10">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              Sign in to your account
+        <div className="max-w-md w-full space-y-8 bg-white p-10 rounded-2xl shadow-xl">
+          <div className="text-center">
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent mb-2">
+              Welcome Back
             </h1>
-            <p className="text-gray-600">
-              Welcome back! Please enter your details.
+            <p className="text-gray-500">
+              Enter your credentials to access your workspace
             </p>
           </div>
 
@@ -74,45 +79,51 @@ const SignInPage = () => {
             onSubmit={handleSubmit}
           >
             {({ isSubmitting, errors, touched }) => (
-              <Form className="space-y-6">
-                <div className="space-y-2">
-                  <label htmlFor="username" className="block text-sm font-medium text-gray-700">
+              <Form className="mt-8 space-y-6">
+                <div>
+                  <label htmlFor="email" className="block text-sm font-medium text-gray-700">
                     Email address
                   </label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                  <div className="mt-1 relative flex items-center">
+                    <div className="absolute left-3 text-gray-400">
+                      <Mail className="h-5 w-5" />
+                    </div>
                     <Field
-                      id="username"
-                      name="username"
+                      id="email"
+                      name="email"
                       type="email"
-                      className={`pl-10 w-full px-4 py-2 border ${errors.username && touched.username ? 'border-red-500' : 'border-gray-300'
-                        } rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500`}
+                      className={`appearance-none block w-full pl-10 px-3 py-3 border ${
+                        errors.email && touched.email ? 'border-red-500' : 'border-gray-300'
+                      } rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
                       placeholder="Enter your email"
                     />
-                    {errors.username && touched.username ? (
-                      <div className="text-red-500 text-sm">{errors.username}</div>
-                    ) : null}
                   </div>
+                  {errors.email && touched.email && (
+                    <div className="text-red-500 text-sm mt-1">{errors.email}</div>
+                  )}
                 </div>
 
-                <div className="space-y-2">
+                <div>
                   <label htmlFor="password" className="block text-sm font-medium text-gray-700">
                     Password
                   </label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                  <div className="mt-1 relative flex items-center">
+                    <div className="absolute left-3 text-gray-400">
+                      <Lock className="h-5 w-5" />
+                    </div>
                     <Field
                       id="password"
                       name="password"
                       type="password"
-                      className={`pl-10 w-full px-4 py-2 border ${errors.password && touched.password ? 'border-red-500' : 'border-gray-300'
-                        } rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500`}
+                      className={`appearance-none block w-full pl-10 px-3 py-3 border ${
+                        errors.password && touched.password ? 'border-red-500' : 'border-gray-300'
+                      } rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
                       placeholder="Enter your password"
                     />
-                    {errors.password && touched.password ? (
-                      <div className="text-red-500 text-sm">{errors.password}</div>
-                    ) : null}
                   </div>
+                  {errors.password && touched.password && (
+                    <div className="text-red-500 text-sm mt-1">{errors.password}</div>
+                  )}
                 </div>
 
                 <div className="flex items-center justify-between">
@@ -121,30 +132,34 @@ const SignInPage = () => {
                       id="remember-me"
                       name="rememberMe"
                       type="checkbox"
-                      className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                     />
                     <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700">
                       Remember me
                     </label>
                   </div>
-                  <button type="button" className="text-sm font-medium text-indigo-600 hover:text-indigo-500">
+                  <button 
+                    type="button" 
+                    className="text-sm font-medium text-blue-600 hover:text-blue-500"
+                    onClick={() => window.location.href = '/auth/forgot-password'}
+                  >
                     Forgot password?
                   </button>
                 </div>
 
                 <button
                   type="submit"
-                  className="w-full flex items-center justify-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  className="w-full flex items-center justify-center px-4 py-3 border border-transparent rounded-xl text-white bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transform transition-all duration-200 hover:scale-[1.02]"
                   disabled={isSubmitting}
                 >
-                  Sign in
+                  {isSubmitting ? 'Signing in...' : 'Sign in'}
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </button>
 
                 <p className="text-center text-sm text-gray-600">
                   Don't have an account?{' '}
-                  <a href="/auth/register" className="font-medium text-indigo-600 hover:text-indigo-500">
-                    Sign up
+                  <a href="/auth/register" className="font-medium text-blue-600 hover:text-blue-500">
+                    Create an account
                   </a>
                 </p>
               </Form>
@@ -157,4 +172,3 @@ const SignInPage = () => {
 };
 
 export default SignInPage;
-

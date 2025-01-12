@@ -27,4 +27,7 @@ router.use("/file",fileRoutes)
 const taskRoutes=require("./admin/taskRoutes")
 router.use("/task",taskRoutes)
 
+const todoRoutes=require("./admin/personalTodoRoutes")
+router.use("/todo",todoRoutes)
+
 module.exports=router;

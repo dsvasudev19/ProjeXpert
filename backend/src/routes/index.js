@@ -1,5 +1,8 @@
 const router=require("express").Router()
 
+const seedRoutes=require("./seed")
+router.use("/seed",seedRoutes)
+
 const clientRoutes=require("./clientRoutes")
 router.use("/client",clientRoutes)
 
@@ -14,5 +17,9 @@ router.use("/bug",bugRoutes)
 
 const authRoutes=require("./authRoutes")
 router.use("/auth",authRoutes)
+
+const personalTodoRoutes=require("./personalTodoRoutes")
+router.use("/todo",personalTodoRoutes)
+
 
 module.exports=router;

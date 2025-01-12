@@ -1,6 +1,8 @@
-import { Mail, Lock, ArrowRight } from "lucide-react";
+import { Mail, Lock, ArrowRight, Briefcase } from "lucide-react";
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
+import { axiosInstance } from "../../axiosIntance";
+import toast from "react-hot-toast";
 
 const ResetPassword = () => {
   const initialValues = {
@@ -15,56 +17,69 @@ const ResetPassword = () => {
       .email("Invalid email address")
       .required("Email is required"),
     password: Yup.string()
-      .min(6, "Password must be at least 6 characters")
+      .min(8, "Password must be at least 8 characters")
+      .matches(/[A-Z]/, "Password must contain at least one uppercase letter")
+      .matches(/[0-9]/, "Password must contain at least one number")
+      .matches(/[!@#$%^&*]/, "Password must contain at least one special character")
       .required("Password is required"),
     confirmPassword: Yup.string()
       .oneOf([Yup.ref("password"), ""], "Passwords must match")
       .required("Confirm password is required"),
   });
 
-  const handleSubmit = (values: any) => {
-    // Handle reset password logic here
-    console.log("Password reset for", values);
+  const handleSubmit = async (values: any) => {
+    try {
+      const res = await axiosInstance.post("/auth/reset-password", values);
+      if (res.status === 200) {
+        toast.success("Password reset successful! Please login with your new password.");
+        window.location.href = "/auth/login";
+      }
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "Failed to reset password");
+    }
   };
 
   return (
-    <div className="min-h-screen flex bg-white">
+    <div className="min-h-screen flex bg-gradient-to-br from-blue-50 to-white">
       {/* Left Section */}
-      <div className="hidden lg:flex lg:w-1/2 bg-indigo-50 items-center justify-center p-12">
+      <div className="hidden lg:flex lg:w-1/2 items-center justify-center p-12 bg-gradient-to-br from-blue-100 to-blue-50">
         <div className="max-w-lg">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">ProjeXpert</h2>
-          <p className="text-lg text-gray-600">
-            Optimize your turf management with our cutting-edge technology. Join
-            the thousands of groundskeepers and superintendents who rely on Play
-            Pitch.
+          <div className="flex items-center gap-3 mb-8">
+            <Briefcase className="w-12 h-12 text-blue-600" />
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
+              ProjeXpert
+            </h1>
+          </div>
+          <h2 className="text-4xl font-bold text-gray-900 mb-6 leading-tight">
+            Reset Your Password
+          </h2>
+          <p className="text-lg text-gray-600 mb-10">
+            Don't worry! We'll help you get back to managing your projects with a simple password reset process.
           </p>
-          <div className="mt-8 space-y-4">
-            <div className="flex items-center space-x-3">
-              <div className="w-2 h-2 bg-indigo-600 rounded-full"></div>
-              <p className="text-gray-600">Advanced Analytics Dashboard</p>
-            </div>
-            <div className="flex items-center space-x-3">
-              <div className="w-2 h-2 bg-indigo-600 rounded-full"></div>
-              <p className="text-gray-600">Secure Cloud Integration</p>
-            </div>
-            <div className="flex items-center space-x-3">
-              <div className="w-2 h-2 bg-indigo-600 rounded-full"></div>
-              <p className="text-gray-600">24/7 Premium Support</p>
+          <div className="space-y-6">
+            <div className="flex items-center space-x-4 p-4 bg-white rounded-xl shadow-sm">
+              <div className="p-2 bg-blue-100 rounded-lg">
+                <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+              </div>
+              <div>
+                <h3 className="font-semibold text-gray-900">Secure Reset Process</h3>
+                <p className="text-gray-600">Bank-grade security for your account</p>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
       {/* Right Section */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-8">
-        <div className="max-w-md w-full">
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-6">
+        <div className="max-w-md w-full bg-white rounded-2xl shadow-lg p-8">
           <div className="text-center mb-10">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              Reset your password
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent mb-2">
+              Reset Your Password
             </h1>
-            <p className="text-gray-600">
-              Please enter your new password below.
-            </p>
+            <p className="text-gray-600">Enter your email and new password below</p>
           </div>
 
           <Formik
@@ -73,22 +88,22 @@ const ResetPassword = () => {
             onSubmit={handleSubmit}
           >
             {({ isSubmitting }) => (
-              <Form className="space-y-6">
-                <div className="space-y-2">
+              <Form className="space-y-5">
+                <div>
                   <label
                     htmlFor="email"
-                    className="block text-sm font-medium text-gray-700"
+                    className="block text-sm font-medium text-gray-700 mb-1"
                   >
                     Email address
                   </label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                  <div className="relative flex items-center">
+                    <Mail className="absolute left-3 text-gray-400 h-5 w-5 pointer-events-none" />
                     <Field
                       id="email"
                       name="email"
                       type="email"
-                      className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                      placeholder="Enter your email"
+                      className="pl-10 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                      placeholder="you@company.com"
                     />
                   </div>
                   <ErrorMessage
@@ -98,21 +113,21 @@ const ResetPassword = () => {
                   />
                 </div>
 
-                <div className="space-y-2">
+                <div>
                   <label
                     htmlFor="password"
-                    className="block text-sm font-medium text-gray-700"
+                    className="block text-sm font-medium text-gray-700 mb-1"
                   >
                     New Password
                   </label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                  <div className="relative flex items-center">
+                    <Lock className="absolute left-3 text-gray-400 h-5 w-5 pointer-events-none" />
                     <Field
                       id="password"
                       name="password"
                       type="password"
-                      className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                      placeholder="Enter your new password"
+                      className="pl-10 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                      placeholder="••••••••"
                     />
                   </div>
                   <ErrorMessage
@@ -122,21 +137,21 @@ const ResetPassword = () => {
                   />
                 </div>
 
-                <div className="space-y-2">
+                <div>
                   <label
                     htmlFor="confirmPassword"
-                    className="block text-sm font-medium text-gray-700"
+                    className="block text-sm font-medium text-gray-700 mb-1"
                   >
                     Confirm Password
                   </label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                  <div className="relative flex items-center">
+                    <Lock className="absolute left-3 text-gray-400 h-5 w-5 pointer-events-none" />
                     <Field
                       id="confirmPassword"
                       name="confirmPassword"
                       type="password"
-                      className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                      placeholder="Confirm your new password"
+                      className="pl-10 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                      placeholder="••••••••"
                     />
                   </div>
                   <ErrorMessage
@@ -149,19 +164,19 @@ const ResetPassword = () => {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full flex items-center justify-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  className="w-full flex items-center justify-center px-4 py-3 border border-transparent rounded-lg text-white bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 font-medium"
                 >
-                  Reset Password
-                  <ArrowRight className="ml-2 h-4 w-4" />
+                  {isSubmitting ? "Resetting Password..." : "Reset Password"}
+                  <ArrowRight className="ml-2 h-5 w-5" />
                 </button>
 
-                <p className="text-center text-sm text-gray-600">
+                <p className="text-center text-sm text-gray-600 mt-6">
                   Remember your password?{" "}
                   <a
-                    href="/auth/sign-in"
-                    className="font-medium text-indigo-600 hover:text-indigo-500"
+                    href="/auth/login"
+                    className="font-medium text-blue-600 hover:text-blue-700 transition-colors duration-200"
                   >
-                    Sign in
+                    Sign in to ProjeXpert
                   </a>
                 </p>
               </Form>

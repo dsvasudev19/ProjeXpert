@@ -1,4 +1,4 @@
-const { Bug, User, Project } = require('../models'); // Adjust the path based on your project structure
+const { Bug, User, Project } = require('../../models'); // Adjust the path based on your project structure
 const { Op } = require('sequelize');
 
 const getAllBugs = async (req, res) => {

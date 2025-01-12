@@ -13,6 +13,9 @@ import Bookings from "./pages/Tasks";
 import ForgotPassword from "./pages/auth/ForgotPassword";
 import ResetPassword from "./pages/auth/ResetPassword";
 import Files from "./pages/Files";
+import Todo from "./pages/Todo";
+import Settings from "./pages/Settings";
+import UnauthorizedAccess from "./components/UnauthorizedAccess";
 
 
 const AppRoutes = () => {
@@ -28,6 +31,8 @@ const AppRoutes = () => {
           <Route path="kanban" element={<Reviews />} />
           <Route path="payment" element={<Transactions />} />
           <Route path="task" element={<Bookings />} />
+          <Route path="todo" element={<Todo />} />
+          <Route path="settings" element={<Settings />} />
         </Route>
         <Route path="/auth/*">
           <Route path="login" element={<SignInPage />} />
@@ -39,6 +44,7 @@ const AppRoutes = () => {
         </Route>
         <Route path="*" element={<NotFound />} />
         <Route path="/" element={<Navigate to="/auth/login" />} />
+        <Route path="401" element={<UnauthorizedAccess />} />
       </Routes>
     </BrowserRouter>
   );

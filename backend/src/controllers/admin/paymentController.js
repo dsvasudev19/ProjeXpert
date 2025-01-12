@@ -1,4 +1,4 @@
-const { Payment, User, Project } = require('../models'); // Adjust the path based on your project structure
+const { Payment, User, Project } = require('../../models'); // Adjust the path based on your project structure
 const { Op } = require('sequelize');
 
 const getAllPayments = async (req, res) => {

@@ -1,7 +1,8 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { User, Role } = require('../models'); // Adjust the path based on your project structure
-const { Op } = require('sequelize');
+const { User, Role, RefreshToken } = require('../models'); // Adjust the path based on your project structure
+const { Op, where } = require('sequelize');
+const crypto = require("crypto")
 
 const register = async (req, res) => {
     try {
@@ -57,23 +58,89 @@ const login = async (req, res) => {
         }
 
         // Generate a JWT token
-        const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
-        return res.status(200).json({ message: 'Login successful.', token, user });
+        const refreshToken = await RefreshToken.create({
+            userId: user.id,
+            expiryDate: new Date(Date.now() + 30 * 60 * 1000),
+            token: crypto.randomBytes(6).toString("hex").toUpperCase()
+        })
+
+        user.lastLogin = new Date();
+
+        await user.save();
+
+        return res.status(200).json({ message: 'Login successful.', token, user:{name:user.name,email:user.email,phone:user.phone,lastLogin:user.lastLogin}, refreshToken: refreshToken.token });
     } catch (error) {
+        console.log(error)
         return res.status(500).json({ message: 'Internal server error.', error });
     }
 }
 
 // Log out a user
 const logout = (req, res) => {
-    // Since JWT is stateless, the logout can be handled on the client-side by removing the token
-    // Here, we just respond with a success message
+
     return res.status(200).json({ message: 'Logout successful.' });
+}
+
+const getUserByToken = async (req, res) => {
+    try {
+        const token = req.headers.authorization?.split(' ')[1];
+        if (!token) {
+            return res.status(401).json({ message: 'Unauthorized: No token provided.' });
+        }
+
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const user = await User.findByPk(decoded.id, {
+            include: [{
+                model: Role,
+                attributes: ['name'],
+                exclude: ['UserRole']
+
+            }]
+        });
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found.' });
+        }
+
+        return res.status(200).json({ user });
+    } catch (error) {
+        console.error('Error in getUserByToken:', error);
+        if (error instanceof jwt.JsonWebTokenError) {
+            return res.status(401).json({ message: 'Unauthorized: Invalid token.' });
+        }
+        return res.status(500).json({ message: 'Internal server error.' });
+    }
+}
+
+const generateAccessTokenBasedOnRefreshToken = async (req, res, next) => {
+    try {
+        const { token } = req.query;
+        console.log(req.params)
+        if (!token) {
+            return res.status(401).json({ success: false, message: "No Refresh Token found" })
+        }
+        const tokenFromDatabase = await RefreshToken.findOne({
+            where: {
+                token
+            }
+        })
+        if (tokenFromDatabase.expiryDate > new Date()) {
+            const accessToken = jwt.sign({ id: tokenFromDatabase.userId }, process.env.JWT_SECRET, { expiresIn: '1h' });
+            return res.status(200).json({ success: true, message: "Successfully generated new AccessToken", token: accessToken })
+        }
+        return res.status(401).json({ success: false, message: "Refresh Token expired Please login again." })
+    } catch (error) {
+        console.log(error)
+        next(error)
+    }
 }
 
 module.exports = {
     register,
     login,
-    logout
+    logout,
+    getUserByToken,
+    generateAccessTokenBasedOnRefreshToken
 }

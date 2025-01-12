@@ -4,7 +4,8 @@ const router = express.Router();
 const {
     getPaymentById,
     createPayment,
-    updatePayment
+    updatePayment,
+    getUserPayments
 } = require('../controllers/paymentController');
 const {  authenticateUser } = require('../middlewares/authenticate');
 const {  checkRole } = require('../middlewares/authorize');

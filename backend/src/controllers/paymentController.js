@@ -111,5 +111,6 @@ const updatePayment = async (req, res) => {
 module.exports = {
     getPaymentById,
     createPayment,
-    updatePayment
+    updatePayment,
+    getUserPayments
 };

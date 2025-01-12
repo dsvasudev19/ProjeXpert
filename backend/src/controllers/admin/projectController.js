@@ -1,5 +1,5 @@
 // controllers/projectController.js
-const { Project, User, Bug } = require('../models');
+const { Project, User, Bug } = require('../../models');
 
 const getAllProjects = async (req, res) => {
     try {
