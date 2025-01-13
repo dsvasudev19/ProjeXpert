@@ -18,4 +18,6 @@ router.put('/:id/roles',  userController.updateUserRole); // Update user roles
 router.get('/:id/projects', userController.getUserProjects); // Get projects for a user
 router.get('/:id/bugs',  userController.getUserBugs); // Get bugs for a user
 
+router.get("/users/clients",userController.getAllClients)
+
 module.exports = router;

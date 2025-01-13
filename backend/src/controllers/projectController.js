@@ -12,7 +12,6 @@ const getAllProjects = async (req, res) => {
             const projects = await Project.findAll({
                 include: [
                     { model: User, as: 'Client' },
-                    { model: User, as: 'Freelancer' },
                     { model: Bug, as: 'Bugs' },
                 ],
             });
@@ -24,7 +23,6 @@ const getAllProjects = async (req, res) => {
             where: {
                 [Op.or]: [
                     { clientId: userId },
-                    { freelancerId: userId },
                 ],
             },
             include: [
@@ -48,7 +46,6 @@ const getProjectById = async (req, res) => {
         const project = await Project.findByPk(req.params.id, {
             include: [
                 { model: User, as: 'Client' },
-                { model: User, as: 'Freelancer' },
                 { model: Bug, as: 'Bugs' },
             ],
         });
@@ -82,7 +79,7 @@ const createProject = async (req, res) => {
             return res.status(403).json({ message: 'Access denied. Admins only.' });
         }
 
-        const { title, description, budget, status, clientId, freelancerId } = req.body;
+        const { title, description, budget, status, clientId } = req.body;
 
         const project = await Project.create({
             title,
@@ -90,7 +87,6 @@ const createProject = async (req, res) => {
             budget,
             status,
             clientId,
-            freelancerId,
         });
 
         return res.status(201).json({ message: 'Project created successfully.', project });
@@ -108,7 +104,7 @@ const updateProject = async (req, res) => {
             return res.status(403).json({ message: 'Access denied. Admins only.' });
         }
 
-        const { title, description, budget, status, clientId, freelancerId } = req.body;
+        const { title, description, budget, status, clientId } = req.body;
         const project = await Project.findByPk(req.params.id);
 
         if (!project) {
@@ -120,7 +116,6 @@ const updateProject = async (req, res) => {
         project.budget = budget || project.budget;
         project.status = status || project.status;
         project.clientId = clientId || project.clientId;
-        project.freelancerId = freelancerId || project.freelancerId;
 
         await project.save();
 
@@ -158,29 +153,29 @@ const getProjectBugs = async (req, res) => {
 }
 
 // Assign freelancer to a project (Admin only)
-const assignFreelancer = async (req, res) => {
-    try {
-        const userRole = req.user.role;
+// const assignFreelancer = async (req, res) => {
+//     try {
+//         const userRole = req.user.role;
 
-        if (userRole !== 'admin') {
-            return res.status(403).json({ message: 'Access denied. Admins only.' });
-        }
+//         if (userRole !== 'admin') {
+//             return res.status(403).json({ message: 'Access denied. Admins only.' });
+//         }
 
-        const { freelancerId } = req.body;
-        const project = await Project.findByPk(req.params.id);
+//         const { freelancerId } = req.body;
+//         const project = await Project.findByPk(req.params.id);
 
-        if (!project) {
-            return res.status(404).json({ message: 'Project not found.' });
-        }
+//         if (!project) {
+//             return res.status(404).json({ message: 'Project not found.' });
+//         }
 
-        project.freelancerId = freelancerId;
-        await project.save();
+//         project.freelancerId = freelancerId;
+//         await project.save();
 
-        return res.status(200).json({ message: 'Freelancer assigned successfully.', project });
-    } catch (error) {
-        return res.status(500).json({ message: 'Internal server error.', error });
-    }
-}
+//         return res.status(200).json({ message: 'Freelancer assigned successfully.', project });
+//     } catch (error) {
+//         return res.status(500).json({ message: 'Internal server error.', error });
+//     }
+// }
 
 module.exports = {
     getAllProjects,
@@ -188,5 +183,5 @@ module.exports = {
     createProject,
     updateProject,
     getProjectBugs,
-    assignFreelancer
+    // assignFreelancer
 };

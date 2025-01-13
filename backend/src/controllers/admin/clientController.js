@@ -26,7 +26,7 @@ const getAllUsers = async (req, res) => {
             include: [{ model: Role, through: { attributes: [] } }],
         });
         return res.status(200).json(users);
-    } catch (error) {
+    } catch (error) { console.log(error);
         return res.status(500).json({ message: 'Internal server error.', error });
     }
 };
@@ -47,7 +47,7 @@ const getUserById = async (req, res) => {
             return res.status(404).json({ message: 'User not found.' });
         }
         return res.status(200).json(targetUser);
-    } catch (error) {
+    } catch (error) { console.log(error);
         return res.status(500).json({ message: 'Internal server error.', error });
     }
 };
@@ -89,7 +89,7 @@ const createUser = async (req, res) => {
         }
 
         return res.status(201).json({ message: 'User created successfully.', newUser });
-    } catch (error) {
+    } catch (error) { console.log(error);
         return res.status(500).json({ message: 'Internal server error.', error });
     }
 };
@@ -122,7 +122,7 @@ const updateUser = async (req, res) => {
         await targetUser.save();
 
         return res.status(200).json({ message: 'User updated successfully.', targetUser });
-    } catch (error) {
+    } catch (error) { console.log(error);
         return res.status(500).json({ message: 'Internal server error.', error });
     }
 };
@@ -142,7 +142,7 @@ const deleteUser = async (req, res) => {
         }
         await targetUser.destroy();
         return res.status(200).json({ message: 'User deleted successfully.' });
-    } catch (error) {
+    } catch (error) { console.log(error);
         return res.status(500).json({ message: 'Internal server error.', error });
     }
 };
@@ -171,7 +171,7 @@ const updateUserRole = async (req, res) => {
         }
 
         return res.status(200).json({ message: 'User roles updated successfully.', targetUser });
-    } catch (error) {
+    } catch (error) { console.log(error);
         return res.status(500).json({ message: 'Internal server error.', error });
     }
 };
@@ -197,7 +197,7 @@ const getUserProjects = async (req, res) => {
         }
 
         return res.status(200).json({ targetUser });
-    } catch (error) {
+    } catch (error) { console.log(error);
         return res.status(500).json({ message: 'Internal server error.', error });
     }
 };
@@ -223,10 +223,28 @@ const getUserBugs = async (req, res) => {
         }
 
         return res.status(200).json({ targetUser });
-    } catch (error) {
+    } catch (error) { console.log(error);
         return res.status(500).json({ message: 'Internal server error.', error });
     }
 };
+
+const getAllClients = async (req, res, next) => {
+    console.log("getting here")
+    try {
+        const clients = await User.findAll({
+            include: [{ model: Role, where: { name: 'client' },attributes:['name']}]
+        });
+
+        console.log(clients)
+
+        const newClients=clients.map((client)=>{return {id:client.id,name:client.name,email:client.email,role:client.Roles[0].name}})
+
+        return res.status(200).json({success:true,message:"Successfully fetched all clients",data:newClients});
+    } catch (error) { console.log(error);
+        console.log(error);
+        next(error);
+    }
+}
 
 module.exports = {
     getAllUsers,
@@ -237,4 +255,5 @@ module.exports = {
     updateUserRole,
     getUserProjects,
     getUserBugs,
+    getAllClients
 };

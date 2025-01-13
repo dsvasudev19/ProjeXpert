@@ -2,6 +2,7 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 const process = require("process");
+const crypto = require("crypto"); // Added missing import for crypto
 const cwd = process.cwd();
 
 if (!fs.existsSync("uploads/")) {
@@ -31,7 +32,7 @@ const projectFile = multer.diskStorage({
   destination: (req, file, cb) => {
     const dir = "./uploads/projectFile";
     createDirIfNot(dir);
-    cb(null, "./uploads/projectFile");
+    cb(null, dir); // Changed to use the variable dir instead of hardcoded path
   },
   filename: (req, file, cb) => {
     const uniqueString = Date.now() + "_" + path.extname(file.originalname);
@@ -39,19 +40,17 @@ const projectFile = multer.diskStorage({
   },
 });
 
-
-const taskFile=multer.diskStorage({
-    destination:(req,file,cb)=>{
-        const dir="./uploads/taskFile";
-        createDirIfNot(dir);
-        cb(null,"./uploads/taskFile");
-    },
-    filename:(req,file,cb)=>{
-        const uniqueString=Date.now()+"_"+path.extname(file.originalname);
-        cb(null,"task_"+uniqueString);
-    }
-})
-
+const taskFile = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const dir = "./uploads/taskFile";
+    createDirIfNot(dir);
+    cb(null, dir); // Changed to use the variable dir instead of hardcoded path
+  },
+  filename: (req, file, cb) => {
+    const uniqueString = Date.now() + "_" + path.extname(file.originalname);
+    cb(null, "task_" + uniqueString);
+  }
+});
 
 function fileFilter(req, file, cb) {
   if (file.mimetype.startsWith("image/")) {
@@ -68,10 +67,10 @@ const projectUpload = multer({
   limits: { fileSize: 1024 * 1024 * 2 },
 });
 
-const taskUpload=multer({
-    storage:taskFile,
-    limits:{fileSize:1024*1024*2},
-})
+const taskUpload = multer({
+  storage: taskFile,
+  limits: { fileSize: 1024 * 1024 * 2 },
+});
 
 module.exports = {
   upload,

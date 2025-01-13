@@ -13,9 +13,9 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       this.belongsToMany(models.Role, { through: models.UserRole,foreignKey:'userId' });
       this.hasMany(models.Project, { as: 'ClientProjects', foreignKey: 'clientId' });
-      this.hasMany(models.Project, { as: 'FreelancerProjects', foreignKey: 'freelancerId' });
       this.hasMany(models.Bug, { as: 'ReportedBugs', foreignKey: 'reportedById' });
       this.hasMany(models.Bug, { as: 'AssignedBugs', foreignKey: 'assigneeId' });
+      this.hasOne(models.TeamMember, { foreignKey: 'userId', as: 'TeamMember' });
     }
   }
   User.init({

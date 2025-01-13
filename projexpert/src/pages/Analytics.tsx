@@ -3,6 +3,7 @@ import { Users, Briefcase, DollarSign,  CheckCircle, AlertTriangle, Calendar, Tr
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 
+
 const Analytics = () => {
   const [selectedView, setSelectedView] = useState('overview');
 
@@ -97,6 +98,26 @@ const Analytics = () => {
       activeTasks: 5
     }
   ];
+
+  // const { user, loading } = useAuth();
+
+  // useEffect(() => {
+  //   if (!loading && !user) {
+  //     window.location.href = '/auth/login';
+  //   }
+  // }, [loading, user]);
+
+  // if (loading) {
+  //   return (
+  //     <div className="min-h-screen flex items-center justify-center">
+  //       <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-emerald-500"></div>
+  //     </div>
+  //   );
+  // }
+
+  // if (!user) {
+  //   return null;
+  // }
 
   const renderContent = () => {
     switch(selectedView) {

@@ -12,13 +12,19 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       this.belongsTo(models.User, { as: 'Client', foreignKey: 'clientId' });
-      this.belongsTo(models.User, { as: 'Freelancer', foreignKey: 'freelancerId' });
       this.hasMany(models.Bug,{
         foreignKey:'projectId'
       });
       this.hasMany(models.Payment,{
         foreignKey:'projectId'
       });
+      this.hasMany(models.Task,{
+        foreignKey:'projectId',
+      })
+      this.hasMany(models.File,{
+        foreignKey:'projectId'
+      })
+      this.belongsToMany(models.TeamMember, { foreignKey: 'projectId', through:models.ProjectAssignment });
     }
   }
   Project.init({
@@ -29,8 +35,7 @@ module.exports = (sequelize, DataTypes) => {
     endDate: DataTypes.DATE,
     budget: DataTypes.DECIMAL,
     priority: DataTypes.STRING,
-    clientId: DataTypes.INTEGER,
-    freelancerId: DataTypes.INTEGER
+    clientId: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'Project',

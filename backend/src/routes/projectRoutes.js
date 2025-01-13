@@ -27,6 +27,6 @@ router.put('/:id', authenticateUser, checkRole('admin'), updateProject);
 router.get('/:id/bugs', authenticateUser, getProjectBugs);
 
 // Route to assign a freelancer to a project (Admins only)
-router.put('/:id/assign-freelancer', authenticateUser, checkRole('admin'), assignFreelancer);
+// router.put('/:id/assign-freelancer', authenticateUser, checkRole('admin'), assignFreelancer);
 
 module.exports = router;
