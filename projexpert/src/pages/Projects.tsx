@@ -61,7 +61,7 @@ const Projects = () => {
           {projects.map((project: any) => (
             <div
               key={project.id}
-              className={`p-3 rounded-lg cursor-pointer transition-all duration-200 ${selectedProject?.id === project.id
+              className={`p-3 rounded-lg cursor-pointer transition-all duration-200 ${selectedProject === project.id
                   ? 'bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-500 shadow-sm'
                   : 'hover:bg-gray-50'
                 }`}

@@ -5,19 +5,19 @@ const { authenticateUser } = require('../../middlewares/authenticate');
 const { checkRole } = require('../../middlewares/authorize');
 
 // Routes for user management
-router.get('/', userController.getAllUsers); // Get all users
-router.get('/:id', userController.getUserById); // Get user by ID
-router.post('/',  userController.createUser); // Create a new user
-router.put('/:id',  userController.updateUser); // Update a user
-router.delete('/:id',  userController.deleteUser); // Delete a user
+router.get('/',authenticateUser, userController.getAllUsers); // Get all users
+router.get('/:id',authenticateUser, userController.getUserById); // Get user by ID
+router.post('/',authenticateUser,  userController.createUser); // Create a new user
+router.put('/:id',authenticateUser,  userController.updateUser); // Update a user
+router.delete('/:id',authenticateUser,  userController.deleteUser); // Delete a user
 
 // Route to update user roles
-router.put('/:id/roles',  userController.updateUserRole); // Update user roles
+router.put('/:id/roles', authenticateUser, userController.updateUserRole); // Update user roles
 
 // Routes to get projects and bugs for a user
-router.get('/:id/projects', userController.getUserProjects); // Get projects for a user
-router.get('/:id/bugs',  userController.getUserBugs); // Get bugs for a user
+router.get('/:id/projects', authenticateUser,userController.getUserProjects); // Get projects for a user
+router.get('/:id/bugs', authenticateUser, userController.getUserBugs); // Get bugs for a user
 
-router.get("/users/clients",userController.getAllClients)
+router.get("/users/clients",authenticateUser,userController.getAllClients)
 
 module.exports = router;

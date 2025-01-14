@@ -22,6 +22,7 @@ const DashboardLayout = () => {
         { icon: SquareKanban, label: 'Kanban', href: '/dashboard/kanban' },
         { icon: BadgeIndianRupee, label: 'Payment', href: '/dashboard/payment' },
         { icon: UserCog, label: 'Team', href: '/dashboard/team' },
+        { icon: UserCog, label: 'Client', href: '/dashboard/client' },
     ];
 
     useEffect(() => {
@@ -126,7 +127,7 @@ const DashboardLayout = () => {
                                     <Link
                                         to={item.href}
                                         key={index}
-                                        className={`flex items-center px-3 py-3.5 rounded-xl transition-all duration-300 group relative
+                                        className={`flex items-center px-3 py-2.5 rounded-xl transition-all duration-300 group relative
                                             ${activeItem === item.href
                                                 ? 'bg-gradient-to-r from-green-500 to-blue-600 shadow-lg shadow-blue-200/50'
                                                 : 'hover:bg-gradient-to-r from-green-50 to-blue-50'
