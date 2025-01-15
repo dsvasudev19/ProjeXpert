@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Clock, CheckCircle, AlertCircle, Plus, Search, ChevronDown, ChevronUp, FileText, ChartBar } from 'lucide-react';
+import { axiosInstance } from '../axiosIntance';
+import toast from 'react-hot-toast';
 
 const Tasks = () => {
   const [tasks, setTasks] = useState([
@@ -41,6 +43,19 @@ const Tasks = () => {
     },
   ]);
 
+
+  const getAllTasks=async()=>{
+    try {
+      const res=await axiosInstance.get("/admin/task")
+      if(res.status===200){
+        // setTasks(res.data)
+      }
+      
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   const getStatusIcon = (status: string) => {
     switch(status) {
       case 'Completed': return <CheckCircle className="w-5 h-5 text-green-500" />;
@@ -76,6 +91,35 @@ const Tasks = () => {
       task.id === taskId ? { ...task, expanded: !task.expanded } : task
     ));
   };
+
+  // const deleteTask=async(id:any)=>{
+  //   try {
+  //     const res=await axiosInstance.delete(`/admin/task/${id}`)
+  //     if(res.status===200){
+  //       toast.success("Task Deleted Successfully")
+  //     }
+  //   } catch (error) {
+  //     console.log(error)
+  //   }
+  // }
+
+  const completeTask=async(id:any)=>{
+    try {
+      const res=await axiosInstance.post(`/admin/task/${id}`,{status:"Completed"})
+      if(res.status===200){
+        toast.success("Task Status Changed Successfully")
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  useEffect(()=>{
+     getAllTasks();
+    
+  },[])
+
+
 
   return (
     <div className="p-6">
@@ -153,7 +197,7 @@ const Tasks = () => {
                     </td>
                     <td className="p-4">
                     <button 
-            
+                        onClick={()=>{completeTask(task?.id)}}
                         className="p-2 text-green-400 hover:bg-green-500 rounded-lg transition-colors"
                         title="Show Details"
                       >

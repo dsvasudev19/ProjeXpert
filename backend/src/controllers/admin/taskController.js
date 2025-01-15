@@ -1,13 +1,42 @@
-const { Task } = require('../../models');
+const { Task,User,Project } = require('../../models');
 
-const getAllTasks= async (req, res) => {
+const getAllTasks = async (req, res) => {
     try {
-        const tasks = await Task.findAll();
-        res.json(tasks);
+        const userId = req.user.id;
+        
+        const user = await User.findOne({
+            where: { id: userId },
+            include: [{ model: Role }]
+        });
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        const userRole = user.Roles[0].name;
+
+        let whereCondition = {};
+
+        if (userRole !== 'admin') {
+            whereCondition.assigneeId = userId;
+        }
+
+        const tasks = await Task.findAll({
+            where: whereCondition,
+            include: [
+                { model: User, as: 'Assignee' },
+                { model: Project },
+                { model: Task, as: 'ParentTask' },
+                { model: Task, as: 'SubTasks' }
+            ]
+        });
+
+        res.status(200).json(tasks);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
-}
+};
+
 const getTaskById = async (req, res) => {
     try {
         const task = await Task.findByPk(req.params.id);
@@ -72,7 +101,9 @@ const updateTaskStatus = async (req, res) => {
         const task = await Task.findByPk(req.params.id);
         if (task) {
             task.status = req.body.status;
+            task.progress=100;
             await task.save();
+
             res.json(task);
         } else {
             res.status(404).json({ message: 'Task not found' });

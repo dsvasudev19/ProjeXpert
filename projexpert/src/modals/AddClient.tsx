@@ -11,7 +11,7 @@ const AddClient = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }
 
     const handleSubmit = async (values: typeof initialValues) => {
        try {
-           const res=await axiosInstance.post("/admin/role",values)
+           const res=await axiosInstance.post("/admin/client",values)
            if(res.status===201){
             toast.success("Client Onboarded Successfully")
             onClose();
