@@ -21,6 +21,23 @@ const FileManagementFolder: React.FC = () => {
     }
   };
 
+  const handleDownload = async (fileId: number) => {
+    try {
+      const response = await axiosInstance.get(`/admin/file/${fileId}/download`, {
+        responseType: 'blob', // Important for file download
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `file_${fileId}`); // You can customize the filename here
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      console.error('Error downloading the file:', error);
+    }
+  };
+
   useEffect(() => {
     const queryParams = new URLSearchParams(window.location.search);
     const foundId = queryParams.get('projectId');
@@ -62,7 +79,7 @@ const FileManagementFolder: React.FC = () => {
                 <p className="text-xs text-slate-500">{file.type}</p>
               </div>
               <div className="flex gap-2">
-                <button className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-600 hover:text-blue-600 transition-colors">
+                <button className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-600 hover:text-blue-600 transition-colors" onClick={() => handleDownload(file.id)}>
                   <Eye className="w-4 h-4" />
                 </button>
                 <button className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-600 hover:text-green-600 transition-colors">

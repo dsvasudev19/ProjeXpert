@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { axiosInstance } from "../axiosIntance";
 import toast from "react-hot-toast";
 
-const AddClient = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
+const AddClient = ({ isOpen, onClose,getClients }: { isOpen: boolean; onClose: () => void;getClients:any }) => {
     const [roles,setRoles]=useState<any>([])
     const initialValues = { name: "", email: "", roleId: "" };
 
@@ -14,6 +14,7 @@ const AddClient = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }
            const res=await axiosInstance.post("/admin/client",values)
            if(res.status===201){
             toast.success("Client Onboarded Successfully")
+            getClients()
             onClose();
            }
            

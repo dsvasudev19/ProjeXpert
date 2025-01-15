@@ -17,6 +17,7 @@ import Todo from "./../pages/Todo";
 import Settings from "./../pages/Settings";
 import UnauthorizedAccess from "./../components/UnauthorizedAccess";
 import ClientOrDeveloper from "../pages/ClientOrDeveloper";
+import RolesAndPermissions from "../pages/RolesAndPermissions";
 
 
 
@@ -36,6 +37,7 @@ const AppRoutes = () => {
             <Route path="todo" element={<Todo />} />
             <Route path="settings" element={<Settings />} />
             <Route path="client" element={<ClientOrDeveloper />} />
+            <Route path="roles-and-permissions" element={<RolesAndPermissions />} />
           </Route>
         <Route path="/auth/*">
           <Route path="login" element={<SignInPage />} />

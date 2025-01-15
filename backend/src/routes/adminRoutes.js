@@ -30,4 +30,7 @@ router.use("/task",taskRoutes)
 const todoRoutes=require("./admin/personalTodoRoutes")
 router.use("/todo",todoRoutes)
 
+const dashboardRoutes=require("./admin/dashboardRoutes")
+router.use("/dashboard",dashboardRoutes)
+
 module.exports=router;

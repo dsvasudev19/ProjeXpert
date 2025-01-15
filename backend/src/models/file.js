@@ -17,7 +17,12 @@ module.exports = (sequelize, DataTypes) => {
     name: DataTypes.STRING,
     type: DataTypes.STRING,
     size: DataTypes.INTEGER,
-    path: DataTypes.STRING,
+    path: {
+      type: DataTypes.STRING,
+      get url() {
+        return `http://localhost:3000/${this.path}`;
+      }
+    },
     uploaderId: DataTypes.INTEGER,
     projectId: DataTypes.INTEGER
   }, {

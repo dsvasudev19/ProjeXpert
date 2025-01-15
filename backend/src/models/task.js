@@ -2,6 +2,7 @@
 const {
   Model
 } = require('sequelize');
+const crypto=require("crypto")
 module.exports = (sequelize, DataTypes) => {
   class Task extends Model {
     /**
@@ -15,24 +16,32 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey:"projectId"
       })
       this.belongsTo(models.User,{
-        foreignKey:'userId',
+        foreignKey:'assigneeId',
         as:"Assignee"
       })
-      this.belongsTo(models.Bug,{
-        foreignKey:'bugId'
-      })
+      // this.belongsTo(models.Bug,{
+      //   foreignKey:'bugId'
+      // })
       this.belongsTo(models.Task, {
         foreignKey: 'parentTaskId', 
-        as: 'ParentTask' 
+        as: 'ParentTask' ,
+        allowNull: true 
       });
 
       this.hasMany(models.Task, {
         foreignKey: 'parentTaskId', 
-        as: 'SubTasks' 
+        as: 'SubTasks' ,
+        allowNull: true 
       });
     }
   }
   Task.init({
+    refId:{
+      type:DataTypes.STRING,
+      defaultValue:crypto.randomBytes(3).toString("hex").toUpperCase(),
+      allowNull:false,
+      unique:true
+    },
     title: DataTypes.STRING,
     description: DataTypes.TEXT,
     status: DataTypes.STRING,
@@ -41,7 +50,7 @@ module.exports = (sequelize, DataTypes) => {
     assigneeId: DataTypes.INTEGER,
     projectId: DataTypes.INTEGER,
     bugId: DataTypes.INTEGER,
-    parentTaskId: DataTypes.INTEGER,
+    parentTaskId: {type:DataTypes.INTEGER,allowNull: true },
     progress: DataTypes.INTEGER
   }, {
     sequelize,

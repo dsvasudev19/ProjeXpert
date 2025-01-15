@@ -30,7 +30,7 @@ const getProjectById = async (req, res) => {
             include: [
                 { model: User, as: 'Client', attributes: ['id', 'name'] },
                 { model: Bug, as: 'Bugs' },
-                { model: Task, as: 'Tasks' },
+                { model: Task, as: 'Tasks' ,include:[{model:User,as:"Assignee"}]},
                 { model: File },
                 { model: TeamMember }
             ],

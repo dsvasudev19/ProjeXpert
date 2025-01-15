@@ -1,11 +1,15 @@
 import { AlertCircle, Bug, CheckCircle, ChevronDown, ChevronUp, Clock, FileText, FolderGit2, ListTodo, Plus, Users } from "lucide-react";
 import { useEffect, useState } from "react";
 import { axiosInstance } from "../axiosIntance";
+import AddTask from "../modals/AddTask";
 
 const RenderProjectDetails = ({ projectId }: any) => {
     const [selectedProject, setSelectedProject] = useState<any>(null);
     const [expandedSection, setExpandedSection] = useState<string | null>(null);
     const [closeBugModalOpen, setCloseBugModalOpen] = useState<any>(false)
+    const [showAllTasks, setShowAllTasks] = useState(false)
+    const [showAllFiles, setShowAllFiles] = useState(false);
+    const [showAddTaskModal,setShowAddTaskModal]=useState(false)
 
     const dummyProjects = [
         {
@@ -91,7 +95,7 @@ const RenderProjectDetails = ({ projectId }: any) => {
                         <Users className="w-5 h-5" />
                         <span>Add Member</span>
                     </button>
-                    <button className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-lg hover:shadow-lg transition-all duration-300">
+                    <button onClick={()=>{setShowAddTaskModal(true)}} className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-lg hover:shadow-lg transition-all duration-300">
                         <Plus className="w-5 h-5" />
                         <span>Add Task</span>
                     </button>
@@ -186,10 +190,15 @@ const RenderProjectDetails = ({ projectId }: any) => {
                         <div>
                             <div className="flex justify-between items-center mb-4">
                                 <h3 className="text-lg font-semibold">Tasks</h3>
-                                <button className="text-blue-500 hover:text-blue-600">View All</button>
+                                <button
+                                    onClick={() => setShowAllTasks(!showAllTasks)}
+                                    className="text-blue-500 hover:text-blue-600"
+                                >
+                                    {showAllTasks ? 'Show Less' : 'View All'}
+                                </button>
                             </div>
                             <div className="space-y-3">
-                                {selectedProject?.Tasks?.map((task: any) => (
+                                {(showAllTasks ? selectedProject?.Tasks : selectedProject?.Tasks?.slice(0, 3))?.map((task: any) => (
                                     <div key={task.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                                         <div className="flex items-center gap-3">
                                             <div className={`p-2 rounded-lg ${task.status === 'completed' ? 'bg-green-100' : 'bg-blue-100'}`}>
@@ -197,7 +206,7 @@ const RenderProjectDetails = ({ projectId }: any) => {
                                             </div>
                                             <div>
                                                 <p className="font-medium">{task.title}</p>
-                                                <p className="text-sm text-gray-500">Assigned to: {task.assignee}</p>
+                                                <p className="text-sm text-gray-500">Assigned to: {task?.Assignee?.name}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -210,10 +219,15 @@ const RenderProjectDetails = ({ projectId }: any) => {
                         <div>
                             <div className="flex justify-between items-center mb-4">
                                 <h3 className="text-lg font-semibold">Project Files</h3>
-                                <button className="text-blue-500 hover:text-blue-600">View All</button>
+                                <button
+                                    onClick={() => setShowAllFiles(!showAllFiles)}
+                                    className="text-blue-500 hover:text-blue-600"
+                                >
+                                    {showAllFiles ? 'Show Less' : 'View All'}
+                                </button>
                             </div>
                             <div className="space-y-3">
-                                {selectedProject.Files?.map((file: any) => (
+                                {(showAllFiles ? selectedProject?.Files : selectedProject?.Files?.slice(0, 3))?.map((file: any) => (
                                     <div key={file.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                                         <div className="flex items-center gap-3">
                                             <div className="p-2 rounded-lg bg-emerald-100">
@@ -221,7 +235,7 @@ const RenderProjectDetails = ({ projectId }: any) => {
                                             </div>
                                             <div>
                                                 <p className="font-medium">{file.name}</p>
-                                                <p className="text-sm text-gray-500">Size: {Math.ceil(file.size/1024)} MB</p>
+                                                <p className="text-sm text-gray-500">Size: {Math.ceil(file.size / 1024)} MB</p>
                                             </div>
                                         </div>
                                         <div className="text-sm text-gray-500">
@@ -344,6 +358,9 @@ const RenderProjectDetails = ({ projectId }: any) => {
                     </div>
                 </div>
             </div>
+            {
+                showAddTaskModal && <AddTask showAddModal={showAddTaskModal} getTasks={getProjectDetailsById} closeModal={()=>{setShowAddTaskModal(false)}} proId={projectId}  />
+            }
         </div>
     );
 };

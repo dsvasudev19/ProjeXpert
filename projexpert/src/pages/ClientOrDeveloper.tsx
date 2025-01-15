@@ -111,7 +111,7 @@ const ClientOrDeveloper = () => {
                         </div>
                 }
 
-                <AddClient isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+                <AddClient isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} getClients={getAllClients} />
             </div>
         </div>
     );

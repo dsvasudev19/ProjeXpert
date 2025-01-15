@@ -7,10 +7,12 @@ const {checkPermission}=require("../../middlewares/checkPermission")
 
 router.get('/',authenticateUser, taskController.getAllTasks);
 router.get('/:id',authenticateUser, taskController.getTaskById);
+router.get("/search/by-query",authenticateUser,taskController.searchTasks);
 router.post('/',authenticateUser, taskController.createTask);
 router.put('/:id', authenticateUser,taskController.updateTask);
-router.delete('/:id',authenticateUser,checkRole(['admin','client','TeamLead']),checkPermission(['delete_tasks']), taskController.deleteTask);
-router.patch('/:id/assign',authenticateUser,checkPermission('assign_tasks'), taskController.assignTask);
-router.patch('/:id/status',authenticateUser,checkPermission('update_task_status'),taskController.updateTaskStatus);
 
+router.delete('/:id',authenticateUser,checkRole(['admin','client','TeamLead']),checkPermission(['delete_tasks']), taskController.deleteTask);
+router.patch('/:id/assign',authenticateUser,checkPermission(['assign_tasks']), taskController.assignTask);
+router.patch('/:id/status',authenticateUser,checkPermission(['update_task_status']),taskController.updateTaskStatus);
+router.patch("/trigger-status/:id",authenticateUser,taskController.updateTaskProgress)
 module.exports = router;

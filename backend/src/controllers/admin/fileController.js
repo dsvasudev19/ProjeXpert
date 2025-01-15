@@ -9,7 +9,7 @@ const uploadFile = async (req, res) => {
             name: req.file.originalname,
             type: req.file.mimetype,
             size: req.file.size,
-            path: '/uploads/'+req.file.filename,
+            path: '/uploads/projectFile/'+req.file.filename,
             uploaderId: req.user.id,
             projectId: req.params.projectId,
             taskId: req.body.taskId
@@ -24,14 +24,17 @@ const downloadFile = async (req, res) => {
     try {
         const file = await File.findByPk(req.params.id);
         if (file) {
-            res.download(path.resolve(file.path), file.name);
+            const filePath = path.join(__dirname, '..', file.path); // Ensure this resolves to the correct file path on your server
+            res.download(filePath, file.name);
         } else {
             res.status(404).json({ message: 'File not found' });
         }
-    } catch (error) { console.log(error);
+    } catch (error) {
+        console.log(error);
         res.status(500).json({ error: error.message });
     }
-}
+};
+
 const deleteFile = async (req, res) => {
     try {
         const file = await File.findByPk(req.params.id);

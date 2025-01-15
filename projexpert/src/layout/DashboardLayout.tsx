@@ -4,8 +4,10 @@ import { Home, LogOut, ChevronLeft, ChevronRight, UserCog, BadgeIndianRupee, Sea
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import NotificationPopup from '../modals/NotificationDialog';
 import { useAuth } from '../contexts/AuthContext';
+import { axiosInstance } from '../axiosIntance';
 
 const DashboardLayout = () => {
+    const [metrics,setMetrics]=useState<any>()
     const [sidebarOpen, setSidebarOpen] = useState(() => {
         const saved = localStorage.getItem('sidebarOpen');
         return saved !== null ? JSON.parse(saved) : true;
@@ -25,6 +27,17 @@ const DashboardLayout = () => {
         { icon: UserCog, label: 'Client', href: '/dashboard/client' },
     ];
 
+    const getAnalyticsData=async()=>{
+        try {
+            const res=await axiosInstance.get("/admin/dashboard/side-data")
+            if(res.status===200){
+                setMetrics(res.data)
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
     useEffect(() => {
         console.log(location.pathname.split("/"))
         setActiveItem(location.pathname);
@@ -33,6 +46,10 @@ const DashboardLayout = () => {
     useEffect(() => {
         localStorage.setItem('sidebarOpen', JSON.stringify(sidebarOpen));
     }, [sidebarOpen]);
+
+    useEffect(()=>{
+        getAnalyticsData()
+    },[])
 
     return (
         <div className="relative min-h-screen bg-slate-100/50">
@@ -175,15 +192,15 @@ const DashboardLayout = () => {
                                         <div className="space-y-2">
                                             <div className="flex items-center text-xs text-slate-600">
                                                 <CheckCircle2 className="w-4 h-4 mr-2 text-green-500" />
-                                                <span>Completed Tasks: 24</span>
+                                                <span>Completed Tasks: {metrics?.tasksCompletedThisWeek}</span>
                                             </div>
                                             <div className="flex items-center text-xs text-slate-600">
                                                 <Clock className="w-4 h-4 mr-2 text-blue-500" />
-                                                <span>In Progress: 12</span>
+                                                <span>In Progress: {metrics?.tasksInProgressDueThisWeek}</span>
                                             </div>
                                             <div className="flex items-center text-xs text-slate-600">
                                                 <AlertCircle className="w-4 h-4 mr-2 text-amber-500" />
-                                                <span>Due Soon: 8</span>
+                                                <span>Due Soon: {metrics?.tasksDueThisWeekPending}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -192,14 +209,14 @@ const DashboardLayout = () => {
                                     <div className="p-4 rounded-xl bg-gradient-to-br from-green-50 to-blue-50 border border-blue-100">
                                         <div className="flex items-center justify-between mb-3">
                                             <span className="text-sm font-semibold text-slate-800">Active Projects</span>
-                                            <span className="text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-600 font-medium">5 Running</span>
+                                            <span className="text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-600 font-medium">{metrics?.totalActiveProjects} Running</span>
                                         </div>
                                         <div className="w-full h-2 bg-blue-100 rounded-full overflow-hidden">
-                                            <div className="h-full w-2/3 bg-gradient-to-r from-green-500 to-blue-500 rounded-full"></div>
+                                            <div className={`h-full bg-gradient-to-r from-green-500 to-blue-500 rounded-full w-2/3`}></div>
                                         </div>
                                         <div className="mt-3 flex justify-between items-center text-xs text-slate-600">
-                                            <span>3 Due This Week</span>
-                                            <span>67% Completed</span>
+                                            <span>{metrics?.projectsDueThisWeek} Due This Week</span>
+                                            {/* <span>{Math.ceil(((metrics?.totalProjects-metrics?.projectsDueThisWeek) * 100)/metrics?.totalActiveProjects)}% Completed</span> */}
                                         </div>
                                     </div>
                                 </div>
