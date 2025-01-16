@@ -69,7 +69,7 @@ const createBug = async (req, res) => {
     try {
         const userId = req.user.id;
         const user = await User.findByPk(userId);
-        const { title, description, status, priority, projectId } = req.body;
+        const { title, description, status, priority, projectId,assigneeId } = req.body;
 
         if (!user) {
             return res.status(404).json({ message: 'User not found.' });
@@ -77,9 +77,7 @@ const createBug = async (req, res) => {
 
         const project = await Project.findByPk(projectId);
 
-        if (!project || (project.clientId !== userId && project.freelancerId !== userId)) {
-            return res.status(403).json({ message: 'You can only report bugs for your projects.' });
-        }
+       
 
         const bug = await Bug.create({
             title,
@@ -87,6 +85,7 @@ const createBug = async (req, res) => {
             status,
             priority,
             projectId,
+            assigneeId
         });
 
         return res.status(201).json({ message: 'Bug created successfully.', bug });
@@ -165,10 +164,28 @@ const deleteBug = async (req, res) => {
         return res.status(500).json({ message: 'Internal server error.', error });
     }
 }
+
+
+const resolveBug=async(req,res,next)=>{
+    try {
+        const bug=await Bug.findByPk(req.params.id)
+        if(!bug){
+            return res.status(404).json({message:"Bug not found"})
+        }
+        bug.resolution=req.body.resolution;
+        bug.status="resolved"
+        await bug.save();
+        return res.status(200).json({success:true,message:"Successfully Closed the bug"})
+    } catch (error) {
+        console.log(error)
+    }
+}
+
 module.exports = {
     getAllBugs,
     getBugById,
     createBug,
     updateBug,
-    deleteBug
+    deleteBug,
+    resolveBug
 };

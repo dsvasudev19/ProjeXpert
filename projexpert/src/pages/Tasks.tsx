@@ -6,27 +6,23 @@ import AddTask from '../modals/AddTask';
 
 const Tasks = () => {
   const [tasks, setTasks] = useState<any>([]);
-
   const [showAddModal, setShowAddModal] = useState(false);
-  const [loadingTasks, setLoadingTasks] = useState(false)
+  const [loadingTasks, setLoadingTasks] = useState(false);
   const searchTimeoutRef = useRef<any>(null);
 
   const getAllTasks = async () => {
+    setLoadingTasks(true); // Set loading to true before fetching
     try {
-      const res = await axiosInstance.get("/admin/task")
+      const res = await axiosInstance.get("/admin/task");
       if (res.status === 200) {
-        setTasks(res.data)
+        setTasks(res.data);
       }
     } catch (error) {
-      console.log(error)
+      console.log(error);
     } finally {
-      setLoadingTasks(false)
+      setLoadingTasks(false);
     }
-  }
-
-
-
-
+  };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -53,7 +49,7 @@ const Tasks = () => {
       });
 
       if (response.status === 200) {
-        toast.success("Updated successfully")
+        toast.success("Updated successfully");
         setTasks(tasks.map((task: any) =>
           task.id === taskId ? { ...task, status: newStatus } : task
         ));
@@ -70,7 +66,7 @@ const Tasks = () => {
       });
 
       if (response.status === 200) {
-        toast.success("Updated successfully")
+        toast.success("Updated successfully");
         setTasks(tasks.map((task: any) =>
           task.id === taskId ? { ...task, progress: newProgress } : task
         ));
@@ -88,61 +84,51 @@ const Tasks = () => {
 
   const completeTask = async (id: any) => {
     try {
-      const res = await axiosInstance.patch(`/admin/task/${id}/status`, { status: "Completed" })
+      const res = await axiosInstance.patch(`/admin/task/${id}/status`, { status: "Completed" });
       if (res.status === 200) {
-        toast.success("Task Status Changed Successfully")
-        getAllTasks()
+        toast.success("Task Status Changed Successfully");
+        getAllTasks();
       }
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
+  };
 
   const handleSearchChange = (value: string) => {
-
     if (searchTimeoutRef.current) {
       clearTimeout(searchTimeoutRef.current);
     }
 
     // Set a new timeout
     searchTimeoutRef.current = setTimeout(() => {
-      // Your search logic goes here (e.g., call an API or filter results)
-      getFilteredTasks(value)
+      getFilteredTasks(value);
       console.log('Search triggered with:', value);
     }, 2000);
   };
 
   const getFilteredTasks = async (value: string) => {
     try {
-      const res = await axiosInstance.get(`/admin/task/search/by-query?searchText=${value}`)
+      const res = await axiosInstance.get(`/admin/task/search/by-query?searchText=${value}`);
       if (res.status === 200) {
-        setTasks(res.data)
+        setTasks(res.data);
       }
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
-
-
+  };
 
   useEffect(() => {
     getAllTasks();
-  }, [])
+  }, []);
 
   return (
     <div className="h-full flex flex-col text-xs">
-      {/* Add Task Modal */}
-
-
       <div className="p-5 flex-none">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold text-gray-800">Tasks</h1>
           <div className="flex items-center gap-4">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-
-
-
               <input
                 onChange={(e: any) => handleSearchChange(e.target.value)}
                 type="text"

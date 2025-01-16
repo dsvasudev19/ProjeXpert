@@ -11,6 +11,13 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      this.hasMany(models.TeamMember,{
+        foreignKey:'teamId'
+      })
+      this.belongsTo(models.User,{
+        foreignKey:"leadId",
+        as:"Lead"
+      })
     }
   }
   Team.init({

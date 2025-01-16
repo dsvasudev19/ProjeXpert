@@ -8,12 +8,20 @@ const getAll = async (req, res) => {
                 model: TeamMember,
                 include: [{
                     model: User,
-                    as: 'User'
-                }]
+                    as: 'User',
+                    attributes:['id','name','email','status']
+                }],
+                attributes:['position']
+            },
+            {
+                model: User,
+                as: 'Lead',
+                attributes: ['name', 'id', 'email']
             }]
         });
         return res.status(200).json(teams);
     } catch (error) {
+        console.log(error)
         return res.status(500).json({ message: 'Error fetching teams', error });
     }
 }
@@ -35,6 +43,7 @@ const getById = async (req, res) => {
         }
         return res.status(200).json(team);
     } catch (error) {
+        console.log(error)
         return res.status(500).json({ message: 'Error fetching team', error });
     }
 }
@@ -51,6 +60,7 @@ const create = async (req, res) => {
         });
         return res.status(201).json(team);
     } catch (error) {
+        console.log(error)
         return res.status(500).json({ message: 'Error creating team', error });
     }
 }
@@ -74,6 +84,7 @@ const update = async (req, res) => {
 
         return res.status(200).json(team);
     } catch (error) {
+        console.log(error)
         return res.status(500).json({ message: 'Error updating team', error });
     }
 }
@@ -90,6 +101,7 @@ const remove = async (req, res) => {
         await team.destroy();
         return res.status(200).json({ message: 'Team deleted successfully' });
     } catch (error) {
+        console.log(error)
         return res.status(500).json({ message: 'Error deleting team', error });
     }
 }
@@ -115,15 +127,17 @@ const addMember = async (req, res) => {
         }
 
         const teamMember = await TeamMember.create({
-            teamId,
             userId,
             position,
             status: 'active',
             dateJoined: new Date()
         });
 
+        await team.addTeamMember(teamMember);
+
         return res.status(201).json(teamMember);
     } catch (error) {
+        console.log(error)
         return res.status(500).json({ message: 'Error adding team member', error });
     }
 }
@@ -144,6 +158,7 @@ const removeMember = async (req, res) => {
         await teamMember.destroy();
         return res.status(200).json({ message: 'Team member removed successfully' });
     } catch (error) {
+        console.log(error)
         return res.status(500).json({ message: 'Error removing team member', error });
     }
 }
@@ -163,6 +178,7 @@ const getTeamMembers = async (req, res, next) => {
         })
         return res.status(200).json(members)
     } catch (error) {
+        console.log(error)
 
         next(error)
     }

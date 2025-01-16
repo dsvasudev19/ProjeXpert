@@ -1,7 +1,7 @@
 const { User, Role, Project, Bug } = require('../../models'); // Adjust the path based on your project structure
 const bcrypt = require('bcrypt');
 const { Op } = require('sequelize');
-const crypto=require("crypto")
+const crypto = require("crypto")
 
 
 
@@ -9,7 +9,7 @@ const crypto=require("crypto")
 const getAllUsers = async (req, res) => {
     try {
         const users = await User.findAll({
-            include: [{ model: Role, attributes:['name'] }],
+            include: [{ model: Role, attributes: ['name'] }],
         });
         const newUsersMap = users.map(user => ({ ...user.toJSON(), role: user.Roles[0]?.name }));
         return res.status(200).json(newUsersMap);
@@ -43,7 +43,7 @@ const createUser = async (req, res) => {
     try {
         const user = await User.findByPk(req.user.id, { include: [Role] });
 
-        const { name, email, roleId} = req.body;
+        const { name, email, roleId } = req.body;
 
 
         // Check if the email already exists
@@ -51,7 +51,7 @@ const createUser = async (req, res) => {
         if (existingUser) {
             return res.status(400).json({ message: 'Email already in use.' });
         }
-        let tempPassword=crypto.randomBytes(8).toString('hex')
+        let tempPassword = crypto.randomBytes(8).toString('hex')
 
         // Hash the password
         const hashedPassword = await bcrypt.hash(tempPassword, 10);
@@ -224,6 +224,27 @@ const getAllClients = async (req, res, next) => {
     }
 }
 
+const getTeamOnlyMembers = async (req, res, next) => {
+    try {
+        const clients = await User.findAll({
+            include: [{
+                model: Role, where: {
+                    name: { [Op.not]: 'client' }
+                }, attributes: ['name']
+            }]
+        });
+
+        console.log(clients)
+
+        const newClients = clients.map((client) => { return { id: client.id, name: client.name, email: client.email, role: client.Roles[0].name } })
+
+        return res.status(200).json({ success: true, message: "Successfully fetched all TeamMembers", data: newClients });
+    } catch (error) {
+        console.log(error)
+        next(error)
+    }
+}
+
 module.exports = {
     getAllUsers,
     getUserById,
@@ -233,5 +254,6 @@ module.exports = {
     updateUserRole,
     getUserProjects,
     getUserBugs,
-    getAllClients
+    getAllClients,
+    getTeamOnlyMembers
 };

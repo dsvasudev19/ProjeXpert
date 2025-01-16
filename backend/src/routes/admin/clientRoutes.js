@@ -7,6 +7,7 @@ const { checkRole } = require('../../middlewares/authorize');
 // Routes for user management
 router.get('/',authenticateUser, userController.getAllUsers); // Get all users
 router.get('/:id',authenticateUser, userController.getUserById); // Get user by ID
+
 router.post('/',authenticateUser,  userController.createUser); // Create a new user
 router.put('/:id',authenticateUser,  userController.updateUser); // Update a user
 router.delete('/:id',authenticateUser,  userController.deleteUser); // Delete a user
@@ -19,5 +20,7 @@ router.get('/:id/projects', authenticateUser,userController.getUserProjects); //
 router.get('/:id/bugs', authenticateUser, userController.getUserBugs); // Get bugs for a user
 
 router.get("/users/clients",authenticateUser,userController.getAllClients)
+
+router.get("/team/internal-only",authenticateUser,userController.getTeamOnlyMembers)
 
 module.exports = router;

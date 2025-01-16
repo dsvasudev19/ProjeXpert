@@ -1,4 +1,4 @@
-const { Project, Task, Project, Task, TeamMember } = require("../../models");
+const { Project, Task, TeamMember,File } = require("../../models");
 const { Sequelize } = require("./../../models")
 const moment = require('moment');
 

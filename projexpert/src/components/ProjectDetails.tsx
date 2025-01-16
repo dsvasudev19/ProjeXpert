@@ -2,6 +2,8 @@ import { AlertCircle, Bug, CheckCircle, ChevronDown, ChevronUp, Clock, FileText,
 import { useEffect, useState } from "react";
 import { axiosInstance } from "../axiosIntance";
 import AddTask from "../modals/AddTask";
+import ReportBugModal from "../modals/ReportBug";
+import toast from "react-hot-toast";
 
 const RenderProjectDetails = ({ projectId }: any) => {
     const [selectedProject, setSelectedProject] = useState<any>(null);
@@ -9,8 +11,12 @@ const RenderProjectDetails = ({ projectId }: any) => {
     const [closeBugModalOpen, setCloseBugModalOpen] = useState<any>(false)
     const [showAllTasks, setShowAllTasks] = useState(false)
     const [showAllFiles, setShowAllFiles] = useState(false);
-    const [showAddTaskModal,setShowAddTaskModal]=useState(false)
-    const [loading,setLoading]=useState(false);
+    const [showAddTaskModal, setShowAddTaskModal] = useState(false)
+    const [loading, setLoading] = useState(false);
+    const [openReportBugModal, setOpenReportBugModal] = useState(false)
+    const [resolution, setResolution] = useState<string>('');
+    const [bugId, setBugId] = useState<any>()
+
     const dummyProjects = [
         {
             id: 1,
@@ -44,7 +50,17 @@ const RenderProjectDetails = ({ projectId }: any) => {
             case 'high': return 'text-red-500 bg-red-50';
             case 'medium': return 'text-orange-500 bg-orange-50';
             case 'low': return 'text-yellow-500 bg-yellow-50';
+            case 'critical': return 'text-orange-500 bg-orange-50';
             default: return 'text-gray-500 bg-gray-50';
+        }
+    };
+
+    const getBugStatusColor = (status: string) => {
+        switch (status) {
+            case 'open': return 'bg-red-100 text-red-600';
+            case 'resolved': return 'bg-green-100 text-green-600';
+            case 'in-progress': return 'bg-yellow-100 text-yellow-600';
+            default: return 'bg-gray-100 text-gray-600';
         }
     };
 
@@ -58,7 +74,7 @@ const RenderProjectDetails = ({ projectId }: any) => {
             }
         } catch (error) {
             console.log(error)
-        }finally{
+        } finally {
             setLoading(false)
         }
     }
@@ -70,6 +86,23 @@ const RenderProjectDetails = ({ projectId }: any) => {
         getProjectDetailsById(projectId)
     }, [projectId]);
 
+    // Function to handle bug resolution submission
+    const closeBug = async () => {
+        try {
+            // Make API request to submit the resolution
+            const res = await axiosInstance.patch(`/admin/bug/resolve/${bugId}`, { resolution });
+            if (res.status === 200) {
+                // Optionally, refresh project details or handle success
+                getProjectDetailsById(projectId);
+                toast.success("Bug Closed Successfully")
+            }
+        } catch (error) {
+            console.error("Error submitting resolution:", error);
+        } finally {
+            setCloseBugModalOpen(false); // Close the modal after submission
+            setResolution(''); // Clear the resolution state
+        }
+    };
 
     if (!selectedProject) {
         return (
@@ -99,7 +132,7 @@ const RenderProjectDetails = ({ projectId }: any) => {
                         <Users className="w-5 h-5" />
                         <span>Add Member</span>
                     </button>
-                    <button onClick={()=>{setShowAddTaskModal(true)}} className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-lg hover:shadow-lg transition-all duration-300">
+                    <button onClick={() => { setShowAddTaskModal(true) }} className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-lg hover:shadow-lg transition-all duration-300">
                         <Plus className="w-5 h-5" />
                         <span>Add Task</span>
                     </button>
@@ -255,29 +288,40 @@ const RenderProjectDetails = ({ projectId }: any) => {
                         <div>
                             <div className="flex justify-between items-center mb-4">
                                 <h3 className="text-lg font-semibold">Active Bugs</h3>
-                                <button className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-lg hover:from-red-600 hover:to-pink-600 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200">
+                                <button onClick={() => setOpenReportBugModal(true)} className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-lg hover:from-red-600 hover:to-pink-600 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200">
                                     <Plus className="w-4 h-4" />
                                     <span>Report Bug</span>
                                 </button>
+                                {
+                                    openReportBugModal && <ReportBugModal
+                                        isOpen={openReportBugModal}
+                                        onClose={() => setOpenReportBugModal(false)}
+                                        onSubmit={() => { getProjectDetailsById(projectId) }}
+                                        proId={selectedProject?.id}
+                                    />
+                                }
                             </div>
                             <div className="space-y-3">
                                 {selectedProject?.Bugs?.map((bug: any) => (
-                                    <div key={bug.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                    <div key={bug.id} className="flex items-center justify-between p-4 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200">
                                         <div className="flex items-center gap-3">
                                             <div className={`p-2 rounded-lg ${getBugSeverityColor(bug.severity)}`}>
                                                 <AlertCircle className="w-5 h-5" />
                                             </div>
-                                            <div>
-                                                <p className="font-medium">{bug.title}</p>
-                                                <p className="text-sm text-gray-500">Severity: {bug.severity}</p>
+                                            <div className="flex flex-col">
+                                                <div className="flex justify-between">
+                                                    <p className="font-medium">{bug.title}</p>
+                                                    <p className={`text-sm ${getBugSeverityColor(bug?.priority)} rounded p-1`}>Severity: {bug?.priority}</p>
+                                                </div>
+                                                <p className="text-sm text-gray-500 mt-1">{bug.description}</p>
                                             </div>
                                         </div>
                                         <div className="flex items-center gap-2">
-                                            <span className="px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-600">
-                                                {bug.status}
+                                            <span className={`px-3 py-1 rounded-full text-xs font-medium ${getBugStatusColor(bug.status)}`}>
+                                                {bug?.status}
                                             </span>
                                             <button
-                                                onClick={() => setCloseBugModalOpen(true)}
+                                                onClick={() => { setBugId(bug?.id); setCloseBugModalOpen(true) }}
                                                 className="p-2 bg-gradient-to-r from-green-400 to-emerald-500 text-white rounded-lg hover:from-green-500 hover:to-emerald-600 shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200"
                                                 title="Mark as Resolved"
                                             >
@@ -294,6 +338,8 @@ const RenderProjectDetails = ({ projectId }: any) => {
                                     <div className="bg-white rounded-xl p-6 w-96 shadow-2xl">
                                         <h3 className="text-xl font-semibold mb-4">Close Bug</h3>
                                         <textarea
+                                            value={resolution}
+                                            onChange={(e) => setResolution(e.target.value)}
                                             className="w-full h-32 p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none resize-none"
                                             placeholder="Enter closing notes..."
                                         />
@@ -305,10 +351,7 @@ const RenderProjectDetails = ({ projectId }: any) => {
                                                 Cancel
                                             </button>
                                             <button
-                                                onClick={() => {
-                                                    // Handle submit logic here
-                                                    setCloseBugModalOpen(false);
-                                                }}
+                                                onClick={closeBug}
                                                 className="px-4 py-2 bg-gradient-to-r from-green-400 to-emerald-500 text-white rounded-lg hover:from-green-500 hover:to-emerald-600 shadow-md hover:shadow-lg transition-all duration-200"
                                             >
                                                 Submit
@@ -363,7 +406,7 @@ const RenderProjectDetails = ({ projectId }: any) => {
                 </div>
             </div>
             {
-                showAddTaskModal && <AddTask showAddModal={showAddTaskModal} getTasks={getProjectDetailsById} closeModal={()=>{setShowAddTaskModal(false)}} proId={projectId}  />
+                showAddTaskModal && <AddTask showAddModal={showAddTaskModal} getTasks={getProjectDetailsById} closeModal={() => { setShowAddTaskModal(false) }} proId={projectId} />
             }
         </div>
     );

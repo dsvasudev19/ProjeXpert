@@ -7,6 +7,7 @@ import { axiosInstance } from '../axiosIntance';
 
 const Analytics = () => {
   const [selectedView, setSelectedView] = useState('overview');
+  const [loading, setLoading] = useState(false)
 
   const projectStats = {
     totalProjects: 24,
@@ -104,6 +105,7 @@ const Analytics = () => {
   ];
 
   const getDashboardOverview = async () => {
+    setLoading(true)
     try {
       const res = await axiosInstance.get("/admin/dashboard/overview")
       if (res.status === 200) {
@@ -111,6 +113,8 @@ const Analytics = () => {
       }
     } catch (error) {
       console.log(error)
+    }finally{
+      setLoading(false)
     }
   }
 
@@ -126,25 +130,55 @@ const Analytics = () => {
           <>
             {/* Top Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-4">
-              <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-6 text-white">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-blue-100">Total Projects</p>
-                    <h3 className="text-3xl font-bold mt-1">{overview?.projects?.total}</h3>
+              {loading ? (
+                <div className="bg-gray-200 rounded-2xl p-6 animate-pulse">
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <div className="h-4 bg-gray-300 rounded mb-2"></div>
+                      <div className="h-6 bg-gray-300 rounded"></div>
+                    </div>
+                    <div className="h-12 w-12 bg-gray-300 rounded-full opacity-50"></div>
                   </div>
-                  <Briefcase className="h-12 w-12 opacity-50" />
+                  <div className="mt-4 flex items-center text-sm">
+                    <div className="h-4 bg-gray-300 rounded w-24"></div>
+                    <div className="ml-2 h-4 bg-gray-300 rounded w-24"></div>
+                  </div>
                 </div>
-                <div className="mt-4 flex items-center text-sm">
-                  <span className="bg-blue-400/30 px-2 py-1 rounded">
-                    {overview?.projects?.active} Active
-                  </span>
-                  <span className="ml-2 bg-blue-400/30 px-2 py-1 rounded">
-                    {overview?.projects?.completed} Completed
-                  </span>
+              ) : (
+                <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-6 text-white">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-blue-100">Total Projects</p>
+                      <h3 className="text-3xl font-bold mt-1">{overview?.projects?.total}</h3>
+                    </div>
+                    <Briefcase className="h-12 w-12 opacity-50" />
+                  </div>
+                  <div className="mt-4 flex items-center text-sm">
+                    <span className="bg-blue-400/30 px-2 py-1 rounded">
+                      {overview?.projects?.active} Active
+                    </span>
+                    <span className="ml-2 bg-blue-400/30 px-2 py-1 rounded">
+                      {overview?.projects?.completed} Completed
+                    </span>
+                  </div>
                 </div>
-              </div>
+              )}
 
-              <div className="bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl p-6 text-white">
+              {loading ? (
+                <div className="bg-gray-200 rounded-2xl p-6 animate-pulse">
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <div className="h-4 bg-gray-300 rounded mb-2"></div>
+                      <div className="h-6 bg-gray-300 rounded"></div>
+                    </div>
+                    <div className="h-12 w-12 bg-gray-300 rounded-full opacity-50"></div>
+                  </div>
+                  <div className="mt-4 flex items-center text-sm">
+                    <div className="h-4 bg-gray-300 rounded w-24"></div>
+                    <div className="ml-2 h-4 bg-gray-300 rounded w-24"></div>
+                  </div>
+                </div>
+              ) : <div className="bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl p-6 text-white">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-emerald-100">Task Completion</p>
@@ -157,9 +191,23 @@ const Analytics = () => {
                     {overview?.tasks?.completed}/{overview?.tasks.total} Tasks Done
                   </span>
                 </div>
-              </div>
+              </div>}
 
-              <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl p-6 text-white">
+              {loading ? (
+                <div className="bg-gray-200 rounded-2xl p-6 animate-pulse">
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <div className="h-4 bg-gray-300 rounded mb-2"></div>
+                      <div className="h-6 bg-gray-300 rounded"></div>
+                    </div>
+                    <div className="h-12 w-12 bg-gray-300 rounded-full opacity-50"></div>
+                  </div>
+                  <div className="mt-4 flex items-center text-sm">
+                    <div className="h-4 bg-gray-300 rounded w-24"></div>
+                    <div className="ml-2 h-4 bg-gray-300 rounded w-24"></div>
+                  </div>
+                </div>
+              ) : <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl p-6 text-white">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-purple-100">Team Members</p>
@@ -172,9 +220,23 @@ const Analytics = () => {
                     {overview?.team?.activeNow} Active Now
                   </span>
                 </div>
-              </div>
+              </div>}
 
-              <div className="bg-gradient-to-br from-amber-500 to-amber-600 rounded-2xl p-6 text-white">
+              {loading ? (
+                <div className="bg-gray-200 rounded-2xl p-6 animate-pulse">
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <div className="h-4 bg-gray-300 rounded mb-2"></div>
+                      <div className="h-6 bg-gray-300 rounded"></div>
+                    </div>
+                    <div className="h-12 w-12 bg-gray-300 rounded-full opacity-50"></div>
+                  </div>
+                  <div className="mt-4 flex items-center text-sm">
+                    <div className="h-4 bg-gray-300 rounded w-24"></div>
+                    <div className="ml-2 h-4 bg-gray-300 rounded w-24"></div>
+                  </div>
+                </div>
+              ) : <div className="bg-gradient-to-br from-amber-500 to-amber-600 rounded-2xl p-6 text-white">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-amber-100">Total Budget</p>
@@ -187,12 +249,26 @@ const Analytics = () => {
                     {overview?.hours?.total} Total Hours
                   </span>
                 </div>
-              </div>
+              </div>}
             </div>
 
             {/* Additional KPI Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-              <div className="bg-white rounded-2xl shadow-sm p-6">
+              {loading ? (
+                <div className="bg-gray-200 rounded-2xl p-6 animate-pulse">
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <div className="h-4 bg-gray-300 rounded mb-2"></div>
+                      <div className="h-6 bg-gray-300 rounded"></div>
+                    </div>
+                    <div className="h-12 w-12 bg-gray-300 rounded-full opacity-50"></div>
+                  </div>
+                  <div className="mt-4 flex items-center text-sm">
+                    <div className="h-4 bg-gray-300 rounded w-24"></div>
+                    <div className="ml-2 h-4 bg-gray-300 rounded w-24"></div>
+                  </div>
+                </div>
+              ) : <div className="bg-white rounded-2xl shadow-sm p-6">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-semibold">Resource Utilization</h3>
                   <BarChart2 className="h-6 w-6 text-blue-500" />
@@ -207,20 +283,48 @@ const Analytics = () => {
                     })}
                   />
                 </div>
-              </div>
-
-              <div className="bg-white rounded-2xl shadow-sm p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold">Project ROI</h3>
-                  <TrendingUp className="h-6 w-6 text-green-500" />
+              </div>}
+              {loading ? (
+                <div className="bg-gray-200 rounded-2xl p-6 animate-pulse">
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <div className="h-4 bg-gray-300 rounded mb-2"></div>
+                      <div className="h-6 bg-gray-300 rounded"></div>
+                    </div>
+                    <div className="h-12 w-12 bg-gray-300 rounded-full opacity-50"></div>
+                  </div>
+                  <div className="mt-4 flex items-center text-sm">
+                    <div className="h-4 bg-gray-300 rounded w-24"></div>
+                    <div className="ml-2 h-4 bg-gray-300 rounded w-24"></div>
+                  </div>
                 </div>
-                <div className="text-center">
-                  <h4 className="text-3xl font-bold text-green-600">{projectStats.projectROI}%</h4>
-                  <p className="text-sm text-gray-500 mt-2">Return on Investment</p>
-                </div>
-              </div>
+              ) :
+                <div className="bg-white rounded-2xl shadow-sm p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-semibold">Project ROI</h3>
+                    <TrendingUp className="h-6 w-6 text-green-500" />
+                  </div>
+                  <div className="text-center">
+                    <h4 className="text-3xl font-bold text-green-600">{projectStats.projectROI}%</h4>
+                    <p className="text-sm text-gray-500 mt-2">Return on Investment</p>
+                  </div>
+                </div>}
 
-              <div className="bg-white rounded-2xl shadow-sm p-6">
+              {loading ? (
+                <div className="bg-gray-200 rounded-2xl p-6 animate-pulse">
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <div className="h-4 bg-gray-300 rounded mb-2"></div>
+                      <div className="h-6 bg-gray-300 rounded"></div>
+                    </div>
+                    <div className="h-12 w-12 bg-gray-300 rounded-full opacity-50"></div>
+                  </div>
+                  <div className="mt-4 flex items-center text-sm">
+                    <div className="h-4 bg-gray-300 rounded w-24"></div>
+                    <div className="ml-2 h-4 bg-gray-300 rounded w-24"></div>
+                  </div>
+                </div>
+              ) : <div className="bg-white rounded-2xl shadow-sm p-6">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-semibold">Risk Assessment</h3>
                   <Target className="h-6 w-6 text-red-500" />
@@ -229,12 +333,26 @@ const Analytics = () => {
                   <h4 className="text-3xl font-bold text-blue-600">{projectStats.riskScore}</h4>
                   <p className="text-sm text-gray-500 mt-2">Overall Risk Score</p>
                 </div>
-              </div>
+              </div>}
             </div>
 
             {/* Project Management Metrics */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-white rounded-2xl shadow-sm p-6">
+              {loading ? (
+                <div className="bg-gray-200 rounded-2xl p-6 animate-pulse">
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <div className="h-4 bg-gray-300 rounded mb-2"></div>
+                      <div className="h-6 bg-gray-300 rounded"></div>
+                    </div>
+                    <div className="h-12 w-12 bg-gray-300 rounded-full opacity-50"></div>
+                  </div>
+                  <div className="mt-4 flex items-center text-sm">
+                    <div className="h-4 bg-gray-300 rounded w-24"></div>
+                    <div className="ml-2 h-4 bg-gray-300 rounded w-24"></div>
+                  </div>
+                </div>
+              ) : <div className="bg-white rounded-2xl shadow-sm p-6">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-semibold">Document Management</h3>
                   <FileText className="h-6 w-6 text-indigo-500" />
@@ -243,9 +361,23 @@ const Analytics = () => {
                   <h4 className="text-3xl font-bold text-indigo-600">{overview?.documents?.total}</h4>
                   <p className="text-sm text-gray-500 mt-2">Documents Shared This Week</p>
                 </div>
-              </div>
+              </div>}
 
-              <div className="bg-white rounded-2xl shadow-sm p-6">
+              {loading ? (
+                <div className="bg-gray-200 rounded-2xl p-6 animate-pulse">
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <div className="h-4 bg-gray-300 rounded mb-2"></div>
+                      <div className="h-6 bg-gray-300 rounded"></div>
+                    </div>
+                    <div className="h-12 w-12 bg-gray-300 rounded-full opacity-50"></div>
+                  </div>
+                  <div className="mt-4 flex items-center text-sm">
+                    <div className="h-4 bg-gray-300 rounded w-24"></div>
+                    <div className="ml-2 h-4 bg-gray-300 rounded w-24"></div>
+                  </div>
+                </div>
+              ) : <div className="bg-white rounded-2xl shadow-sm p-6">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-semibold">Upcoming Deadlines</h3>
                   <Clock8 className="h-6 w-6 text-orange-500" />
@@ -254,7 +386,7 @@ const Analytics = () => {
                   <h4 className="text-3xl font-bold text-orange-600">{projectStats.upcomingDeadlines}</h4>
                   <p className="text-sm text-gray-500 mt-2">Tasks Due This Week</p>
                 </div>
-              </div>
+              </div>}
             </div>
           </>
         );
@@ -323,8 +455,8 @@ const Analytics = () => {
           <button
             onClick={() => setSelectedView('overview')}
             className={`flex items-center px-4 py-2 rounded-lg ${selectedView === 'overview'
-                ? 'bg-blue-600 text-white'
-                : 'bg-white text-gray-600 hover:bg-gray-100'
+              ? 'bg-blue-600 text-white'
+              : 'bg-white text-gray-600 hover:bg-gray-100'
               }`}
           >
             <LayoutDashboard className="h-5 w-5 mr-2" />
@@ -333,8 +465,8 @@ const Analytics = () => {
           <button
             onClick={() => setSelectedView('activity')}
             className={`flex items-center px-4 py-2 rounded-lg ${selectedView === 'activity'
-                ? 'bg-blue-600 text-white'
-                : 'bg-white text-gray-600 hover:bg-gray-100'
+              ? 'bg-blue-600 text-white'
+              : 'bg-white text-gray-600 hover:bg-gray-100'
               }`}
           >
             <List className="h-5 w-5 mr-2" />
@@ -343,8 +475,8 @@ const Analytics = () => {
           <button
             onClick={() => setSelectedView('team')}
             className={`flex items-center px-4 py-2 rounded-lg ${selectedView === 'team'
-                ? 'bg-blue-600 text-white'
-                : 'bg-white text-gray-600 hover:bg-gray-100'
+              ? 'bg-blue-600 text-white'
+              : 'bg-white text-gray-600 hover:bg-gray-100'
               }`}
           >
             <Users className="h-5 w-5 mr-2" />

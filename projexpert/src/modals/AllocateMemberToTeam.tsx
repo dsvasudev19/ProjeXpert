@@ -5,71 +5,82 @@ import { axiosInstance } from '../axiosIntance';
 import toast from 'react-hot-toast';
 
 const validationSchema = Yup.object().shape({
-  name: Yup.string()
+  teamId: Yup.string()
+    .required('Please select a team'),
+  userId: Yup.string()
+    .required('Please select a user'),
+  position: Yup.string()
     .min(2, 'Too Short!')
     .max(50, 'Too Long!')
     .required('Required'),
-  description: Yup.string()
-    .min(10, 'Description must be at least 10 characters')
-    .required('Required'),
-  leadId: Yup.string()
-    .required('Please select a team lead'),
-  department: Yup.string()
-    .required('Required'),
 });
 
-const AddTeam = ({ isOpen, onClose, getTeams }:any) => {
-    const [users,setUsers]=useState([])
+const AllocateMemberToTeam = ({ isOpen, onClose, refreshData }:any) => {
+  const [teams, setTeams] = useState([]);
+  const [users, setUsers] = useState([]);
+
   const initialValues = {
-    name: '',
-    description: '',
-    leadId: '',
-    department: ''
+    teamId: '',
+    userId: '',
+    position: ''
   };
 
-  const handleSubmit=async(values:any,{resetForm}:any)=>{
+  const handleSubmit = async (values:any, { resetForm }:any) => {
     try {
-        const res=await axiosInstance.post("/admin/team",values)
-        if(res.status===201){
-          toast.success("Team Added Successfully")
-          resetForm();
-          getTeams();
-          onClose();
-        }
+      const res = await axiosInstance.post("/admin/team/member", values);
+      if (res.status === 201) {
+        toast.success("Member Allocated Successfully");
+        resetForm();
+        refreshData?.();
+        onClose();
+      }
     } catch (error) {
-        console.log(error)
+      console.log(error);
+      toast.error("Failed to allocate member");
     }
-  }
+  };
 
-  const getAllUsers=async()=>{
+  const getAllTeams = async () => {
     try {
-        const res=await axiosInstance.get("admin/client/team/internal-only")
-        if(res.status===200){
-            setUsers(res.data.data)
-        }
+      const res = await axiosInstance.get("/admin/team");
+      if (res.status === 200) {
+        setTeams(res.data);
+      }
     } catch (error) {
-        console.log(error)
+      console.log(error);
     }
-  }
+  };
 
-  useEffect(()=>{
-    getAllUsers()
-  },[])
+  const getAllUsers = async () => {
+    try {
+      const res = await axiosInstance.get("admin/client/team/internal-only");
+      if (res.status === 200) {
+        setUsers(res.data.data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    if (isOpen) {
+      getAllTeams();
+      getAllUsers();
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      {/* Backdrop */}
       <div 
         className="fixed inset-0 bg-black bg-opacity-50 transition-opacity" 
         onClick={onClose}
       />
 
-      {/* Modal */}
       <div className="relative bg-white rounded-lg w-full max-w-md p-6 shadow-xl">
         <h2 className="text-2xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
-          Add New Team
+          Allocate Member to Team
         </h2>
         
         <Formik
@@ -81,96 +92,81 @@ const AddTeam = ({ isOpen, onClose, getTeams }:any) => {
             <Form className="space-y-4">
               <div>
                 <label 
-                  htmlFor="name"
+                  htmlFor="teamId"
                   className="block text-sm font-medium text-gray-700 mb-1"
                 >
-                  Team Name
-                </label>
-                <Field
-                  type="text"
-                  id="name"
-                  name="name"
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                    errors.name && touched.name 
-                      ? 'border-red-500' 
-                      : 'border-gray-300'
-                  }`}
-                />
-                {errors.name && touched.name && (
-                  <div className="text-red-500 text-sm mt-1">{errors.name}</div>
-                )}
-              </div>
-
-              <div>
-                <label 
-                  htmlFor="description"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Description
-                </label>
-                <Field
-                  as="textarea"
-                  id="description"
-                  name="description"
-                  className={`w-full px-3 py-2 border rounded-lg min-h-[100px] focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                    errors.description && touched.description 
-                      ? 'border-red-500' 
-                      : 'border-gray-300'
-                  }`}
-                />
-                {errors.description && touched.description && (
-                  <div className="text-red-500 text-sm mt-1">{errors.description}</div>
-                )}
-              </div>
-
-              <div>
-                <label 
-                  htmlFor="leadId"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Lead
+                  Select Team
                 </label>
                 <Field
                   as="select"
-                  id="leadId"
-                  name="leadId"
+                  id="teamId"
+                  name="teamId"
                   className={`w-full px-3 py-2 border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                    errors.leadId && touched.leadId 
+                    errors.teamId && touched.teamId 
                       ? 'border-red-500' 
                       : 'border-gray-300'
                   }`}
                 >
-                  <option value="">Select a team lead</option>
+                  <option value="">Select a team</option>
+                  {teams?.map((team:any) => (
+                    <option key={team.id} value={team.id}>
+                      {team.name}
+                    </option>
+                  ))}
+                </Field>
+                {errors.teamId && touched.teamId && (
+                  <div className="text-red-500 text-sm mt-1">{errors.teamId}</div>
+                )}
+              </div>
+
+              <div>
+                <label 
+                  htmlFor="userId"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Select Member
+                </label>
+                <Field
+                  as="select"
+                  id="userId"
+                  name="userId"
+                  className={`w-full px-3 py-2 border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                    errors.userId && touched.userId 
+                      ? 'border-red-500' 
+                      : 'border-gray-300'
+                  }`}
+                >
+                  <option value="">Select a member</option>
                   {users?.map((user:any) => (
                     <option key={user.id} value={user.id}>
                       {user.name}
                     </option>
                   ))}
                 </Field>
-                {errors.leadId && touched.leadId && (
-                  <div className="text-red-500 text-sm mt-1">{errors.leadId}</div>
+                {errors.userId && touched.userId && (
+                  <div className="text-red-500 text-sm mt-1">{errors.userId}</div>
                 )}
               </div>
 
               <div>
                 <label 
-                  htmlFor="department"
+                  htmlFor="position"
                   className="block text-sm font-medium text-gray-700 mb-1"
                 >
-                  Department
+                  Position
                 </label>
                 <Field
                   type="text"
-                  id="department"
-                  name="department"
+                  id="position"
+                  name="position"
                   className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                    errors.department && touched.department 
+                    errors.position && touched.position 
                       ? 'border-red-500' 
                       : 'border-gray-300'
                   }`}
                 />
-                {errors.department && touched.department && (
-                  <div className="text-red-500 text-sm mt-1">{errors.department}</div>
+                {errors.position && touched.position && (
+                  <div className="text-red-500 text-sm mt-1">{errors.position}</div>
                 )}
               </div>
 
@@ -187,7 +183,7 @@ const AddTeam = ({ isOpen, onClose, getTeams }:any) => {
                   disabled={isSubmitting}
                   className="px-4 py-2 rounded-lg bg-gradient-to-r from-blue-600 to-green-600 text-white hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
                 >
-                  {isSubmitting ? 'Adding...' : 'Add Team'}
+                  {isSubmitting ? 'Allocating...' : 'Allocate Member'}
                 </button>
               </div>
             </Form>
@@ -198,4 +194,4 @@ const AddTeam = ({ isOpen, onClose, getTeams }:any) => {
   );
 };
 
-export default AddTeam;
+export default AllocateMemberToTeam;
