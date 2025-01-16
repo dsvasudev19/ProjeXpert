@@ -210,7 +210,7 @@ const Team = () => {
           Teams Overview
         </h1>
         <div className="flex gap-3">
-          <button className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-500 to-blue-500 text-white rounded-lg hover:opacity-90 transition-all duration-200 shadow-md hover:shadow-lg">
+          <button onClick={()=>{setShowAddTeamModal(true)}} className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-500 to-blue-500 text-white rounded-lg hover:opacity-90 transition-all duration-200 shadow-md hover:shadow-lg">
             <Users className="w-4 h-4" />
             New Team
           </button>
