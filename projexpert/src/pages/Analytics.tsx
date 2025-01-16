@@ -105,7 +105,7 @@ const Analytics = () => {
 
   const getDashboardOverview = async () => {
     try {
-      const res = await axiosInstance.get("/dashboard/overview")
+      const res = await axiosInstance.get("/admin/dashboard/overview")
       if (res.status === 200) {
         setOverview(res.data)
       }

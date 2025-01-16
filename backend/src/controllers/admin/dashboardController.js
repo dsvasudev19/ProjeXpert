@@ -110,18 +110,6 @@ const getDashboardOverview = async (req, res) => {
     // Documents statistics (File model)
     const totalDocuments = await File.count();
 
-    // Deadline-related statistics (tasks due this week)
-    const currentDate = moment();  // Current date
-    const endOfWeek = currentDate.clone().endOf('week').format('YYYY-MM-DD'); // End of current week
-    const startOfWeek = currentDate.clone().startOf('week').format('YYYY-MM-DD'); // Start of current week
-
-    const tasksDueThisWeek = await Task.count({
-      where: {
-        dueDate: {
-          [Op.between]: [startOfWeek, endOfWeek]  // Task's due date is within this week
-        }
-      }
-    });
 
     // Return the response grouped by categories
     return res.status(200).json({
@@ -147,9 +135,6 @@ const getDashboardOverview = async (req, res) => {
       },
       documents: {
         total: totalDocuments
-      },
-      deadlines: {
-        tasksDueThisWeek: tasksDueThisWeek
       }
     });
   } catch (error) {
