@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Plus, Mail, Phone, Building2, X, FolderGit2, ListTodo, Bug, Clock, Users } from "lucide-react";
+import { axiosInstance } from "../axiosIntance";
+import AddTeam from "../modals/AddTeam";
 
 const Team = () => {
-  const [teams] = useState<any>([
+  const [teams,setTeams] = useState<any>([
     {
       id: 1,
       name: "Engineering Team", 
@@ -164,12 +166,42 @@ const Team = () => {
     }
   ]);
 
+  const [showAddTeamModal,setShowAddTeamModal]=useState(false)
+
   const [expandedTeamId, setExpandedTeamId] = useState<number | null>(null);
   const [selectedMember, setSelectedMember] = useState<any>(null);
 
   const toggleTeam = (teamId: number) => {
     setExpandedTeamId(expandedTeamId === teamId ? null : teamId);
   };
+
+  const getAllTeams=async()=>{
+    try {
+      const res=await axiosInstance.get("/admin/team")
+      if(res.status===200){
+        setTeams(res.data)
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  // const getTeamMembers=async(id:any)=>{
+  //   try {
+  //     const res=await axiosInstance.get(`/admin/team/members/${id}`)
+  //     if(res.status===200){
+  //       setMembers(res.data)
+  //     }
+  //   } catch (error) {
+  //     console.log(error)
+  //   }
+  // }
+
+
+  useEffect(()=>{
+    getAllTeams()
+  },[])
+
 
   return (
     <div className="w-full h-full p-6 overflow-y-auto">
@@ -369,6 +401,9 @@ const Team = () => {
               </div>
             </div>
           </div>
+          {
+            showAddTeamModal && <AddTeam isOpen={showAddTeamModal} onClose={()=>{setShowAddTeamModal(false)}} getTeams={()=>{}} />
+          }
         </div>
       )}
     </div>

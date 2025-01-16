@@ -1,6 +1,7 @@
 const { Task, User, Project, Role } = require('../../models');
 const { sequelize } = require("../../models")
 const { Op } = require("sequelize")
+const crypto=require("crypto")
 const getAllTasks = async (req, res) => {
     try {
         const userId = req.user.id;
@@ -74,6 +75,7 @@ const createTask = async (req, res) => {
             projectId,
             parentTaskId: sanitizedParentTaskId, // Pass the sanitized value
             progress,
+            refId:crypto.randomBytes(3).toString("hex").toUpperCase(),
         });
 
         return res.status(201).json(newTask);

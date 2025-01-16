@@ -89,7 +89,7 @@ const AddTask = ({ showAddModal, closeModal, getTasks, proId }: { showAddModal: 
                                 title: '',
                                 description: '',
                                 status: 'Pending',
-                                priority: 'Medium',
+                                priority: 'medium',
                                 dueDate: '',
                                 assigneeId: '',
                                 projectId: proId?proId:'',

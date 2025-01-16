@@ -33,4 +33,7 @@ router.use("/todo",todoRoutes)
 const dashboardRoutes=require("./admin/dashboardRoutes")
 router.use("/dashboard",dashboardRoutes)
 
+const teamRoutes=require("./admin/teamRoutes")
+router.use("/team",teamRoutes)
+
 module.exports=router;

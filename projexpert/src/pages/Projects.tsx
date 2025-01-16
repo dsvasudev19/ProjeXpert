@@ -7,10 +7,10 @@ import RenderProjectDetails from '../components/ProjectDetails';
 
 const Projects = () => {
   const [selectedProject, setSelectedProject] = useState<any>(null);
-
+  const [projectsLoading, setProjectsLoading] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [projects, setProjects] = useState<any>([])
-  
+
   const closeProjectModal = () => {
     setIsModalOpen(false)
   }
@@ -18,18 +18,21 @@ const Projects = () => {
 
   const getAllProjects = async () => {
     try {
-      const res=await axiosInstance.get("/admin/project")
-      if(res.status===200){
+      setProjectsLoading(true)
+      const res = await axiosInstance.get("/admin/project")
+      if (res.status === 200) {
         setProjects(res.data)
       }
       // setProjects(dummyProjects)
     } catch (error) {
       console.log(error)
+    } finally {
+      setProjectsLoading(false)
     }
   }
 
 
- 
+
 
   useEffect(() => {
     getAllProjects()
@@ -58,12 +61,14 @@ const Projects = () => {
           </button>
         </div>
         <div className="space-y-2">
-          {projects.map((project: any) => (
+          {projectsLoading ? <div className="h-full flex items-center justify-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-emerald-500"></div>
+          </div> : projects.map((project: any) => (
             <div
               key={project.id}
               className={`p-3 rounded-lg cursor-pointer transition-all duration-200 ${selectedProject === project.id
-                  ? 'bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-500 shadow-sm'
-                  : 'hover:bg-gray-50'
+                ? 'bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-500 shadow-sm'
+                : 'hover:bg-gray-50'
                 }`}
               onClick={() => setSelectedProject(project.id)}
             >

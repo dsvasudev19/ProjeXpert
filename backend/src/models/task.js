@@ -38,7 +38,6 @@ module.exports = (sequelize, DataTypes) => {
   Task.init({
     refId:{
       type:DataTypes.STRING,
-      defaultValue:crypto.randomBytes(3).toString("hex").toUpperCase(),
       allowNull:false,
       unique:true
     },

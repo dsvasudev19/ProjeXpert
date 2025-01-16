@@ -5,67 +5,31 @@ import toast from 'react-hot-toast';
 import AddTask from '../modals/AddTask';
 
 const Tasks = () => {
-  const [tasks, setTasks] = useState<any>([
-    { 
-      id: 1, 
-      name: 'Design UI', 
-      project: 'Project Alpha',
-      status: 'In Progress', 
-      priority: 'High',
-      dueDate: '2024-02-15',
-      assignee: 'Alice',
-      progress: 65,
-      description: 'Design the user interface for the new dashboard',
-      expanded: false
-    },
-    { 
-      id: 2, 
-      name: 'Develop Backend', 
-      project: 'Project Beta',
-      status: 'Pending', 
-      priority: 'Medium',
-      dueDate: '2024-02-20',
-      assignee: 'Bob',
-      progress: 25,
-      description: 'Implement backend APIs and database integration',
-      expanded: false
-    },
-    { 
-      id: 3, 
-      name: 'Testing', 
-      project: 'Project Alpha',
-      status: 'Completed', 
-      priority: 'Low',
-      dueDate: '2024-02-10',
-      assignee: 'Charlie',
-      progress: 100,
-      description: 'Perform end-to-end testing of the application',
-      expanded: false
-    },
-  ]);
+  const [tasks, setTasks] = useState<any>([]);
 
   const [showAddModal, setShowAddModal] = useState(false);
-  
+  const [loadingTasks, setLoadingTasks] = useState(false)
   const searchTimeoutRef = useRef<any>(null);
 
-  const getAllTasks=async()=>{
+  const getAllTasks = async () => {
     try {
-      const res=await axiosInstance.get("/admin/task")
-      if(res.status===200){
+      const res = await axiosInstance.get("/admin/task")
+      if (res.status === 200) {
         setTasks(res.data)
       }
-      
     } catch (error) {
       console.log(error)
+    }finally{
+      setLoadingTasks(false)
     }
   }
 
-  
 
-  
+
+
 
   const getStatusIcon = (status: string) => {
-    switch(status) {
+    switch (status) {
       case 'Completed': return <CheckCircle className="w-5 h-5 text-green-500" />;
       case 'In Progress': return <Clock className="w-5 h-5 text-blue-500" />;
       case 'Pending': return <AlertCircle className="w-5 h-5 text-amber-500" />;
@@ -74,10 +38,10 @@ const Tasks = () => {
   };
 
   const getPriorityColor = (priority: string) => {
-    switch(priority) {
-      case 'High': return 'text-red-500 bg-red-50';
-      case 'Medium': return 'text-amber-500 bg-amber-50';
-      case 'Low': return 'text-green-500 bg-green-50';
+    switch (priority) {
+      case 'high': return 'text-red-500 bg-red-50';
+      case 'medium': return 'text-amber-500 bg-amber-50';
+      case 'low': return 'text-green-500 bg-green-50';
       default: return 'text-gray-500 bg-gray-50';
     }
   };
@@ -87,10 +51,10 @@ const Tasks = () => {
       const response = await axiosInstance.patch(`/admin/task/trigger-status/${taskId}`, {
         status: newStatus
       });
-  
+
       if (response.status === 200) {
         toast.success("Updated successfully")
-        setTasks(tasks.map((task: any) => 
+        setTasks(tasks.map((task: any) =>
           task.id === taskId ? { ...task, status: newStatus } : task
         ));
       }
@@ -98,16 +62,16 @@ const Tasks = () => {
       console.error('Error updating status:', error);
     }
   };
-  
+
   const handleProgressChange = async (taskId: number, newProgress: number) => {
     try {
       const response = await axiosInstance.patch(`/admin/task/trigger-status/${taskId}`, {
         progress: newProgress
       });
-  
+
       if (response.status === 200) {
         toast.success("Updated successfully")
-        setTasks(tasks.map((task: any) => 
+        setTasks(tasks.map((task: any) =>
           task.id === taskId ? { ...task, progress: newProgress } : task
         ));
       }
@@ -117,15 +81,15 @@ const Tasks = () => {
   };
 
   const toggleTaskExpanded = (taskId: number) => {
-    setTasks(tasks.map((task:any) =>
+    setTasks(tasks.map((task: any) =>
       task.id === taskId ? { ...task, expanded: !task.expanded } : task
     ));
   };
 
-  const completeTask=async(id:any)=>{
+  const completeTask = async (id: any) => {
     try {
-      const res=await axiosInstance.patch(`/admin/task/${id}/status`,{status:"Completed"})
-      if(res.status===200){
+      const res = await axiosInstance.patch(`/admin/task/${id}/status`, { status: "Completed" })
+      if (res.status === 200) {
         toast.success("Task Status Changed Successfully")
         getAllTasks()
       }
@@ -148,27 +112,27 @@ const Tasks = () => {
     }, 2000);
   };
 
-  const getFilteredTasks=async(value:string)=>{
+  const getFilteredTasks = async (value: string) => {
     try {
-      const res=await axiosInstance.get(`/admin/task/search/by-query?searchText=${value}`)
-      if(res.status===200){
+      const res = await axiosInstance.get(`/admin/task/search/by-query?searchText=${value}`)
+      if (res.status === 200) {
         setTasks(res.data)
       }
     } catch (error) {
       console.log(error)
     }
   }
-  
 
 
-  useEffect(()=>{
-     getAllTasks();
-  },[])
+
+  useEffect(() => {
+    getAllTasks();
+  }, [])
 
   return (
     <div className="h-full flex flex-col text-xs">
       {/* Add Task Modal */}
-      
+
 
       <div className="p-5 flex-none">
         <div className="flex justify-between items-center mb-6">
@@ -176,17 +140,17 @@ const Tasks = () => {
           <div className="flex items-center gap-4">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-              
-              
+
+
 
               <input
-                onChange={(e:any) => handleSearchChange(e.target.value)}
+                onChange={(e: any) => handleSearchChange(e.target.value)}
                 type="text"
                 placeholder="Search tasks..."
                 className="pl-10 pr-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
-            <button 
+            <button
               onClick={() => setShowAddModal(true)}
               className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:shadow-lg transition-all duration-300"
             >
@@ -215,7 +179,9 @@ const Tasks = () => {
                 </tr>
               </thead>
               <tbody>
-                {tasks.map((task:any) => (
+                {loadingTasks ? <div className="h-full flex items-center justify-center">
+                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-emerald-500"></div>
+                </div> : tasks.map((task: any) => (
                   <React.Fragment key={task.id}>
                     <tr className="border-b border-gray-100 hover:bg-gray-50">
                       <td className="p-2">
@@ -248,23 +214,23 @@ const Tasks = () => {
                       <td className="p-2">
                         <div className="flex items-center gap-2">
                           <div className="w-24 bg-gray-200 rounded-full h-2">
-                            <div 
-                              className="bg-blue-500 h-2 rounded-full" 
-                              style={{width: `${task.progress}%`}}
+                            <div
+                              className="bg-blue-500 h-2 rounded-full"
+                              style={{ width: `${task.progress}%` }}
                             />
                           </div>
                           <span className="text-sm text-gray-600">{task.progress}%</span>
                         </div>
                       </td>
                       <td className="p-2">
-                      <button 
-                          onClick={()=>{completeTask(task?.id)}}
+                        <button
+                          onClick={() => { completeTask(task?.id) }}
                           className="p-2 text-green-400 hover:bg-green-500 rounded-lg transition-colors"
                           title="Show Details"
                         >
-                           <CheckCircle className="w-5 h-5" />
+                          <CheckCircle className="w-5 h-5" />
                         </button>
-                        <button 
+                        <button
                           onClick={() => toggleTaskExpanded(task.id)}
                           className="p-2 text-gray-400 hover:bg-gray-50 rounded-lg transition-colors"
                           title="Show Details"
@@ -293,7 +259,7 @@ const Tasks = () => {
                                   <Clock className="w-5 h-5 text-amber-500" />
                                   Update Status
                                 </h4>
-                                <select 
+                                <select
                                   value={task.status}
                                   onChange={(e) => handleStatusChange(task.id, e.target.value)}
                                   className="w-full p-2 rounded-lg border border-slate-200 text-slate-600 focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition-all duration-200"
@@ -312,13 +278,13 @@ const Tasks = () => {
                                 </h4>
                                 <div className="flex items-center gap-3">
                                   <div className="flex-1 h-2 bg-slate-200 rounded-lg relative">
-                                    <div 
+                                    <div
                                       className="absolute top-0 left-0 h-full bg-blue-500 rounded-lg"
-                                      style={{width: `${task.progress}%`}}
+                                      style={{ width: `${task.progress}%` }}
                                     />
-                                    <input 
-                                      type="range" 
-                                      value={task.progress} 
+                                    <input
+                                      type="range"
+                                      value={task.progress}
                                       onChange={(e) => handleProgressChange(task.id, parseInt(e.target.value))}
                                       className="absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer"
                                     />
@@ -329,7 +295,7 @@ const Tasks = () => {
                             </div>
 
                             <div className="flex justify-end">
-                              <button onClick={()=>{completeTask(task?.id)}} className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-lg hover:from-green-600 hover:to-emerald-700 shadow-md hover:shadow-lg transition-all duration-200">
+                              <button onClick={() => { completeTask(task?.id) }} className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-lg hover:from-green-600 hover:to-emerald-700 shadow-md hover:shadow-lg transition-all duration-200">
                                 <CheckCircle className="w-4 h-4" />
                                 <span className="font-medium">Complete Task</span>
                               </button>
@@ -346,7 +312,7 @@ const Tasks = () => {
         </div>
       </div>
       {
-        showAddModal && <AddTask showAddModal={showAddModal} closeModal={()=>{setShowAddModal(false)}} getTasks={getAllTasks} /> 
+        showAddModal && <AddTask showAddModal={showAddModal} closeModal={() => { setShowAddModal(false) }} getTasks={getAllTasks} />
       }
     </div>
   );

@@ -10,7 +10,7 @@ const RenderProjectDetails = ({ projectId }: any) => {
     const [showAllTasks, setShowAllTasks] = useState(false)
     const [showAllFiles, setShowAllFiles] = useState(false);
     const [showAddTaskModal,setShowAddTaskModal]=useState(false)
-
+    const [loading,setLoading]=useState(false);
     const dummyProjects = [
         {
             id: 1,
@@ -50,12 +50,16 @@ const RenderProjectDetails = ({ projectId }: any) => {
 
     const getProjectDetailsById = async (projectId: number) => {
         try {
+            console.log(loading)
+            setLoading(true)
             const res = await axiosInstance.get(`/admin/project/${projectId}`)
             if (res.status === 200) {
                 setSelectedProject(res.data)
             }
         } catch (error) {
             console.log(error)
+        }finally{
+            setLoading(false)
         }
     }
 

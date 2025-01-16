@@ -1,4 +1,4 @@
-const {Team, TeamMember, User} = require("./../../models")
+const { Team, TeamMember, User } = require("./../../models")
 
 // Get all teams
 const getAll = async (req, res) => {
@@ -60,7 +60,7 @@ const update = async (req, res) => {
     try {
         const { name, description, leadId, department } = req.body;
         const team = await Team.findByPk(req.params.id);
-        
+
         if (!team) {
             return res.status(404).json({ message: 'Team not found' });
         }
@@ -82,7 +82,7 @@ const update = async (req, res) => {
 const remove = async (req, res) => {
     try {
         const team = await Team.findByPk(req.params.id);
-        
+
         if (!team) {
             return res.status(404).json({ message: 'Team not found' });
         }
@@ -98,7 +98,7 @@ const remove = async (req, res) => {
 const addMember = async (req, res) => {
     try {
         const { teamId, userId, position } = req.body;
-        
+
         // Check if team exists
         const team = await Team.findByPk(teamId);
         if (!team) {
@@ -132,7 +132,7 @@ const addMember = async (req, res) => {
 const removeMember = async (req, res) => {
     try {
         const { teamId, userId } = req.params;
-        
+
         const teamMember = await TeamMember.findOne({
             where: { teamId, userId }
         });
@@ -148,6 +148,26 @@ const removeMember = async (req, res) => {
     }
 }
 
+const getTeamMembers = async (req, res, next) => {
+    try {
+        const members = await TeamMember.findAll({
+            where: {
+                teamId: req.params.id
+            },
+            include: [
+                {
+                    model: User,
+                    as: 'User'
+                }
+            ]
+        })
+        return res.status(200).json(members)
+    } catch (error) {
+
+        next(error)
+    }
+}
+
 module.exports = {
     getAll,
     getById,
@@ -155,5 +175,6 @@ module.exports = {
     update,
     remove,
     addMember,
-    removeMember
+    removeMember,
+    getTeamMembers
 }
