@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { axiosInstance } from "../axiosIntance";
 import { Trash2 } from "lucide-react";
 import toast from "react-hot-toast";
-import ClockLoader from "react-spinners/ClockLoader";
+// import ClockLoader from "react-spinners/ClockLoader";
 
 const Transactions = () => {
   const [transactions, setTransactions] = useState<any[]>([]);
@@ -51,9 +51,9 @@ const Transactions = () => {
           </h1>
         </div>
         {loading ? (
-          <div className="flex justify-center text-center items-center w-full h-[81vh]">
-            <ClockLoader color="#085387" size={200} />
-          </div>
+          <div className="min-h-screen flex items-center justify-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-emerald-500"></div>
+        </div>
         ) : (
           <div className="bg-white shadow-md rounded-lg overflow-hidden">
             <div className="overflow-x-auto custom-scrollbar h-[82vh]">

@@ -9,15 +9,19 @@ const FileManagementFolder: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState<any>(false)
   const [projectId, setProjectId] = useState<any>()
   const history = useNavigate(); // Using useHistory to navigate
+  const [loadingFiles, setLoadingFiles] = useState(false)
 
   const getAllFiles = async (id: any) => {
     try {
+      setLoadingFiles(true)
       const res = await axiosInstance.get(`/admin/file/project/${id}`);
       if (res.status === 200) {
         setFiles(res.data);
       }
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoadingFiles(false)
     }
   };
 
@@ -50,7 +54,7 @@ const FileManagementFolder: React.FC = () => {
   return (
     <div className="p-4">
       <div className="flex items-center justify-between mb-6">
-        <button 
+        <button
           onClick={() => history(-1)} // Navigate back on click
           className="flex items-center text-gray-600 hover:text-gray-800 transition-colors"
         >
@@ -65,7 +69,9 @@ const FileManagementFolder: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-3 gap-4">
-        {files.map((file: any) => (
+        {loadingFiles ? <div className="min-h-screen flex items-center justify-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-emerald-500"></div>
+        </div> : files.map((file: any) => (
           <div
             key={file.id}
             className="bg-white p-3 rounded-lg shadow hover:shadow-lg transition-all duration-300 border border-slate-100"

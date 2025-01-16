@@ -4,10 +4,10 @@ import { axiosInstance } from "../axiosIntance";
 import AddTeam from "../modals/AddTeam";
 
 const Team = () => {
-  const [teams,setTeams] = useState<any>([
+  const [teams, setTeams] = useState<any>([
     {
       id: 1,
-      name: "Engineering Team", 
+      name: "Engineering Team",
       description: "Frontend and Backend Development",
       teamLead: "Sarah Brown",
       members: [
@@ -20,47 +20,8 @@ const Team = () => {
           department: "Engineering",
           avatar: "JD",
           projects: [
-            {id: 1, name: "Project Alpha", role: "Lead Developer", tasks: 5, bugs: 2, status: "in-progress"},
-            {id: 2, name: "Project Beta", role: "Developer", tasks: 3, bugs: 1, status: "completed"}
-          ]
-        },
-        {
-          id: 1,
-          name: "John Doe",
-          role: "Frontend Developer", 
-          email: "john@example.com",
-          phone: "+1 234-567-8901",
-          department: "Engineering",
-          avatar: "JD",
-          projects: [
-            {id: 1, name: "Project Alpha", role: "Lead Developer", tasks: 5, bugs: 2, status: "in-progress"},
-            {id: 2, name: "Project Beta", role: "Developer", tasks: 3, bugs: 1, status: "completed"}
-          ]
-        },
-        {
-          id: 1,
-          name: "John Doe",
-          role: "Frontend Developer",
-          email: "john@example.com", 
-          phone: "+1 234-567-8901",
-          department: "Engineering",
-          avatar: "JD",
-          projects: [
-            {id: 1, name: "Project Alpha", role: "Lead Developer", tasks: 5, bugs: 2, status: "in-progress"},
-            {id: 2, name: "Project Beta", role: "Developer", tasks: 3, bugs: 1, status: "completed"}
-          ]
-        },
-        {
-          id: 1,
-          name: "John Doe",
-          role: "Frontend Developer",
-          email: "john@example.com",
-          phone: "+1 234-567-8901",
-          department: "Engineering", 
-          avatar: "JD",
-          projects: [
-            {id: 1, name: "Project Alpha", role: "Lead Developer", tasks: 5, bugs: 2, status: "in-progress"},
-            {id: 2, name: "Project Beta", role: "Developer", tasks: 3, bugs: 1, status: "completed"}
+            { id: 1, name: "Project Alpha", role: "Lead Developer", tasks: 5, bugs: 2, status: "in-progress" },
+            { id: 2, name: "Project Beta", role: "Developer", tasks: 3, bugs: 1, status: "completed" }
           ]
         },
         {
@@ -72,8 +33,8 @@ const Team = () => {
           department: "Engineering",
           avatar: "JD",
           projects: [
-            {id: 1, name: "Project Alpha", role: "Lead Developer", tasks: 5, bugs: 2, status: "in-progress"},
-            {id: 2, name: "Project Beta", role: "Developer", tasks: 3, bugs: 1, status: "completed"}
+            { id: 1, name: "Project Alpha", role: "Lead Developer", tasks: 5, bugs: 2, status: "in-progress" },
+            { id: 2, name: "Project Beta", role: "Developer", tasks: 3, bugs: 1, status: "completed" }
           ]
         },
         {
@@ -85,8 +46,8 @@ const Team = () => {
           department: "Engineering",
           avatar: "JD",
           projects: [
-            {id: 1, name: "Project Alpha", role: "Lead Developer", tasks: 5, bugs: 2, status: "in-progress"},
-            {id: 2, name: "Project Beta", role: "Developer", tasks: 3, bugs: 1, status: "completed"}
+            { id: 1, name: "Project Alpha", role: "Lead Developer", tasks: 5, bugs: 2, status: "in-progress" },
+            { id: 2, name: "Project Beta", role: "Developer", tasks: 3, bugs: 1, status: "completed" }
           ]
         },
         {
@@ -98,8 +59,8 @@ const Team = () => {
           department: "Engineering",
           avatar: "JD",
           projects: [
-            {id: 1, name: "Project Alpha", role: "Lead Developer", tasks: 5, bugs: 2, status: "in-progress"},
-            {id: 2, name: "Project Beta", role: "Developer", tasks: 3, bugs: 1, status: "completed"}
+            { id: 1, name: "Project Alpha", role: "Lead Developer", tasks: 5, bugs: 2, status: "in-progress" },
+            { id: 2, name: "Project Beta", role: "Developer", tasks: 3, bugs: 1, status: "completed" }
           ]
         },
         {
@@ -111,8 +72,8 @@ const Team = () => {
           department: "Engineering",
           avatar: "JD",
           projects: [
-            {id: 1, name: "Project Alpha", role: "Lead Developer", tasks: 5, bugs: 2, status: "in-progress"},
-            {id: 2, name: "Project Beta", role: "Developer", tasks: 3, bugs: 1, status: "completed"}
+            { id: 1, name: "Project Alpha", role: "Lead Developer", tasks: 5, bugs: 2, status: "in-progress" },
+            { id: 2, name: "Project Beta", role: "Developer", tasks: 3, bugs: 1, status: "completed" }
           ]
         },
         {
@@ -124,8 +85,47 @@ const Team = () => {
           department: "Engineering",
           avatar: "JD",
           projects: [
-            {id: 1, name: "Project Alpha", role: "Lead Developer", tasks: 5, bugs: 2, status: "in-progress"},
-            {id: 2, name: "Project Beta", role: "Developer", tasks: 3, bugs: 1, status: "completed"}
+            { id: 1, name: "Project Alpha", role: "Lead Developer", tasks: 5, bugs: 2, status: "in-progress" },
+            { id: 2, name: "Project Beta", role: "Developer", tasks: 3, bugs: 1, status: "completed" }
+          ]
+        },
+        {
+          id: 1,
+          name: "John Doe",
+          role: "Frontend Developer",
+          email: "john@example.com",
+          phone: "+1 234-567-8901",
+          department: "Engineering",
+          avatar: "JD",
+          projects: [
+            { id: 1, name: "Project Alpha", role: "Lead Developer", tasks: 5, bugs: 2, status: "in-progress" },
+            { id: 2, name: "Project Beta", role: "Developer", tasks: 3, bugs: 1, status: "completed" }
+          ]
+        },
+        {
+          id: 1,
+          name: "John Doe",
+          role: "Frontend Developer",
+          email: "john@example.com",
+          phone: "+1 234-567-8901",
+          department: "Engineering",
+          avatar: "JD",
+          projects: [
+            { id: 1, name: "Project Alpha", role: "Lead Developer", tasks: 5, bugs: 2, status: "in-progress" },
+            { id: 2, name: "Project Beta", role: "Developer", tasks: 3, bugs: 1, status: "completed" }
+          ]
+        },
+        {
+          id: 1,
+          name: "John Doe",
+          role: "Frontend Developer",
+          email: "john@example.com",
+          phone: "+1 234-567-8901",
+          department: "Engineering",
+          avatar: "JD",
+          projects: [
+            { id: 1, name: "Project Alpha", role: "Lead Developer", tasks: 5, bugs: 2, status: "in-progress" },
+            { id: 2, name: "Project Beta", role: "Developer", tasks: 3, bugs: 1, status: "completed" }
           ]
         },
         {
@@ -137,8 +137,8 @@ const Team = () => {
           department: "Engineering",
           avatar: "MW",
           projects: [
-            {id: 2, name: "Project Beta", role: "Lead Developer", tasks: 6, bugs: 3, status: "in-progress"},
-            {id: 5, name: "Project Epsilon", role: "Developer", tasks: 7, bugs: 2, status: "completed"}
+            { id: 2, name: "Project Beta", role: "Lead Developer", tasks: 6, bugs: 3, status: "in-progress" },
+            { id: 5, name: "Project Epsilon", role: "Developer", tasks: 7, bugs: 2, status: "completed" }
           ]
         }
       ]
@@ -158,15 +158,15 @@ const Team = () => {
           department: "Design",
           avatar: "JS",
           projects: [
-            {id: 1, name: "Project Alpha", role: "Lead Designer", tasks: 4, bugs: 0, status: "in-progress"},
-            {id: 4, name: "Project Delta", role: "Designer", tasks: 6, bugs: 1, status: "completed"}
+            { id: 1, name: "Project Alpha", role: "Lead Designer", tasks: 4, bugs: 0, status: "in-progress" },
+            { id: 4, name: "Project Delta", role: "Designer", tasks: 6, bugs: 1, status: "completed" }
           ]
         }
       ]
     }
   ]);
 
-  const [showAddTeamModal,setShowAddTeamModal]=useState(false)
+  const [showAddTeamModal, setShowAddTeamModal] = useState(false)
 
   const [expandedTeamId, setExpandedTeamId] = useState<number | null>(null);
   const [selectedMember, setSelectedMember] = useState<any>(null);
@@ -175,10 +175,10 @@ const Team = () => {
     setExpandedTeamId(expandedTeamId === teamId ? null : teamId);
   };
 
-  const getAllTeams=async()=>{
+  const getAllTeams = async () => {
     try {
-      const res=await axiosInstance.get("/admin/team")
-      if(res.status===200){
+      const res = await axiosInstance.get("/admin/team")
+      if (res.status === 200) {
         setTeams(res.data)
       }
     } catch (error) {
@@ -198,9 +198,9 @@ const Team = () => {
   // }
 
 
-  useEffect(()=>{
+  useEffect(() => {
     getAllTeams()
-  },[])
+  }, [])
 
 
   return (
@@ -210,7 +210,7 @@ const Team = () => {
           Teams Overview
         </h1>
         <div className="flex gap-3">
-          <button onClick={()=>{setShowAddTeamModal(true)}} className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-500 to-blue-500 text-white rounded-lg hover:opacity-90 transition-all duration-200 shadow-md hover:shadow-lg">
+          <button onClick={() => { setShowAddTeamModal(true) }} className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-500 to-blue-500 text-white rounded-lg hover:opacity-90 transition-all duration-200 shadow-md hover:shadow-lg">
             <Users className="w-4 h-4" />
             New Team
           </button>
@@ -219,13 +219,16 @@ const Team = () => {
             Add Member
           </button>
         </div>
+        {
+          showAddTeamModal && <AddTeam isOpen={showAddTeamModal} onClose={() => { setShowAddTeamModal(false) }} getTeams={() => { }} />
+        }
       </div>
 
       {!expandedTeamId ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {teams.map((team:any) => (
-            <div 
-              key={team.id} 
+          {teams.map((team: any) => (
+            <div
+              key={team.id}
               onClick={() => toggleTeam(team.id)}
               className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer transform hover:-translate-y-1 border border-blue-100 overflow-hidden"
             >
@@ -240,9 +243,9 @@ const Team = () => {
                     <span className="text-blue-600 font-medium">{team.members.length}</span>
                   </div>
                 </div>
-                
+
                 <p className="text-gray-600">{team.description}</p>
-                
+
                 <div className="pt-4 border-t border-blue-100">
                   <div className="flex items-center gap-2">
                     <div className="text-sm text-gray-500">Team Lead:</div>
@@ -265,7 +268,7 @@ const Team = () => {
                     </h2>
                     <p className="text-gray-600 mt-1">{team.description}</p>
                   </div>
-                  <button 
+                  <button
                     onClick={() => setExpandedTeamId(null)}
                     className="p-2 hover:bg-blue-100 rounded-lg transition-colors"
                   >
@@ -276,9 +279,9 @@ const Team = () => {
 
               <div className="p-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {team.members.map((member:any) => (
-                    <div 
-                      key={member.id} 
+                  {team.members.map((member: any) => (
+                    <div
+                      key={member.id}
                       className="bg-white p-6 rounded-xl border border-blue-100 hover:border-blue-300 hover:shadow-lg transition-all duration-300 cursor-pointer transform hover:-translate-y-1"
                       onClick={() => setSelectedMember(member)}
                     >
@@ -298,7 +301,7 @@ const Team = () => {
                         </div>
                         <div className="flex items-center gap-2 text-sm text-gray-600">
                           <FolderGit2 className="w-4 h-4 text-blue-500" />
-                          {member.projects.filter((p:any) => p.status === "in-progress").length} Active Projects
+                          {member.projects.filter((p: any) => p.status === "in-progress").length} Active Projects
                         </div>
                       </div>
                     </div>
@@ -327,7 +330,7 @@ const Team = () => {
                     <p className="text-blue-600">{selectedMember.role}</p>
                   </div>
                 </div>
-                <button 
+                <button
                   onClick={() => setSelectedMember(null)}
                   className="p-2 hover:bg-blue-100 rounded-lg transition-colors"
                 >
@@ -344,19 +347,17 @@ const Team = () => {
                     Projects
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {selectedMember.projects.map((project:any) => (
-                      <div 
-                        key={project.id} 
-                        className={`p-4 rounded-lg border ${
-                          project.status === "in-progress" 
-                            ? "bg-green-50 border-green-100" 
+                    {selectedMember.projects.map((project: any) => (
+                      <div
+                        key={project.id}
+                        className={`p-4 rounded-lg border ${project.status === "in-progress"
+                            ? "bg-green-50 border-green-100"
                             : "bg-blue-50 border-blue-100"
-                        }`}
+                          }`}
                       >
                         <div className="flex items-center gap-3 mb-2">
-                          <FolderGit2 className={`w-5 h-5 ${
-                            project.status === "in-progress" ? "text-green-500" : "text-blue-500"
-                          }`} />
+                          <FolderGit2 className={`w-5 h-5 ${project.status === "in-progress" ? "text-green-500" : "text-blue-500"
+                            }`} />
                           <h4 className="font-medium text-gray-800">{project.name}</h4>
                         </div>
                         <div className="grid grid-cols-3 gap-4 text-sm">
@@ -401,9 +402,7 @@ const Team = () => {
               </div>
             </div>
           </div>
-          {
-            showAddTeamModal && <AddTeam isOpen={showAddTeamModal} onClose={()=>{setShowAddTeamModal(false)}} getTeams={()=>{}} />
-          }
+
         </div>
       )}
     </div>

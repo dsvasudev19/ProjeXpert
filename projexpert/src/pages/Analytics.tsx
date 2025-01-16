@@ -1,7 +1,8 @@
-import { useState } from 'react';
-import { Users, Briefcase, DollarSign,  CheckCircle, AlertTriangle, Calendar, TrendingUp, BarChart2, Target,  List, LayoutDashboard, FileText, Clock8 } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Users, Briefcase, DollarSign, CheckCircle, AlertTriangle, Calendar, TrendingUp, BarChart2, Target, List, LayoutDashboard, FileText, Clock8 } from 'lucide-react';
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
+import { axiosInstance } from '../axiosIntance';
 
 
 const Analytics = () => {
@@ -23,6 +24,7 @@ const Analytics = () => {
     documentsShared: 45,
     upcomingDeadlines: 5
   };
+  const [overview, setOverview] = useState<any>()
 
   const recentActivities = [
     {
@@ -34,7 +36,7 @@ const Analytics = () => {
       description: 'Completed homepage mockups'
     },
     {
-      id: 2, 
+      id: 2,
       type: 'project_milestone',
       user: 'Priya Singh',
       project: 'Mobile App',
@@ -75,6 +77,8 @@ const Analytics = () => {
   //   }
   // ];
 
+
+
   const teamPerformance = [
     {
       id: 1,
@@ -99,28 +103,24 @@ const Analytics = () => {
     }
   ];
 
-  // const { user, loading } = useAuth();
+  const getDashboardOverview = async () => {
+    try {
+      const res = await axiosInstance.get("/dashboard/overview")
+      if (res.status === 200) {
+        setOverview(res.data)
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
-  // useEffect(() => {
-  //   if (!loading && !user) {
-  //     window.location.href = '/auth/login';
-  //   }
-  // }, [loading, user]);
+  useEffect(() => {
+    getDashboardOverview()
 
-  // if (loading) {
-  //   return (
-  //     <div className="min-h-screen flex items-center justify-center">
-  //       <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-emerald-500"></div>
-  //     </div>
-  //   );
-  // }
-
-  // if (!user) {
-  //   return null;
-  // }
+  }, [])
 
   const renderContent = () => {
-    switch(selectedView) {
+    switch (selectedView) {
       case 'overview':
         return (
           <>
@@ -130,16 +130,16 @@ const Analytics = () => {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-blue-100">Total Projects</p>
-                    <h3 className="text-3xl font-bold mt-1">{projectStats.totalProjects}</h3>
+                    <h3 className="text-3xl font-bold mt-1">{overview?.projects?.total}</h3>
                   </div>
                   <Briefcase className="h-12 w-12 opacity-50" />
                 </div>
                 <div className="mt-4 flex items-center text-sm">
                   <span className="bg-blue-400/30 px-2 py-1 rounded">
-                    {projectStats.activeProjects} Active
+                    {overview?.projects?.active} Active
                   </span>
                   <span className="ml-2 bg-blue-400/30 px-2 py-1 rounded">
-                    {projectStats.completedProjects} Completed
+                    {overview?.projects?.completed} Completed
                   </span>
                 </div>
               </div>
@@ -148,13 +148,13 @@ const Analytics = () => {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-emerald-100">Task Completion</p>
-                    <h3 className="text-3xl font-bold mt-1">{Math.round((projectStats.completedTasks/projectStats.totalTasks) * 100)}%</h3>
+                    <h3 className="text-3xl font-bold mt-1">{Math.round((overview?.tasks?.completed / overview?.tasks.total) * 100)}%</h3>
                   </div>
                   <CheckCircle className="h-12 w-12 opacity-50" />
                 </div>
                 <div className="mt-4 text-sm">
                   <span className="bg-emerald-400/30 px-2 py-1 rounded">
-                    {projectStats.completedTasks}/{projectStats.totalTasks} Tasks Done
+                    {overview?.tasks?.completed}/{overview?.tasks.total} Tasks Done
                   </span>
                 </div>
               </div>
@@ -163,13 +163,13 @@ const Analytics = () => {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-purple-100">Team Members</p>
-                    <h3 className="text-3xl font-bold mt-1">{projectStats.teamMembers}</h3>
+                    <h3 className="text-3xl font-bold mt-1">{overview?.team?.totalMembers}</h3>
                   </div>
                   <Users className="h-12 w-12 opacity-50" />
                 </div>
                 <div className="mt-4 text-sm">
                   <span className="bg-purple-400/30 px-2 py-1 rounded">
-                    8 Active Now
+                    {overview?.team?.activeNow} Active Now
                   </span>
                 </div>
               </div>
@@ -178,13 +178,13 @@ const Analytics = () => {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-amber-100">Total Budget</p>
-                    <h3 className="text-3xl font-bold mt-1">{projectStats.budget}</h3>
+                    <h3 className="text-3xl font-bold mt-1">{overview?.budget?.total}</h3>
                   </div>
                   <DollarSign className="h-12 w-12 opacity-50" />
                 </div>
                 <div className="mt-4 text-sm">
                   <span className="bg-amber-400/30 px-2 py-1 rounded">
-                    {projectStats.timeSpent} Total Hours
+                    {overview?.hours?.total} Total Hours
                   </span>
                 </div>
               </div>
@@ -240,7 +240,7 @@ const Analytics = () => {
                   <FileText className="h-6 w-6 text-indigo-500" />
                 </div>
                 <div className="text-center">
-                  <h4 className="text-3xl font-bold text-indigo-600">{projectStats.documentsShared}</h4>
+                  <h4 className="text-3xl font-bold text-indigo-600">{overview?.documents?.total}</h4>
                   <p className="text-sm text-gray-500 mt-2">Documents Shared This Week</p>
                 </div>
               </div>
@@ -258,7 +258,7 @@ const Analytics = () => {
             </div>
           </>
         );
-      
+
       case 'activity':
         return (
           <div className="bg-white rounded-2xl shadow-sm p-6">
@@ -322,33 +322,30 @@ const Analytics = () => {
         <div className="flex space-x-4 mb-6">
           <button
             onClick={() => setSelectedView('overview')}
-            className={`flex items-center px-4 py-2 rounded-lg ${
-              selectedView === 'overview' 
-                ? 'bg-blue-600 text-white' 
+            className={`flex items-center px-4 py-2 rounded-lg ${selectedView === 'overview'
+                ? 'bg-blue-600 text-white'
                 : 'bg-white text-gray-600 hover:bg-gray-100'
-            }`}
+              }`}
           >
             <LayoutDashboard className="h-5 w-5 mr-2" />
             Overview
           </button>
           <button
             onClick={() => setSelectedView('activity')}
-            className={`flex items-center px-4 py-2 rounded-lg ${
-              selectedView === 'activity' 
-                ? 'bg-blue-600 text-white' 
+            className={`flex items-center px-4 py-2 rounded-lg ${selectedView === 'activity'
+                ? 'bg-blue-600 text-white'
                 : 'bg-white text-gray-600 hover:bg-gray-100'
-            }`}
+              }`}
           >
             <List className="h-5 w-5 mr-2" />
             Activity
           </button>
           <button
             onClick={() => setSelectedView('team')}
-            className={`flex items-center px-4 py-2 rounded-lg ${
-              selectedView === 'team' 
-                ? 'bg-blue-600 text-white' 
+            className={`flex items-center px-4 py-2 rounded-lg ${selectedView === 'team'
+                ? 'bg-blue-600 text-white'
                 : 'bg-white text-gray-600 hover:bg-gray-100'
-            }`}
+              }`}
           >
             <Users className="h-5 w-5 mr-2" />
             Team

@@ -1,5 +1,7 @@
-const { Project, Task } = require("../../models");
-const {Sequelize}=require("./../../models")
+const { Project, Task, Project, Task, TeamMember } = require("../../models");
+const { Sequelize } = require("./../../models")
+const moment = require('moment');
+
 const getDashboardData = async (req, res, next) => {
   const currentDate = new Date();
 
@@ -82,6 +84,82 @@ const getDashboardData = async (req, res, next) => {
   }
 };
 
+
+const getDashboardOverview = async (req, res) => {
+  try {
+    // Project-related statistics
+    const totalProjects = await Project.count();
+    const activeProjects = await Project.count({ where: { status: 'active' } });
+    const completedProjects = await Project.count({ where: { status: 'completed' } });
+
+    // Task-related statistics
+    const totalTasks = await Task.count();
+    const completedTasks = await Task.count({ where: { status: 'completed' } });
+    const taskCompletionPercentage = totalTasks > 0 ? ((completedTasks / totalTasks) * 100).toFixed(2) : 0;
+
+    // Team-related statistics
+    const totalTeamMembers = await TeamMember.count();
+    const activeMembers = await TeamMember.count({ where: { status: 'active' } });
+
+    // Budget-related statistics
+    const totalBudget = await Project.sum('budget');
+
+    // Total Hours from tasks (assuming `hoursSpent` is a field in Task)
+    const totalHours = Math.ceil(Math.random() * 90);  // Simulated data for now
+
+    // Documents statistics (File model)
+    const totalDocuments = await File.count();
+
+    // Deadline-related statistics (tasks due this week)
+    const currentDate = moment();  // Current date
+    const endOfWeek = currentDate.clone().endOf('week').format('YYYY-MM-DD'); // End of current week
+    const startOfWeek = currentDate.clone().startOf('week').format('YYYY-MM-DD'); // Start of current week
+
+    const tasksDueThisWeek = await Task.count({
+      where: {
+        dueDate: {
+          [Op.between]: [startOfWeek, endOfWeek]  // Task's due date is within this week
+        }
+      }
+    });
+
+    // Return the response grouped by categories
+    return res.status(200).json({
+      projects: {
+        total: totalProjects,
+        active: activeProjects,
+        completed: completedProjects
+      },
+      tasks: {
+        completionPercentage: taskCompletionPercentage,
+        completed: completedTasks,
+        total: totalTasks
+      },
+      team: {
+        totalMembers: totalTeamMembers,
+        activeNow: activeMembers
+      },
+      budget: {
+        total: `${totalBudget.toLocaleString()}`
+      },
+      hours: {
+        total: `${totalHours}`
+      },
+      documents: {
+        total: totalDocuments
+      },
+      deadlines: {
+        tasksDueThisWeek: tasksDueThisWeek
+      }
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: 'Error fetching team overview', error });
+  }
+};
+
+
 module.exports = {
-  getDashboardData
+  getDashboardData,
+  getDashboardOverview
 };
