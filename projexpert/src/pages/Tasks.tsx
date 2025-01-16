@@ -19,7 +19,7 @@ const Tasks = () => {
       }
     } catch (error) {
       console.log(error)
-    }finally{
+    } finally {
       setLoadingTasks(false)
     }
   }
@@ -179,9 +179,15 @@ const Tasks = () => {
                 </tr>
               </thead>
               <tbody>
-                {loadingTasks ? <div className="min-h-[50vh] flex items-center justify-center">
-                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-emerald-500"></div>
-                </div> : tasks.map((task: any) => (
+                {loadingTasks ? (
+                  <tr>
+                    <td colSpan={9}>
+                      <div className="min-h-[50vh] flex items-center justify-center">
+                        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-emerald-500"></div>
+                      </div>
+                    </td>
+                  </tr>
+                ) : tasks.map((task: any) => (
                   <React.Fragment key={task.id}>
                     <tr className="border-b border-gray-100 hover:bg-gray-50">
                       <td className="p-2">
