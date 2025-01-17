@@ -32,7 +32,7 @@ const getProjectById = async (req, res) => {
                 { model: Bug, as: 'Bugs' },
                 { model: Task, as: 'Tasks' ,include:[{model:User,as:"Assignee"}]},
                 { model: File },
-                { model: TeamMember }
+                { model: TeamMember,include:{model:User,as:"User"} }
             ],
         });
 

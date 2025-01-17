@@ -6,7 +6,7 @@ const assignEmployeeToProject = async (req, res, next) => {
         if (!project) {
             return res.status(404).json({ success: true, message: "Project not found" })
         }
-        const teamMember = await TeamMember.findByPk(req.body.userId)
+        const teamMember = await TeamMember.findOne({ where: { userId: req.body.teamMemberId } })
         if (!teamMember) {
             return res.status(404).json({ success: true, message: "Team Member not found" })
         }

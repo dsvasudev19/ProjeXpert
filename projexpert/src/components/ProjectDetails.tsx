@@ -215,11 +215,11 @@ const RenderProjectDetails = ({ projectId }: any) => {
                                     <div key={member.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                                         <div className="flex items-center gap-3">
                                             <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-medium">
-                                                {member.avatar}
+                                                {member?.User?.name?.charAt(0)}
                                             </div>
                                             <div>
-                                                <p className="font-medium">{member.name}</p>
-                                                <p className="text-sm text-gray-500">{member.role}</p>
+                                                <p className="font-medium">{member?.User?.name}</p>
+                                                <p className="text-sm text-gray-500">{member?.position}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -308,30 +308,34 @@ const RenderProjectDetails = ({ projectId }: any) => {
                             </div>
                             <div className="space-y-3">
                                 {selectedProject?.Bugs?.map((bug: any) => (
-                                    <div key={bug.id} className="flex items-center justify-between p-4 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200">
-                                        <div className="flex items-center gap-3">
-                                            <div className={`p-2 rounded-lg ${getBugSeverityColor(bug.severity)}`}>
-                                                <AlertCircle className="w-5 h-5" />
-                                            </div>
-                                            <div className="flex flex-col">
-                                                <div className="flex justify-between">
-                                                    <p className="font-medium">{bug.title}</p>
-                                                    <p className={`text-sm ${getBugSeverityColor(bug?.priority)} rounded p-1`}>Severity: {bug?.priority}</p>
+                                    <div key={bug.id} className="flex flex-col p-4 bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-200 border border-gray-100">
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex items-center gap-3">
+                                                <div className={`p-2 rounded-lg ${getBugSeverityColor(bug.severity)}`}>
+                                                    <AlertCircle className="w-5 h-5" />
                                                 </div>
-                                                <p className="text-sm text-gray-500 mt-1">{bug.description}</p>
+                                                <div>
+                                                    <div className="flex items-center gap-2">
+                                                        <h3 className="font-semibold">{bug.title}</h3>
+                                                        <p className={`text-xs ${getBugSeverityColor(bug?.priority)} rounded-full px-2 py-0.5`}>
+                                                            {bug?.priority}
+                                                        </p>
+                                                    </div>
+                                                    <p className="text-sm text-gray-600 mt-0.5 line-clamp-1">{bug.description}</p>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            <span className={`px-3 py-1 rounded-full text-xs font-medium ${getBugStatusColor(bug.status)}`}>
-                                                {bug?.status}
-                                            </span>
-                                            <button
-                                                onClick={() => { setBugId(bug?.id); setCloseBugModalOpen(true) }}
-                                                className="p-2 bg-gradient-to-r from-green-400 to-emerald-500 text-white rounded-lg hover:from-green-500 hover:to-emerald-600 shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200"
-                                                title="Mark as Resolved"
-                                            >
-                                                <CheckCircle className="w-5 h-5" />
-                                            </button>
+                                            <div className="flex items-center gap-2">
+                                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${getBugStatusColor(bug.status)}`}>
+                                                    {bug?.status}
+                                                </span>
+                                                <button
+                                                    onClick={() => { setBugId(bug?.id); setCloseBugModalOpen(true) }}
+                                                    className="p-1.5 bg-gradient-to-r from-green-400 to-emerald-500 text-white rounded-lg hover:from-green-500 hover:to-emerald-600 shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200"
+                                                    title="Mark as Resolved"
+                                                >
+                                                    <CheckCircle className="w-4 h-4" />
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 ))}

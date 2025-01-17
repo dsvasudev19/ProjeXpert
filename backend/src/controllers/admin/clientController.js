@@ -234,8 +234,7 @@ const getTeamOnlyMembers = async (req, res, next) => {
             }]
         });
 
-        console.log(clients)
-
+       
         const newClients = clients.map((client) => { return { id: client.id, name: client.name, email: client.email, role: client.Roles[0].name } })
 
         return res.status(200).json({ success: true, message: "Successfully fetched all TeamMembers", data: newClients });

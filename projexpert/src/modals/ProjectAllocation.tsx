@@ -1,20 +1,15 @@
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { X } from 'lucide-react';
+import { axiosInstance } from '../axiosIntance';
+import { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 
-const ProjectAllocation = ({ isOpen, onClose }:any) => {
+const ProjectAllocation = ({ isOpen, onClose }: any) => {
+  const [teamMembers, setTeamMembers] = useState<any>([])
   // Sample data - replace with your actual data
-  const projects = [
-    { id: 1, name: 'Project Alpha' },
-    { id: 2, name: 'Project Beta' },
-    { id: 3, name: 'Project Gamma' }
-  ];
+  const [projects, setProjects] = useState<any>([])
 
-  const teamMembers = [
-    { id: 1, name: 'John Doe' },
-    { id: 2, name: 'Jane Smith' },
-    { id: 3, name: 'Mike Johnson' }
-  ];
 
   const validationSchema = Yup.object({
     projectId: Yup.string().required('Project selection is required'),
@@ -22,6 +17,46 @@ const ProjectAllocation = ({ isOpen, onClose }:any) => {
   });
 
   if (!isOpen) return null;
+
+  const getAllUsers = async () => {
+    try {
+      const res = await axiosInstance.get("admin/client/team/internal-only");
+      if (res.status === 200) {
+        setTeamMembers(res.data.data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getAllProjects = async () => {
+    try {
+      const res = await axiosInstance.get("/admin/project")
+      if (res.status === 200) {
+        setProjects(res.data)
+      }
+      // setProjects(dummyProjects)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const allocateProject = async (values: any) => {
+    try {
+      const res = await axiosInstance.post(`/admin/project-assignment/${values.projectId}`, values)
+      if (res.status === 200) {
+        toast.success("Project allocated successfully")
+        onClose()
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  useEffect(() => {
+    getAllProjects(),
+      getAllUsers()
+  }, [])
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
@@ -41,11 +76,7 @@ const ProjectAllocation = ({ isOpen, onClose }:any) => {
         <Formik
           initialValues={{ projectId: '', teamMemberId: '' }}
           validationSchema={validationSchema}
-          onSubmit={(values, { setSubmitting }) => {
-            console.log(values);
-            setSubmitting(false);
-            onClose();
-          }}
+          onSubmit={allocateProject}
         >
           {({ isSubmitting }) => (
             <Form className="p-6 space-y-6 bg-green-50/30">
@@ -59,9 +90,9 @@ const ProjectAllocation = ({ isOpen, onClose }:any) => {
                   className="w-full px-3 py-2 border border-green-200 rounded-md shadow-sm focus:ring-2 focus:ring-blue-200 focus:border-blue-300 bg-white/70 backdrop-blur-sm transition-all"
                 >
                   <option value="">Choose a project</option>
-                  {projects.map(project => (
-                    <option key={project.id} value={project.id}>
-                      {project.name}
+                  {projects?.map((project: any) => (
+                    <option key={project?.id} value={project?.id}>
+                      {project?.name}
                     </option>
                   ))}
                 </Field>
@@ -82,9 +113,9 @@ const ProjectAllocation = ({ isOpen, onClose }:any) => {
                   className="w-full px-3 py-2 border border-green-200 rounded-md shadow-sm focus:ring-2 focus:ring-blue-200 focus:border-blue-300 bg-white/70 backdrop-blur-sm transition-all"
                 >
                   <option value="">Choose a team member</option>
-                  {teamMembers.map(member => (
-                    <option key={member.id} value={member.id}>
-                      {member.name}
+                  {teamMembers?.map((member: any) => (
+                    <option key={member?.id} value={member?.id}>
+                      {member?.name}
                     </option>
                   ))}
                 </Field>
