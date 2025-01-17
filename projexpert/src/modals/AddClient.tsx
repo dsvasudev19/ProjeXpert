@@ -5,24 +5,28 @@ import { useEffect, useState } from "react";
 import { axiosInstance } from "../axiosIntance";
 import toast from "react-hot-toast";
 
-const AddClient = ({ isOpen, onClose,getClients }: { isOpen: boolean; onClose: () => void;getClients:any }) => {
-    const [roles,setRoles]=useState<any>([])
+const AddClient = ({ isOpen, onClose, getClients }: { isOpen: boolean; onClose: () => void; getClients: any }) => {
+    const [roles, setRoles] = useState<any>([])
     const initialValues = { name: "", email: "", roleId: "" };
+    const [loading, setLoading] = useState(false);
 
     const handleSubmit = async (values: typeof initialValues) => {
-       try {
-           const res=await axiosInstance.post("/admin/client",values)
-           if(res.status===201){
-            toast.success("Client Onboarded Successfully")
-            getClients()
-            onClose();
-           }
-           
-       } catch (error) {
-        console.log(error)
-       }
+        try {
+            setLoading(false)
+            const res = await axiosInstance.post("/admin/client", values)
+            if (res.status === 201) {
+                toast.success("Client Onboarded Successfully")
+                getClients()
+                onClose();
+            }
+
+        } catch (error) {
+            console.log(error)
+        } finally {
+            setLoading(true)
+        }
     };
-    
+
     const getAllRoles = async () => {
         try {
             const res = await axiosInstance.get("/admin/role")
@@ -33,10 +37,10 @@ const AddClient = ({ isOpen, onClose,getClients }: { isOpen: boolean; onClose: (
             console.log(error)
         }
     }
-    
-    useEffect(()=>{
+
+    useEffect(() => {
         getAllRoles()
-    },[])
+    }, [])
 
     if (!isOpen) return null;
 
@@ -84,9 +88,10 @@ const AddClient = ({ isOpen, onClose,getClients }: { isOpen: boolean; onClose: (
                         </div>
                         <button
                             type="submit"
+                            disabled={loading}
                             className="w-full bg-gradient-to-r from-emerald-500 to-blue-500 text-white py-2 rounded-md hover:from-emerald-600 hover:to-blue-600 transition-colors"
                         >
-                            Add Member
+                            {loading?"Adding Member......":"Add Member"}
                         </button>
                     </Form>
                 </Formik>
