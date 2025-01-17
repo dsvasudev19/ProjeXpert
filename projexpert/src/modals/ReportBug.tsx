@@ -110,7 +110,7 @@ const ReportBugModal: React.FC<ReportBugModalProps > = ({ isOpen, onClose, onSub
                                     <Field
                                         type="text"
                                         name="title"
-                                        className="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 h-10"
+                                        className="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 h-10 px-4 py-2.5"
                                     />
                                     <ErrorMessage name="title" component="div" className="text-red-600 text-sm" />
                                 </div>
@@ -118,7 +118,7 @@ const ReportBugModal: React.FC<ReportBugModalProps > = ({ isOpen, onClose, onSub
                                 {/* Status */}
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700">Status</label>
-                                    <Field as="select" name="status" className="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 h-10">
+                                    <Field as="select" name="status" className="px-4 py-2.5 mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 h-10">
                                         <option value="">Status</option>
                                         <option value="open">Open</option>
                                         <option value="in_progress">In Progress</option>
@@ -135,7 +135,7 @@ const ReportBugModal: React.FC<ReportBugModalProps > = ({ isOpen, onClose, onSub
                                         as="textarea"
                                         name="description"
                                         rows={4}
-                                        className="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                        className="px-4 py-2.5 mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                                     />
                                     <ErrorMessage name="description" component="div" className="text-red-600 text-sm" />
                                 </div>
@@ -143,7 +143,7 @@ const ReportBugModal: React.FC<ReportBugModalProps > = ({ isOpen, onClose, onSub
                                 {/* Priority */}
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700">Priority</label>
-                                    <Field as="select" name="priority" className="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 h-10">
+                                    <Field as="select" name="priority" className="px-4 py-2.5 mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 h-10">
                                         <option value="">Priority</option>
                                         <option value="low">Low</option>
                                         <option value="medium">Medium</option>
@@ -159,7 +159,7 @@ const ReportBugModal: React.FC<ReportBugModalProps > = ({ isOpen, onClose, onSub
                                     <Field
                                         type="date"
                                         name="dueDate"
-                                        className="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 h-10"
+                                        className="px-4 py-2.5 mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 h-10"
                                     />
                                 </div>
 
@@ -170,14 +170,14 @@ const ReportBugModal: React.FC<ReportBugModalProps > = ({ isOpen, onClose, onSub
                                         as="textarea"
                                         name="resolution"
                                         rows={2}
-                                        className="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                        className="px-4 py-2.5 mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                                     />
                                 </div>
 
                                 {/* Project Selection */}
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700">Project</label>
-                                    <Field as="select" name="projectId" className="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 h-10" disabled={proId!=undefined || proId!=null}>
+                                    <Field as="select" name="projectId" className="px-4 py-2.5 mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 h-10" disabled={proId!=undefined || proId!=null}>
                                         <option value="">Select Project</option>
                                         {projects?.map(project => (
                                             <option key={project?.id} value={project?.id}>{project?.name}</option>
@@ -189,7 +189,7 @@ const ReportBugModal: React.FC<ReportBugModalProps > = ({ isOpen, onClose, onSub
                                 {/* Assignee */}
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700">Assignee</label>
-                                    <Field as="select" name="assigneeId" className="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 h-10">
+                                    <Field as="select" name="assigneeId" className="px-4 py-2.5 mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 h-10">
                                         <option value="">Select Assignee</option>
                                         {users?.map(user => (
                                             <option key={user?.id} value={user?.id}>{user?.name}</option>

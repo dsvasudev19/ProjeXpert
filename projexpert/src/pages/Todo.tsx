@@ -9,18 +9,18 @@ import { axiosInstance } from "../axiosIntance";
 const Todo = () => {
   const [todos, setTodos] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  const [adding, setAdding] = useState(false);
 
-
-  const getAllTodos=async()=>{
+  const getAllTodos = async () => {
     setLoading(true)
-    try{
-      const res=await axiosInstance.get("/todo")
-      if(res.status===200){
+    try {
+      const res = await axiosInstance.get("/todo")
+      if (res.status === 200) {
         setTodos(res.data)
       }
-    }catch(error){
+    } catch (error) {
       console.log(error)
-    }finally{
+    } finally {
       setLoading(false)
     }
   }
@@ -39,25 +39,27 @@ const Todo = () => {
 
   const handleSubmit = async (values: any, { resetForm }: any) => {
     try {
-      
-      const res=await axiosInstance.post("/todo",{...values,status:"pending"})
-      if(res.status===201){
+      setAdding(true);
+      const res = await axiosInstance.post("/todo", { ...values, status: "pending" })
+      if (res.status === 201) {
         toast.success("Todo added successfully!");
         resetForm();
         getAllTodos();
       }
-      
     } catch (error) {
+      console.log(error)
       toast.error("Failed to add todo");
+    } finally {
+      setAdding(false)
     }
   };
 
-  
+
 
   const toggleStatus = async (id: number) => {
     try {
-      const res=await axiosInstance.patch(`/todo/${id}/change-status`)
-      if(res.status===200){
+      const res = await axiosInstance.patch(`/todo/${id}/change-status`)
+      if (res.status === 200) {
         toast.success("Status Changes successfully")
         getAllTodos();
       }
@@ -67,10 +69,10 @@ const Todo = () => {
     }
   };
 
-  const deleteTodo =async (id: number) => {
+  const deleteTodo = async (id: number) => {
     try {
-      const res=await axiosInstance.delete("/todo/"+id)
-      if(res.status===200){
+      const res = await axiosInstance.delete("/todo/" + id)
+      if (res.status === 200) {
         toast.success("Todo deleted successfully!");
         getAllTodos();
       }
@@ -80,7 +82,7 @@ const Todo = () => {
   };
 
   const getPriorityColor = (priority: string) => {
-    switch(priority.toLowerCase()) {
+    switch (priority.toLowerCase()) {
       case 'high': return 'text-red-500';
       case 'medium': return 'text-yellow-500';
       case 'low': return 'text-green-500';
@@ -99,25 +101,24 @@ const Todo = () => {
         </p>
       </div>
 
-      {loading ? (
-        <div className="flex-1 flex justify-center items-center">
-          <ClockLoader color="#085387" size={100} />
-        </div>
-      ) : (
-        <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-6 p-6 pt-0">
-          {/* Todo List */}
-          <div className="lg:col-span-2 bg-white rounded-xl shadow-md overflow-hidden flex flex-col">
-            <div className="p-6 pb-4">
-              <h2 className="text-xl font-semibold">Todo List</h2>
-            </div>
-            <div className="flex-1 overflow-y-auto px-6 pb-6 max-h-[calc(100vh-300px)]">
+      <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-6 p-6 pt-0">
+        {/* Todo List */}
+        <div className="lg:col-span-2 bg-white rounded-xl shadow-md overflow-hidden flex flex-col">
+          <div className="p-6 pb-4">
+            <h2 className="text-xl font-semibold">Todo List</h2>
+          </div>
+          <div className="flex-1 overflow-y-auto px-6 pb-6 max-h-[calc(100vh-300px)]">
+            {loading ? (
+              <div className="flex justify-center items-center h-full">
+                <ClockLoader color="#085387" size={100} />
+              </div>
+            ) : (
               <div className="space-y-4">
                 {todos.map((todo) => (
                   <div
                     key={todo.id}
-                    className={`p-4 rounded-lg border ${
-                      todo.status === "completed" ? "bg-gray-50" : "bg-white"
-                    }`}
+                    className={`p-4 rounded-lg border ${todo.status === "completed" ? "bg-gray-50" : "bg-white"
+                      }`}
                   >
                     <div className="flex items-start justify-between">
                       <div className="flex items-start space-x-3">
@@ -132,9 +133,8 @@ const Todo = () => {
                           )}
                         </button>
                         <div>
-                          <h3 className={`font-medium ${
-                            todo.status === "completed" ? "line-through text-gray-500" : ""
-                          }`}>
+                          <h3 className={`font-medium ${todo.status === "completed" ? "line-through text-gray-500" : ""
+                            }`}>
                             {todo.title}
                           </h3>
                           <p className="text-sm text-gray-600 mt-1">
@@ -162,90 +162,90 @@ const Todo = () => {
                   </div>
                 ))}
               </div>
-            </div>
-          </div>
-
-          {/* Add Todo Form */}
-          <div className="bg-white rounded-xl shadow-md p-6">
-            <h2 className="text-xl font-semibold mb-4">Add New Todo</h2>
-            <Formik
-              initialValues={{
-                title: "",
-                description: "",
-                priority: "",
-                dueDate: "",
-              }}
-              validationSchema={validationSchema}
-              onSubmit={handleSubmit}
-            >
-              {({ errors, touched }) => (
-                <Form className="space-y-4">
-                  <div>
-                    <Field
-                      name="title"
-                      type="text"
-                      placeholder="Todo Title"
-                      className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 shadow-sm"
-                    />
-                    {errors.title && touched.title && (
-                      <div className="text-red-500 text-sm mt-1">{errors.title}</div>
-                    )}
-                  </div>
-
-                  <div>
-                    <Field
-                      name="description"
-                      as="textarea"
-                      placeholder="Description"
-                      className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 shadow-sm"
-                    />
-                    {errors.description && touched.description && (
-                      <div className="text-red-500 text-sm mt-1">{errors.description}</div>
-                    )}
-                  </div>
-
-                  <div className="grid grid-cols-1 gap-4">
-                    <div>
-                      <Field
-                        name="priority"
-                        as="select"
-                        className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 shadow-sm"
-                      >
-                        <option value="">Select Priority</option>
-                        <option value="high">High</option>
-                        <option value="medium">Medium</option>
-                        <option value="low">Low</option>
-                      </Field>
-                      {errors.priority && touched.priority && (
-                        <div className="text-red-500 text-sm mt-1">{errors.priority}</div>
-                      )}
-                    </div>
-
-                    <div>
-                      <Field
-                        name="dueDate"
-                        type="date"
-                        className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 shadow-sm"
-                      />
-                      {errors.dueDate && touched.dueDate && (
-                        <div className="text-red-500 text-sm mt-1">{errors.dueDate}</div>
-                      )}
-                    </div>
-                  </div>
-
-                  <button
-                    type="submit"
-                    className="w-full flex items-center justify-center px-4 py-2 bg-gradient-to-r from-blue-600 to-green-600 text-white rounded-lg hover:from-blue-700 hover:to-green-700 transition-all duration-200 shadow-md"
-                  >
-                    <Plus className="w-5 h-5 mr-2" />
-                    Add Todo
-                  </button>
-                </Form>
-              )}
-            </Formik>
+            )}
           </div>
         </div>
-      )}
+
+        {/* Add Todo Form */}
+        <div className="bg-white rounded-xl shadow-md p-6">
+          <h2 className="text-xl font-semibold mb-4">Add New Todo</h2>
+          <Formik
+            initialValues={{
+              title: "",
+              description: "",
+              priority: "",
+              dueDate: "",
+            }}
+            validationSchema={validationSchema}
+            onSubmit={handleSubmit}
+          >
+            {({ errors, touched }) => (
+              <Form className="space-y-4">
+                <div>
+                  <Field
+                    name="title"
+                    type="text"
+                    placeholder="Todo Title"
+                    className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 shadow-sm"
+                  />
+                  {errors.title && touched.title && (
+                    <div className="text-red-500 text-sm mt-1">{errors.title}</div>
+                  )}
+                </div>
+
+                <div>
+                  <Field
+                    name="description"
+                    as="textarea"
+                    placeholder="Description"
+                    className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 shadow-sm"
+                  />
+                  {errors.description && touched.description && (
+                    <div className="text-red-500 text-sm mt-1">{errors.description}</div>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-1 gap-4">
+                  <div>
+                    <Field
+                      name="priority"
+                      as="select"
+                      className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 shadow-sm"
+                    >
+                      <option value="">Select Priority</option>
+                      <option value="high">High</option>
+                      <option value="medium">Medium</option>
+                      <option value="low">Low</option>
+                    </Field>
+                    {errors.priority && touched.priority && (
+                      <div className="text-red-500 text-sm mt-1">{errors.priority}</div>
+                    )}
+                  </div>
+
+                  <div>
+                    <Field
+                      name="dueDate"
+                      type="date"
+                      className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 shadow-sm"
+                    />
+                    {errors.dueDate && touched.dueDate && (
+                      <div className="text-red-500 text-sm mt-1">{errors.dueDate}</div>
+                    )}
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  className="w-full flex items-center justify-center px-4 py-2 bg-gradient-to-r from-blue-600 to-green-600 text-white rounded-lg hover:from-blue-700 hover:to-green-700 transition-all duration-200 shadow-md"
+                >
+                  {adding ? "Adding..." : <><Plus className="w-5 h-5 mr-2" />
+                    Add Todo</>}
+                </button>
+              </Form>
+            )}
+          </Formik>
+        </div>
+      </div>
     </div>
   );
 };
