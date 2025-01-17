@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { axiosInstance } from '../axiosIntance';
@@ -21,15 +21,16 @@ interface ReportBugModalProps {
     proId?: number
 }
 
-const ReportBugModal: React.FC<ReportBugModalProps > = ({ isOpen, onClose, onSubmit, proId }) => {
+const ReportBugModal: React.FC<ReportBugModalProps> = ({ isOpen, onClose, onSubmit, proId }) => {
     const [users, setUsers] = React.useState<User[]>([]);
     const [projects, setProjects] = React.useState<Project[]>([]);
+    const [reporting, setReporting] = useState(false);
 
-
-    const reportBug=async(values:any,{resetForm}:any)=>{
+    const reportBug = async (values: any, { resetForm }: any) => {
         try {
-            const res=await axiosInstance.post("/admin/bug",values)
-            if(res.status===201){
+            setReporting(true)
+            const res = await axiosInstance.post("/admin/bug", values)
+            if (res.status === 201) {
                 toast.success("Bug Reported Successfully")
                 onClose()
                 onSubmit()
@@ -37,6 +38,8 @@ const ReportBugModal: React.FC<ReportBugModalProps > = ({ isOpen, onClose, onSub
             }
         } catch (error) {
             console.log(error)
+        } finally {
+            setReporting(false)
         }
     }
     // Fetch users and projects data when modal opens
@@ -76,7 +79,7 @@ const ReportBugModal: React.FC<ReportBugModalProps > = ({ isOpen, onClose, onSub
         priority: 'medium',
         dueDate: '',
         resolution: '',
-        projectId: proId?proId:"",
+        projectId: proId ? proId : "",
         assigneeId: '',
     };
 
@@ -177,7 +180,7 @@ const ReportBugModal: React.FC<ReportBugModalProps > = ({ isOpen, onClose, onSub
                                 {/* Project Selection */}
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700">Project</label>
-                                    <Field as="select" name="projectId" className="p-1 mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 h-10" disabled={proId!=undefined || proId!=null}>
+                                    <Field as="select" name="projectId" className="p-1 mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 h-10" disabled={proId != undefined || proId != null}>
                                         <option value="">Select Project</option>
                                         {projects?.map(project => (
                                             <option key={project?.id} value={project?.id}>{project?.name}</option>
@@ -210,9 +213,10 @@ const ReportBugModal: React.FC<ReportBugModalProps > = ({ isOpen, onClose, onSub
                                 </button>
                                 <button
                                     type="submit"
-                                    className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-md"
+                                    disabled={reporting}
+                                    className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-md"
                                 >
-                                    Submit
+                                    {reporting ? "Reporting Bug...." : "Report"}
                                 </button>
                             </div>
                         </Form>

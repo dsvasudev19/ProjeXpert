@@ -4,6 +4,7 @@ import { axiosInstance } from "../axiosIntance";
 import AddTask from "../modals/AddTask";
 import ReportBugModal from "../modals/ReportBug";
 import toast from "react-hot-toast";
+import ProjectAllocation from "../modals/ProjectAllocation";
 
 const RenderProjectDetails = ({ projectId }: any) => {
     const [selectedProject, setSelectedProject] = useState<any>(null);
@@ -16,6 +17,7 @@ const RenderProjectDetails = ({ projectId }: any) => {
     const [openReportBugModal, setOpenReportBugModal] = useState(false)
     const [resolution, setResolution] = useState<string>('');
     const [bugId, setBugId] = useState<any>()
+    const [projectAllocationModal,setProjectAllocationModal]=useState(false);
 
     const dummyProjects = [
         {
@@ -128,7 +130,7 @@ const RenderProjectDetails = ({ projectId }: any) => {
                     </div>
                 </div>
                 <div className="flex gap-3">
-                    <button className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-lg hover:shadow-lg transition-all duration-300">
+                    <button onClick={()=>{setProjectAllocationModal(true)}} className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-lg hover:shadow-lg transition-all duration-300">
                         <Users className="w-5 h-5" />
                         <span>Add Member</span>
                     </button>
@@ -136,6 +138,9 @@ const RenderProjectDetails = ({ projectId }: any) => {
                         <Plus className="w-5 h-5" />
                         <span>Add Task</span>
                     </button>
+                    {
+                        projectAllocationModal && <ProjectAllocation isOpen={projectAllocationModal} onClose={()=>{setProjectAllocationModal(false)}} />
+                    }
                 </div>
             </div>
 
