@@ -36,4 +36,7 @@ router.use("/dashboard",dashboardRoutes)
 const teamRoutes=require("./admin/teamRoutes")
 router.use("/team",teamRoutes)
 
+const projectAssignment=require("./admin/projectAssignmentRoutes")
+router.use("/project-assignment",projectAssignment)
+
 module.exports=router;
