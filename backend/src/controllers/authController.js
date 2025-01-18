@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const { User, Role, RefreshToken } = require('../models'); // Adjust the path based on your project structure
 const { Op, where } = require('sequelize');
 const crypto = require("crypto")
+const {registrationSuccess,sendEmail} = require("../utils/nodeMailer")
 
 const register = async (req, res) => {
     try {
@@ -34,8 +35,15 @@ const register = async (req, res) => {
         // Associate the user with the 'client' role (many-to-many)
         await user.addRole(clientRole); // Sequelize will use the UserRoles join table automatically
 
+        const verificationLink = `http://localhost:3000/verify-email?token=${user.id}`;
+        const emailContent = registrationSuccess(user, verificationLink);
+
+        const result = await sendEmail(user.email, 'Welcome to ProjectHub!', emailContent);
+
+        
         return res.status(201).json({ message: 'User registered successfully.', user });
     } catch (error) {
+        console.log(error)
         return res.status(500).json({ message: 'Internal server error.', error });
     }
 }
@@ -60,16 +68,19 @@ const login = async (req, res) => {
         // Generate a JWT token
         const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
+        await RefreshToken.destroy({ where: { userId: user.id } });
         const refreshToken = await RefreshToken.create({
             userId: user.id,
             expiryDate: new Date(Date.now() + 30 * 60 * 1000),
             token: crypto.randomBytes(6).toString("hex").toUpperCase()
-        })
+        });
 
         user.lastLogin = new Date();
 
         await user.save();
 
+        res.cookie('token', token, { httpOnly: process.env.NODE_ENV === 'production', secure: process.env.NODE_ENV === 'production', maxAge: 15 * 60 * 1000 });
+        res.cookie('refreshToken', refreshToken.token, { httpOnly: process.env.NODE_ENV === 'production', secure: process.env.NODE_ENV === 'production', maxAge: 60 * 60 * 1000 });
         return res.status(200).json({ message: 'Login successful.', token, user:{name:user.name,email:user.email,phone:user.phone,lastLogin:user.lastLogin}, refreshToken: refreshToken.token });
     } catch (error) {
         console.log(error)

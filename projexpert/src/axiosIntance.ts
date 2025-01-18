@@ -2,7 +2,7 @@ import axios from "axios";
 
 export const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_RUNTIME == "production" ? import.meta.env.VITE_API_PROD_URL : import.meta.env.VITE_API_URL,
-  // withCredentials: true,
+  withCredentials: true,
 });
 
 axiosInstance.interceptors.request.use(

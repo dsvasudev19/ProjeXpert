@@ -18,9 +18,13 @@ module.exports = (sequelize, DataTypes) => {
     type: DataTypes.STRING,
     size: DataTypes.INTEGER,
     path: {
+      type: DataTypes.STRING
+    },
+    url: {
       type: DataTypes.STRING,
-      get url() {
-        return `http://localhost:3000/${this.path}`;
+      get() {
+        let path=this.getDataValue("path")
+        return "http://localhost:3000/"+path
       }
     },
     uploaderId: DataTypes.INTEGER,

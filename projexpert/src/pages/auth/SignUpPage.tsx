@@ -38,7 +38,10 @@ const SignUpPage = () => {
         },2000)
       }
     } catch (error: any) {
-      toast.error(error.response?.data?.message || "An error occurred during signup");
+      console.log(error)
+      toast.error(error.response?.data?.message || "An error occurred during signup",{
+        id:registerToast
+      });
     }
   };
 
@@ -61,8 +64,8 @@ const SignUpPage = () => {
             enhance collaboration, and deliver outstanding results.
           </p>
           <div className="space-y-6">
-            <div className="flex items-center space-x-4 p-4 bg-white rounded-xl shadow-sm">
-              <div className="p-2 bg-blue-100 rounded-lg">
+            <div className="flex items-center space-x-4 p-4 bg-white rounded shadow-sm">
+              <div className="p-2 bg-blue-100 rounded">
                 <Sparkles className="w-6 h-6 text-blue-600" />
               </div>
               <div>
@@ -70,8 +73,8 @@ const SignUpPage = () => {
                 <p className="text-gray-600">Smart analytics and predictive project planning</p>
               </div>
             </div>
-            <div className="flex items-center space-x-4 p-4 bg-white rounded-xl shadow-sm">
-              <div className="p-2 bg-blue-100 rounded-lg">
+            <div className="flex items-center space-x-4 p-4 bg-white rounded shadow-sm">
+              <div className="p-2 bg-blue-100 rounded">
                 <Shield className="w-6 h-6 text-blue-600" />
               </div>
               <div>
@@ -84,7 +87,7 @@ const SignUpPage = () => {
       </div>
 
       <div className="w-full lg:w-1/2 flex items-center justify-center p-6">
-        <div className="max-w-md w-full bg-white rounded-2xl shadow-lg p-8">
+        <div className="max-w-md w-full bg-white rounded shadow-lg p-8">
           <div className="text-center mb-10">
             <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent mb-2">
               Start Your Journey
@@ -117,7 +120,7 @@ const SignUpPage = () => {
                       id="name"
                       name="name"
                       type="text"
-                      className="pl-10 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                      className="pl-10 w-full px-4 py-3 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
                       placeholder="John Doe"
                     />
                   </div>
@@ -141,7 +144,7 @@ const SignUpPage = () => {
                       id="email"
                       name="email"
                       type="email"
-                      className="pl-10 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                      className="pl-10 w-full px-4 py-3 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
                       placeholder="you@company.com"
                     />
                   </div>
@@ -165,7 +168,7 @@ const SignUpPage = () => {
                       id="password"
                       name="password"
                       type="password"
-                      className="pl-10 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                      className="pl-10 w-full px-4 py-3 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
                       placeholder="••••••••"
                     />
                   </div>
@@ -189,7 +192,7 @@ const SignUpPage = () => {
                       id="confirmPassword"
                       name="confirmPassword"
                       type="password"
-                      className="pl-10 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                      className="pl-10 w-full px-4 py-3 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
                       placeholder="••••••••"
                     />
                   </div>
@@ -203,7 +206,7 @@ const SignUpPage = () => {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full flex items-center justify-center px-4 py-3 border border-transparent rounded-lg text-white bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 font-medium"
+                  className="w-full flex items-center justify-center px-4 py-3 border border-transparent rounded text-white bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 font-medium"
                 >
                   {isSubmitting ? "Creating Account..." : "Create Account"}
                   <ArrowRight className="ml-2 h-5 w-5" />

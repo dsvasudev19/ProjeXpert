@@ -28,15 +28,37 @@ const FileManagementFolder: React.FC = () => {
   const handleDownload = async (fileId: number) => {
     try {
       const response = await axiosInstance.get(`/admin/file/${fileId}/download`, {
-        responseType: 'blob', // Important for file download
+        responseType: 'blob',
       });
-      const url = window.URL.createObjectURL(new Blob([response.data]));
+
+      // Get filename from Content-Disposition header if available
+      const contentDisposition = response.headers['content-disposition'];
+      let filename = `file_${fileId}`;
+      if (contentDisposition) {
+        const filenameMatch = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
+        if (filenameMatch && filenameMatch[1]) {
+          filename = filenameMatch[1].replace(/['"]/g, '');
+        }
+      }
+
+      // Create blob with proper mime type from response headers
+      const blob = new Blob([response.data], {
+        type: response.headers['content-type']
+      });
+
+      // Create download URL
+      const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', `file_${fileId}`); // You can customize the filename here
+      link.setAttribute('download', filename);
+
+      // Trigger download
       document.body.appendChild(link);
       link.click();
-      link.remove();
+
+      // Cleanup
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(link);
     } catch (error) {
       console.error('Error downloading the file:', error);
     }
@@ -68,10 +90,10 @@ const FileManagementFolder: React.FC = () => {
         </button>
       </div>
 
-      <div className="grid grid-cols-3 gap-4">
-        {loadingFiles ? <div className="min-h-screen flex items-center justify-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-emerald-500"></div>
-        </div> : files.map((file: any) => (
+      {loadingFiles ? <div className="min-h-96 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-emerald-500"></div>
+      </div> : <div className="grid grid-cols-3 gap-4">
+        {files.map((file: any) => (
           <div
             key={file.id}
             className="bg-white p-3 rounded-lg shadow hover:shadow-lg transition-all duration-300 border border-slate-100"
@@ -85,10 +107,10 @@ const FileManagementFolder: React.FC = () => {
                 <p className="text-xs text-slate-500">{file.type}</p>
               </div>
               <div className="flex gap-2">
-                <button className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-600 hover:text-blue-600 transition-colors" onClick={() => handleDownload(file.id)}>
+                <button className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-600 hover:text-blue-600 transition-colors" onClick={() => window.open(`${file.url}`, '_blank')}>
                   <Eye className="w-4 h-4" />
                 </button>
-                <button className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-600 hover:text-green-600 transition-colors">
+                <button className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-600 hover:text-green-600 transition-colors" onClick={() => handleDownload(file.id)}>
                   <CloudDownload className="w-4 h-4" />
                 </button>
               </div>
@@ -98,7 +120,7 @@ const FileManagementFolder: React.FC = () => {
             </div>
           </div>
         ))}
-      </div>
+      </div>}
       {
         isModalOpen && <FileUploadModal
           isOpen={isModalOpen}

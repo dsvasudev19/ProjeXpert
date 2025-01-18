@@ -18,6 +18,7 @@ import Settings from "./../pages/Settings";
 import UnauthorizedAccess from "./../components/UnauthorizedAccess";
 import ClientOrDeveloper from "../pages/ClientOrDeveloper";
 import RolesAndPermissions from "../pages/RolesAndPermissions";
+import EmailTemplateShowcase from "../components/EmailTemplates";
 
 
 
@@ -38,6 +39,7 @@ const AppRoutes = () => {
             <Route path="settings" element={<Settings />} />
             <Route path="client" element={<ClientOrDeveloper />} />
             <Route path="roles-and-permissions" element={<RolesAndPermissions />} />
+            
           </Route>
         <Route path="/auth/*">
           <Route path="login" element={<SignInPage />} />
@@ -47,9 +49,10 @@ const AppRoutes = () => {
 
           <Route path="*" element={<NotFound />} />
         </Route>
-        <Route path="*" element={<NotFound />} />
         <Route path="/" element={<Navigate to="/auth/login" />} />
         <Route path="401" element={<UnauthorizedAccess />} />
+        <Route path="email-templates" element={<EmailTemplateShowcase />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   );

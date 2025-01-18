@@ -3,7 +3,8 @@ const jwt = require('jsonwebtoken');
 const { User } = require('../models');
 
 const authenticateUser = async (req, res, next) => {
-    const token = req.header('Authorization')?.replace('Bearer ', '');
+    // const token = req.header('Authorization')?.replace('Bearer ', '');
+    const token = req.cookies.token;
     if (!token) {
         return res.status(401).json({ message: 'Unauthorized: No token provided.' });
     }

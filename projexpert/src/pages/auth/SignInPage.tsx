@@ -46,8 +46,8 @@ const SignInPage = () => {
             Access your projects, collaborate with your team, and drive success with our powerful project management platform.
           </p>
           <div className="space-y-6">
-            <div className="flex items-center space-x-4 p-4 bg-white rounded-xl shadow-sm">
-              <div className="p-2 bg-blue-100 rounded-lg">
+            <div className="flex items-center space-x-4 p-4 bg-white rounded shadow-sm">
+              <div className="p-2 bg-blue-100 rounded">
                 <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                 </svg>
@@ -63,7 +63,7 @@ const SignInPage = () => {
 
       {/* Right Section */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8">
-        <div className="max-w-md w-full space-y-8 bg-white p-10 rounded-2xl shadow-xl">
+        <div className="max-w-md w-full space-y-8 bg-white p-10 rounded shadow-xl">
           <div className="text-center">
             <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent mb-2">
               Welcome Back
@@ -94,7 +94,7 @@ const SignInPage = () => {
                       type="email"
                       className={`appearance-none block w-full pl-10 px-3 py-3 border ${
                         errors.email && touched.email ? 'border-red-500' : 'border-gray-300'
-                      } rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+                      } rounded shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
                       placeholder="Enter your email"
                     />
                   </div>
@@ -117,7 +117,7 @@ const SignInPage = () => {
                       type="password"
                       className={`appearance-none block w-full pl-10 px-3 py-3 border ${
                         errors.password && touched.password ? 'border-red-500' : 'border-gray-300'
-                      } rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+                      } rounded shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
                       placeholder="Enter your password"
                     />
                   </div>
@@ -149,7 +149,7 @@ const SignInPage = () => {
 
                 <button
                   type="submit"
-                  className="w-full flex items-center justify-center px-4 py-3 border border-transparent rounded-xl text-white bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transform transition-all duration-200 hover:scale-[1.02]"
+                  className="w-full flex items-center justify-center px-4 py-3 border border-transparent rounded text-white bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transform transition-all duration-200 hover:scale-[1.02]"
                   disabled={isSubmitting}
                 >
                   {isSubmitting ? 'Signing in...' : 'Sign in'}
