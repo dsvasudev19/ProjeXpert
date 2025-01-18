@@ -102,5 +102,5 @@ This project is licensed under the MIT License. See the LICENSE file for details
 
 ## Contact
 
-For any inquiries or support, please contact us at [support@example.com](mailto:vasudevds1729@gmail.com).
+For any inquiries or support, please contact us at [vasudevds1729@gmail.com](mailto:vasudevds1729@gmail.com).
 
