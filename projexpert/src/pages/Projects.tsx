@@ -49,8 +49,8 @@ const Projects = () => {
 
 
   return (
-    <div className="flex h-screen bg-gray-50">
-      <aside className="w-64 bg-white border-r border-gray-200 p-2">
+    <div className="h-full flex flex-col lg:flex-row">
+      <aside className="w-full lg:w-64 bg-white border-b lg:border-r border-gray-200 p-2">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-xl font-bold text-gray-800">Projects</h1>
           <button
@@ -80,7 +80,7 @@ const Projects = () => {
           ))}
         </div>
       </aside>
-      <main className="flex-1 overflow-auto">
+      <main className="flex-1 overflow-auto p-4">
         {selectedProject && <RenderProjectDetails projectId={selectedProject} />}
       </main>
 
