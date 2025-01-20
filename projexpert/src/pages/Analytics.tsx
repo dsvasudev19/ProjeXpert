@@ -129,7 +129,7 @@ const Analytics = () => {
         return (
           <>
             {/* Top Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {loading ? (
                 <div className="bg-gray-200 rounded-2xl p-6 animate-pulse">
                   <div className="flex items-center justify-between">
@@ -253,7 +253,7 @@ const Analytics = () => {
             </div>
 
             {/* Additional KPI Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
               {loading ? (
                 <div className="bg-gray-200 rounded-2xl p-6 animate-pulse">
                   <div className="flex items-center justify-between">

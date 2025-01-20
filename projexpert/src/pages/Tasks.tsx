@@ -150,156 +150,203 @@ const Tasks = () => {
       <div className="flex-1 p-5 pt-0 min-h-0">
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 h-full flex flex-col">
           <div className="flex-1 overflow-auto">
-            <table className="w-full">
-              <thead className="sticky top-0 bg-gray-50 border-b border-gray-200">
-                <tr>
-                  <th className="text-left p-2 text-sm font-semibold text-gray-600">Ref</th>
-                  <th className="text-left p-2 text-sm font-semibold text-gray-600">Task</th>
-                  <th className="text-left p-2 text-sm font-semibold text-gray-600">Project</th>
-                  <th className="text-left p-2 text-sm font-semibold text-gray-600">Status</th>
-                  <th className="text-left p-2 text-sm font-semibold text-gray-600">Priority</th>
-                  <th className="text-left p-2 text-sm font-semibold text-gray-600">Due Date</th>
-                  <th className="text-left p-2 text-sm font-semibold text-gray-600">Assignee</th>
-                  <th className="text-left p-2 text-sm font-semibold text-gray-600">Progress</th>
-                  <th className="text-left p-2 text-sm font-semibold text-gray-600">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {loadingTasks ? (
+            {/* For desktop */}
+            <div className="hidden md:block">
+              <table className="w-full">
+                <thead className="sticky top-0 bg-gray-50 border-b border-gray-200">
                   <tr>
-                    <td colSpan={9}>
-                      <div className="min-h-[50vh] flex items-center justify-center">
-                        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-emerald-500"></div>
-                      </div>
-                    </td>
+                    <th className="text-left p-2 text-sm font-semibold text-gray-600">Ref</th>
+                    <th className="text-left p-2 text-sm font-semibold text-gray-600">Task</th>
+                    <th className="text-left p-2 text-sm font-semibold text-gray-600">Project</th>
+                    <th className="text-left p-2 text-sm font-semibold text-gray-600">Status</th>
+                    <th className="text-left p-2 text-sm font-semibold text-gray-600">Priority</th>
+                    <th className="text-left p-2 text-sm font-semibold text-gray-600">Due Date</th>
+                    <th className="text-left p-2 text-sm font-semibold text-gray-600">Assignee</th>
+                    <th className="text-left p-2 text-sm font-semibold text-gray-600">Progress</th>
+                    <th className="text-left p-2 text-sm font-semibold text-gray-600">Actions</th>
                   </tr>
-                ) : tasks.map((task: any) => (
-                  <React.Fragment key={task.id}>
-                    <tr className="border-b border-gray-100 hover:bg-gray-50">
-                      <td className="p-2">
-                        <span className="font-medium text-gray-800">{task?.refId}</span>
-                      </td>
-                      <td className="p-2">
-                        <span className="font-medium text-gray-800">{task?.title}</span>
-                      </td>
-                      <td className="p-2 text-gray-600">{task.Project?.name}</td>
-                      <td className="p-2">
-                        <div className="flex items-center gap-2">
-                          {getStatusIcon(task.status)}
-                          <span className="text-gray-600">{task.status}</span>
+                </thead>
+                <tbody>
+                  {loadingTasks ? (
+                    <tr>
+                      <td colSpan={9}>
+                        <div className="min-h-[50vh] flex items-center justify-center">
+                          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-emerald-500"></div>
                         </div>
-                      </td>
-                      <td className="p-2">
-                        <span className={`p-1 rounded-full text-xs ${getPriorityColor(task.priority)}`}>
-                          {task.priority}
-                        </span>
-                      </td>
-                      <td className="p-2 text-gray-600">{new Date(task.dueDate).toLocaleDateString()}</td>
-                      <td className="p-2">
-                        <div className="flex items-center gap-2">
-                          <div className="rounded-lg bg-blue-100 flex items-center justify-center p-1">
-                            <span className="text-blue-600">{task?.Assignee?.name.split(" ")[0]}</span>
-                          </div>
-                          <span className="text-gray-600">{task.assignee}</span>
-                        </div>
-                      </td>
-                      <td className="p-2">
-                        <div className="flex items-center gap-2">
-                          <div className="w-24 bg-gray-200 rounded-full h-2">
-                            <div
-                              className="bg-blue-500 h-2 rounded-full"
-                              style={{ width: `${task.progress}%` }}
-                            />
-                          </div>
-                          <span className="text-sm text-gray-600">{task.progress}%</span>
-                        </div>
-                      </td>
-                      <td className="p-2">
-                        <button
-                          onClick={() => { completeTask(task?.id) }}
-                          className="p-2 text-green-400 hover:bg-green-500 rounded-lg transition-colors"
-                          title="Show Details"
-                        >
-                          <CheckCircle className="w-5 h-5" />
-                        </button>
-                        <button
-                          onClick={() => toggleTaskExpanded(task.id)}
-                          className="p-2 text-gray-400 hover:bg-gray-50 rounded-lg transition-colors"
-                          title="Show Details"
-                        >
-                          {task.expanded ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
-                        </button>
                       </td>
                     </tr>
-                    {task.expanded && (
-                      <tr className="bg-gradient-to-br from-slate-50 to-white">
-                        <td colSpan={8} className="p-2">
-                          <div className="space-y-4">
-                            {/* Description Section */}
-                            <div className="bg-white p-3 rounded-xl shadow-sm border border-slate-100">
-                              <h4 className="text-slate-800 mb-2 flex items-center gap-2">
-                                <FileText className="w-5 h-5 text-blue-500" />
-                                Description
-                              </h4>
-                              <p className="text-slate-600 leading-relaxed">{task.description}</p>
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-4">
-                              {/* Status Update Section */}
-                              <div className="bg-white p-3 rounded-xl shadow-sm border border-slate-100">
-                                <h4 className=" text-slate-800 mb-2 flex items-center gap-2">
-                                  <Clock className="w-5 h-5 text-amber-500" />
-                                  Update Status
-                                </h4>
-                                <select
-                                  value={task.status}
-                                  onChange={(e) => handleStatusChange(task.id, e.target.value)}
-                                  className="w-full p-2 rounded-lg border border-slate-200 text-slate-600 focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition-all duration-200"
-                                >
-                                  <option value="Pending">Pending</option>
-                                  <option value="In Progress">In Progress</option>
-                                  <option value="Completed">Completed</option>
-                                </select>
-                              </div>
-
-                              {/* Progress Update Section */}
-                              <div className="bg-white p-3 rounded-xl shadow-sm border border-slate-100">
-                                <h4 className=" text-slate-800 mb-2 flex items-center gap-2">
-                                  <ChartBar className="w-5 h-5 text-green-500" />
-                                  Update Progress
-                                </h4>
-                                <div className="flex items-center gap-3">
-                                  <div className="flex-1 h-2 bg-slate-200 rounded-lg relative">
-                                    <div
-                                      className="absolute top-0 left-0 h-full bg-blue-500 rounded-lg"
-                                      style={{ width: `${task.progress}%` }}
-                                    />
-                                    <input
-                                      type="range"
-                                      value={task.progress}
-                                      onChange={(e) => handleProgressChange(task.id, parseInt(e.target.value))}
-                                      className="absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer"
-                                    />
-                                  </div>
-                                  <span className=" text-blue-500 w-16 text-center">{task.progress}%</span>
-                                </div>
-                              </div>
-                            </div>
-
-                            <div className="flex justify-end">
-                              <button onClick={() => { completeTask(task?.id) }} className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-lg hover:from-green-600 hover:to-emerald-700 shadow-md hover:shadow-lg transition-all duration-200">
-                                <CheckCircle className="w-4 h-4" />
-                                <span className="font-medium">Complete Task</span>
-                              </button>
-                            </div>
+                  ) : tasks.map((task: any) => (
+                    <React.Fragment key={task.id}>
+                      <tr className="border-b border-gray-100 hover:bg-gray-50">
+                        <td className="p-2">
+                          <span className="font-medium text-gray-800">{task?.refId}</span>
+                        </td>
+                        <td className="p-2">
+                          <span className="font-medium text-gray-800">{task?.title}</span>
+                        </td>
+                        <td className="p-2 text-gray-600">{task.Project?.name}</td>
+                        <td className="p-2">
+                          <div className="flex items-center gap-2">
+                            {getStatusIcon(task.status)}
+                            <span className="text-gray-600">{task.status}</span>
                           </div>
                         </td>
+                        <td className="p-2">
+                          <span className={`p-1 rounded-full text-xs ${getPriorityColor(task.priority)}`}>
+                            {task.priority}
+                          </span>
+                        </td>
+                        <td className="p-2 text-gray-600">{new Date(task.dueDate).toLocaleDateString()}</td>
+                        <td className="p-2">
+                          <div className="flex items-center gap-2">
+                            <div className="rounded-lg bg-blue-100 flex items-center justify-center p-1">
+                              <span className="text-blue-600">{task?.Assignee?.name.split(" ")[0]}</span>
+                            </div>
+                            <span className="text-gray-600">{task.assignee}</span>
+                          </div>
+                        </td>
+                        <td className="p-2">
+                          <div className="flex items-center gap-2">
+                            <div className="w-24 bg-gray-200 rounded-full h-2">
+                              <div
+                                className="bg-blue-500 h-2 rounded-full"
+                                style={{ width: `${task.progress}%` }}
+                              />
+                            </div>
+                            <span className="text-sm text-gray-600">{task.progress}%</span>
+                          </div>
+                        </td>
+                        <td className="p-2">
+                          <button
+                            onClick={() => { completeTask(task?.id) }}
+                            className="p-2 text-green-400 hover:bg-green-500 rounded-lg transition-colors"
+                            title="Show Details"
+                          >
+                            <CheckCircle className="w-5 h-5" />
+                          </button>
+                          <button
+                            onClick={() => toggleTaskExpanded(task.id)}
+                            className="p-2 text-gray-400 hover:bg-gray-50 rounded-lg transition-colors"
+                            title="Show Details"
+                          >
+                            {task.expanded ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+                          </button>
+                        </td>
                       </tr>
-                    )}
-                  </React.Fragment>
-                ))}
-              </tbody>
-            </table>
+                      {task.expanded && (
+                        <tr className="bg-gradient-to-br from-slate-50 to-white">
+                          <td colSpan={8} className="p-2">
+                            <div className="space-y-4">
+                              {/* Description Section */}
+                              <div className="bg-white p-3 rounded-xl shadow-sm border border-slate-100">
+                                <h4 className="text-slate-800 mb-2 flex items-center gap-2">
+                                  <FileText className="w-5 h-5 text-blue-500" />
+                                  Description
+                                </h4>
+                                <p className="text-slate-600 leading-relaxed">{task.description}</p>
+                              </div>
+
+                              <div className="grid grid-cols-2 gap-4">
+                                {/* Status Update Section */}
+                                <div className="bg-white p-3 rounded-xl shadow-sm border border-slate-100">
+                                  <h4 className=" text-slate-800 mb-2 flex items-center gap-2">
+                                    <Clock className="w-5 h-5 text-amber-500" />
+                                    Update Status
+                                  </h4>
+                                  <select
+                                    value={task.status}
+                                    onChange={(e) => handleStatusChange(task.id, e.target.value)}
+                                    className="w-full p-2 rounded-lg border border-slate-200 text-slate-600 focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition-all duration-200"
+                                  >
+                                    <option value="Pending">Pending</option>
+                                    <option value="In Progress">In Progress</option>
+                                    <option value="Completed">Completed</option>
+                                  </select>
+                                </div>
+
+                                {/* Progress Update Section */}
+                                <div className="bg-white p-3 rounded-xl shadow-sm border border-slate-100">
+                                  <h4 className=" text-slate-800 mb-2 flex items-center gap-2">
+                                    <ChartBar className="w-5 h-5 text-green-500" />
+                                    Update Progress
+                                  </h4>
+                                  <div className="flex items-center gap-3">
+                                    <div className="flex-1 h-2 bg-slate-200 rounded-lg relative">
+                                      <div
+                                        className="absolute top-0 left-0 h-full bg-blue-500 rounded-lg"
+                                        style={{ width: `${task.progress}%` }}
+                                      />
+                                      <input
+                                        type="range"
+                                        value={task.progress}
+                                        onChange={(e) => handleProgressChange(task.id, parseInt(e.target.value))}
+                                        className="absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer"
+                                      />
+                                    </div>
+                                    <span className=" text-blue-500 w-16 text-center">{task.progress}%</span>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div className="flex justify-end">
+                                <button onClick={() => { completeTask(task?.id) }} className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-lg hover:from-green-600 hover:to-emerald-700 shadow-md hover:shadow-lg transition-all duration-200">
+                                  <CheckCircle className="w-4 h-4" />
+                                  <span className="font-medium">Complete Task</span>
+                                </button>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                    </React.Fragment>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            
+            {/* For mobile */}
+            <div className="md:hidden">
+              {tasks.map((task: any) => (
+                <div key={task.id} className="p-4 border-b border-gray-100">
+                  <div className="flex justify-between items-start mb-2">
+                    <span className="font-medium text-gray-800">{task?.refId}</span>
+                    <div className={`p-1 rounded-full text-xs ${getPriorityColor(task.priority)}`}>
+                      {task.priority}
+                    </div>
+                  </div>
+                  <h3 className="font-medium text-gray-800 mb-2">{task?.title}</h3>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex items-center gap-2">
+                      <span className="text-gray-500">Project:</span>
+                      <span>{task.Project?.name}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-gray-500">Status:</span>
+                      <div className="flex items-center gap-1">
+                        {getStatusIcon(task.status)}
+                        <span>{task.status}</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-gray-500">Due:</span>
+                      <span>{new Date(task.dueDate).toLocaleDateString()}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-gray-500">Progress:</span>
+                      <div className="flex items-center gap-2 flex-1">
+                        <div className="w-full bg-gray-200 rounded-full h-2">
+                          <div
+                            className="bg-blue-500 h-2 rounded-full"
+                            style={{ width: `${task.progress}%` }}
+                          />
+                        </div>
+                        <span className="text-gray-600 min-w-[40px]">{task.progress}%</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>

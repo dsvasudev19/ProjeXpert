@@ -57,72 +57,76 @@ const Transactions = () => {
         ) : (
           <div className="bg-white shadow-md rounded-lg overflow-hidden">
             <div className="overflow-x-auto custom-scrollbar h-[82vh]">
-              <table className="w-full text-sm">
-                <thead className="bg-gray-100 sticky top-0 z-10">
-                  <tr>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Transaction ID</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User ID</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order ID</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payment Type</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Currency</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payment ID</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type ID</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {transactions?.map((transaction: any, index: any) => (
-                    <tr className="bg-white border-b" key={index}>
-                      <th
-                        scope="row"
-                        className="px-4 py-2 text-left text-xs font-medium text-gray-900 uppercase tracking-wider"
-                      >
-                        {transaction?.id}
-                      </th>
-                      <td className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        {transaction?.userId}
-                      </td>
-                      <td className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        {transaction?.orderId}
-                      </td>
-                      <td className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        {transaction?.paytment_type}
-                      </td>
-                      <td className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        {transaction?.status}
-                      </td>
-                      <td className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        {transaction?.currency}
-                      </td>
-                      <td className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        {transaction?.paymentId}
-                      </td>
-                      <td className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        {transaction?.amount}
-                      </td>
-                      <td className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        {transaction?.typeId}
-                      </td>
-                      <td className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        {transaction?.type}
-                      </td>
-                      <td className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider flex justify-end">
-                        <a
-                          onClick={() => {
-                            deleteTransaction(transaction?.id);
-                          }}
-                          className="cursor-pointer text-green-600 hover:text-blue-800 transition-colors"
-                        >
-                          <Trash2 className="w-5 h-5" />
-                        </a>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              <div className="overflow-x-auto">
+                <div className="min-w-[1000px]">
+                  <table className="w-full text-sm">
+                    <thead className="bg-gray-100 sticky top-0 z-10">
+                      <tr>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Transaction ID</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User ID</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order ID</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payment Type</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Currency</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payment ID</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type ID</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {transactions?.map((transaction: any, index: any) => (
+                        <tr className="bg-white border-b" key={index}>
+                          <th
+                            scope="row"
+                            className="px-4 py-2 text-left text-xs font-medium text-gray-900 uppercase tracking-wider"
+                          >
+                            {transaction?.id}
+                          </th>
+                          <td className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            {transaction?.userId}
+                          </td>
+                          <td className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            {transaction?.orderId}
+                          </td>
+                          <td className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            {transaction?.paytment_type}
+                          </td>
+                          <td className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            {transaction?.status}
+                          </td>
+                          <td className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            {transaction?.currency}
+                          </td>
+                          <td className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            {transaction?.paymentId}
+                          </td>
+                          <td className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            {transaction?.amount}
+                          </td>
+                          <td className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            {transaction?.typeId}
+                          </td>
+                          <td className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            {transaction?.type}
+                          </td>
+                          <td className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider flex justify-end">
+                            <a
+                              onClick={() => {
+                                deleteTransaction(transaction?.id);
+                              }}
+                              className="cursor-pointer text-green-600 hover:text-blue-800 transition-colors"
+                            >
+                              <Trash2 className="w-5 h-5" />
+                            </a>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
               <div className="flex justify-between items-center p-2 absolute bottom-0 w-full pl-1 pr-1 pb-1">
                 <button
                   onClick={() => setCurrentPage((prev: any) => prev - 1)}
