@@ -19,6 +19,7 @@ import UnauthorizedAccess from "./../components/UnauthorizedAccess";
 import ClientOrDeveloper from "../pages/ClientOrDeveloper";
 import RolesAndPermissions from "../pages/RolesAndPermissions";
 import EmailTemplateShowcase from "../components/EmailTemplates";
+import GithubCallback from '../pages/auth/GithubCallback';
 
 
 
@@ -46,7 +47,7 @@ const AppRoutes = () => {
           <Route path="register" element={<SignUpPage />} />
           <Route path="forgot-password" element={<ForgotPassword />} />
           <Route path="reset-password" element={<ResetPassword />} />
-
+          <Route path="github/callback" element={<GithubCallback />} />
           <Route path="*" element={<NotFound />} />
         </Route>
         <Route path="/" element={<Navigate to="/auth/login" />} />

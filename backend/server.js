@@ -7,6 +7,7 @@ const path=require("path")
 const adminRoutes=require("./src/routes/adminRoutes")
 const routes=require("./src/routes")
 const cookieParser = require('cookie-parser');
+const passport = require('passport');
 
 const app = express()
 
@@ -28,6 +29,7 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use(passport.initialize());
 
 
 

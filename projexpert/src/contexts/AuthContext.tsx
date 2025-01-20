@@ -25,7 +25,7 @@ export const AuthProvider = ({ children }: any) => {
     try {
       const token = localStorage.getItem("__auth");
       if (!token) {
-        setLoading(false); // Reset loading if no token is present
+        setLoading(false); 
         return;
       }
 
@@ -61,7 +61,8 @@ export const AuthProvider = ({ children }: any) => {
     user,
     logout,
     login,
-  }), [loading, user, logout, login]);
+    setUser,
+  }), [loading, user, logout, login, setUser]);
 
   return (
     <AuthContext.Provider value={contextValue}>

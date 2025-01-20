@@ -4,6 +4,8 @@ const { User, Role, RefreshToken } = require('../models'); // Adjust the path ba
 const { Op, where } = require('sequelize');
 const crypto = require("crypto")
 const {registrationSuccess,sendEmail} = require("../utils/nodeMailer")
+const passport = require('passport');
+const GitHubStrategy = require('passport-github2').Strategy;
 
 const register = async (req, res) => {
     try {
@@ -148,10 +150,138 @@ const generateAccessTokenBasedOnRefreshToken = async (req, res, next) => {
     }
 }
 
+// Configure GitHub Strategy
+passport.use(new GitHubStrategy({
+    clientID: process.env.GITHUB_CLIENT_ID,
+    clientSecret: process.env.GITHUB_CLIENT_SECRET,
+    callbackURL: "/api/v1/auth/github/callback",
+    scope: ['user:email']  // Add this line to request email access
+  },
+  async function(accessToken, refreshToken, profile, done) {
+    try {
+      console.log("GitHub profile:", profile); // For debugging
+      
+      // Find or create user
+      let user = await User.findOne({ 
+        where: { 
+          githubId: profile.id 
+        }
+      });
+
+      if (!user) {
+        // Get primary email from GitHub profile
+        const primaryEmail = profile.emails?.find(email => email.primary)?.value 
+          || profile.emails?.[0]?.value;
+        
+        if (!primaryEmail) {
+          console.error('No email found in GitHub profile:', profile);
+          return done(new Error('No email found in GitHub profile. Please ensure your GitHub email is public or grant email access.'));
+        }
+
+        // Check if user exists with this email
+        user = await User.findOne({ where: { email: primaryEmail } });
+
+        if (user) {
+          // Update existing user with GitHub ID
+          user.githubId = profile.id;
+          await user.save();
+        } else {
+          // Create new user
+          const clientRole = await Role.findOne({ where: { name: 'client' } });
+          
+          if (!clientRole) {
+            return done(new Error('Client role not found'));
+          }
+
+          user = await User.create({
+            name: profile.displayName || profile.username,
+            email: primaryEmail,
+            githubId: profile.id,
+            status: 'active',
+            lastLogin: new Date()
+          });
+
+          await user.addRole(clientRole);
+        }
+      }
+
+      return done(null, user);
+    } catch (error) {
+      console.error('GitHub strategy error:', error);
+      return done(error);
+    }
+  }
+));
+
+// GitHub callback handler
+const githubCallback = async (req, res, next) => {
+  passport.authenticate('github', async (err, user) => {
+    try {
+      if (err) {
+        console.error('GitHub auth error:', err);
+        return res.redirect(`${process.env.FRONTEND_URL}/auth/login?error=${encodeURIComponent(err.message)}`);
+      }
+      
+      if (!user) {
+        return res.redirect(`${process.env.FRONTEND_URL}/auth/login?error=GitHub authentication failed`);
+      }
+
+      // Generate JWT token
+      const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+      // Create refresh token
+      await RefreshToken.destroy({ where: { userId: user.id } });
+      const refreshToken = await RefreshToken.create({
+        userId: user.id,
+        expiryDate: new Date(Date.now() + 30 * 60 * 1000),
+        token: crypto.randomBytes(6).toString("hex").toUpperCase()
+      });
+
+      // Update last login
+      user.lastLogin = new Date();
+      await user.save();
+
+      // Set cookies
+      res.cookie('token', token, { 
+        httpOnly: process.env.NODE_ENV === 'production', 
+        secure: process.env.NODE_ENV === 'production', 
+        maxAge: 15 * 60 * 1000,  // 15 minutes
+        sameSite: 'lax'
+      });
+      
+      res.cookie('refreshToken', refreshToken.token, { 
+        httpOnly: process.env.NODE_ENV === 'production', 
+        secure: process.env.NODE_ENV === 'production', 
+        maxAge: 30 * 60 * 1000,  // 30 minutes
+        sameSite: 'lax'
+      });
+
+      // Redirect to frontend with tokens in URL parameters
+      const redirectUrl = new URL(`${process.env.FRONTEND_URL}/auth/github/callback`);
+      redirectUrl.searchParams.append('token', token);
+      redirectUrl.searchParams.append('refreshToken', refreshToken.token);
+      
+      // Include basic user info in the redirect
+      const userInfo = {
+        name: user.name,
+        email: user.email,
+        lastLogin: user.lastLogin
+      };
+      redirectUrl.searchParams.append('user', encodeURIComponent(JSON.stringify(userInfo)));
+      
+      res.redirect(redirectUrl.toString());
+    } catch (error) {
+      console.error('GitHub callback error:', error);
+      res.redirect(`${process.env.FRONTEND_URL}/auth/login?error=Server error`);
+    }
+  })(req, res, next);
+};
+
 module.exports = {
     register,
     login,
     logout,
     getUserByToken,
-    generateAccessTokenBasedOnRefreshToken
+    generateAccessTokenBasedOnRefreshToken,
+    githubCallback
 }

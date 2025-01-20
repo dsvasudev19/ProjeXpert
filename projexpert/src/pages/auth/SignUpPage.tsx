@@ -1,4 +1,4 @@
-import { Mail, Lock, User, ArrowRight, Briefcase, Shield, Sparkles } from "lucide-react";
+import { Mail, Lock, User, ArrowRight, Briefcase, Shield, Sparkles, Github } from "lucide-react";
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import toast from "react-hot-toast";
@@ -43,6 +43,10 @@ const SignUpPage = () => {
         id:registerToast
       });
     }
+  };
+
+  const handleGithubSignup = () => {
+    window.location.href = `${import.meta.env.VITE_APP_API_URL}/api/v1/auth/github`;
   };
 
   return (
@@ -93,6 +97,24 @@ const SignUpPage = () => {
               Start Your Journey
             </h1>
             <p className="text-gray-600">Create your account to experience better project management</p>
+          </div>
+
+          <button
+            onClick={handleGithubSignup}
+            type="button"
+            className="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-all duration-200 font-medium mb-6"
+          >
+            <Github className="mr-2 h-5 w-5" />
+            Continue with GitHub
+          </button>
+
+          <div className="relative mb-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-300"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-white text-gray-500">Or continue with email</span>
+            </div>
           </div>
 
           <Formik
