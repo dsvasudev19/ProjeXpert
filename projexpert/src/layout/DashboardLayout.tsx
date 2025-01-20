@@ -1,3 +1,5 @@
+
+
 import { useEffect, useState } from 'react';
 import { Home, LogOut, ChevronLeft, ChevronRight, UserCog, BadgeIndianRupee, Search, Settings, HelpCircle, AlertCircle, Clock, CheckCircle2, FolderGit2, CalendarCheck2, FileCog, SquareKanban } from 'lucide-react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
@@ -123,8 +125,7 @@ const DashboardLayout = () => {
 
             {/* Sidebar */}
             <aside className={`fixed top-14 left-0 bottom-0 z-40 transition-all duration-500 ease-out 
-                ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
-                ${sidebarOpen ? 'w-72' : 'w-20'} lg:relative lg:top-0`}>
+                ${sidebarOpen ? 'w-72' : 'w-20'}`}>
                 <div className="h-full bg-white/80 backdrop-blur-xl shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] border-r border-slate-200/70">
                     <div className="relative h-full flex flex-col">
                         <button

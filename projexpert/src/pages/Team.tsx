@@ -66,7 +66,7 @@ const Team = () => {
           </button>
         </div>
         {
-          showAddTeamModal && <AddTeam isOpen={showAddTeamModal} onClose={() => { setShowAddTeamModal(false) }} getTeams={() => { }} />
+          showAddTeamModal && <AddTeam isOpen={showAddTeamModal} onClose={() => { setShowAddTeamModal(false) }} getTeams={getAllTeams} />
         }
         {
           isModalOpen && <AllocateMemberToTeam 
