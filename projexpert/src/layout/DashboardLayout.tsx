@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Home, LogOut, ChevronLeft, ChevronRight, UserCog, BadgeIndianRupee, Search, Settings, HelpCircle, AlertCircle, Clock, CheckCircle2, FolderGit2, CalendarCheck2, FileCog, SquareKanban, Menu } from 'lucide-react';
+import { Home, LogOut, ChevronLeft, ChevronRight, UserCog, BadgeIndianRupee, Search, Settings, HelpCircle, AlertCircle, Clock, CheckCircle2, FolderGit2, CalendarCheck2, FileCog, SquareKanban } from 'lucide-react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import NotificationPopup from '../modals/NotificationDialog';
 import { useAuth } from '../contexts/AuthContext';
