@@ -1,4 +1,4 @@
-import { useEffect, useContext } from 'react';
+import { useEffect} from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
@@ -16,6 +16,7 @@ const GithubCallback = () => {
     const error = searchParams.get('error');
 
     const validateAndSetUser = async (authToken: string) => {
+      console.log(authToken)
       try {
         // Assuming your API endpoint for getting user data
         const response = await axiosInstance.get(`/auth/user/token`);
