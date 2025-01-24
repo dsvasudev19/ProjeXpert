@@ -100,6 +100,7 @@ const registrationSuccess = (user) => `
 </html>`;
 
 const sendEmail = async (to, subject, html) => {
+    console.log(to,subject,html)
     try {
         const info = await transporter.sendMail({
             from: '"Vasudev DS" <vasudevds1729@gmail.com>',

@@ -235,7 +235,7 @@ const Tasks = () => {
                       </tr>
                       {task.expanded && (
                         <tr className="bg-gradient-to-br from-slate-50 to-white">
-                          <td colSpan={8} className="p-2">
+                          <td colSpan={9} className="p-2">
                             <div className="space-y-4">
                               {/* Description Section */}
                               <div className="bg-white p-3 rounded-xl shadow-sm border border-slate-100">

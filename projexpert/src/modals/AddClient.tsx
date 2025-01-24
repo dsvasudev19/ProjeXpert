@@ -10,20 +10,22 @@ const AddClient = ({ isOpen, onClose, getClients }: { isOpen: boolean; onClose: 
     const initialValues = { name: "", email: "", roleId: "" };
     const [loading, setLoading] = useState(false);
 
-    const handleSubmit = async (values: typeof initialValues) => {
+    const handleSubmit = async (values: typeof initialValues,{resetForm}:any) => {
         try {
-            setLoading(false)
+            setLoading(true)
             const res = await axiosInstance.post("/admin/client", values)
             if (res.status === 201) {
                 toast.success("Client Onboarded Successfully")
                 getClients()
                 onClose();
+                
             }
-
-        } catch (error) {
+        } catch (error:any) {
             console.log(error)
+            toast.error(error.message)
         } finally {
-            setLoading(true)
+            setLoading(false)
+            resetForm()
         }
     };
 

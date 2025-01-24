@@ -38,8 +38,9 @@ const AddProject = ({ isModalOpen, closeModal, getProjects }: any) => {
           if(res.status===200){
             setClients(res.data.data)
           }
-        } catch (error) {
-          
+        } catch (error:any) {
+            console.log(error)
+            toast.error(error.response.data.message)
         }
       }
 
@@ -55,8 +56,9 @@ const AddProject = ({ isModalOpen, closeModal, getProjects }: any) => {
             console.log(values)
 
             // closeModal();
-        } catch (error) {
-            console.error('Error adding project:', error);
+        } catch (error:any) {
+            console.log(error)
+            toast.error(error.response.data.message)
         }
     };
 

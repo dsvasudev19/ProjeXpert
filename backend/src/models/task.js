@@ -50,7 +50,8 @@ module.exports = (sequelize, DataTypes) => {
     projectId: DataTypes.INTEGER,
     bugId: DataTypes.INTEGER,
     parentTaskId: {type:DataTypes.INTEGER,allowNull: true },
-    progress: DataTypes.INTEGER
+    progress: DataTypes.INTEGER,
+    createdBy:DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'Task',

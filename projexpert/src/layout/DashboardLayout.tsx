@@ -23,7 +23,7 @@ const DashboardLayout = () => {
         { icon: CalendarCheck2, label: 'Tasks', href: '/dashboard/task' },
         { icon: FileCog, label: 'Files', href: '/dashboard/files' },
         { icon: SquareKanban, label: 'Kanban', href: '/dashboard/kanban' },
-        { icon: BadgeIndianRupee, label: 'Payment', href: '/dashboard/payment' },
+        // { icon: BadgeIndianRupee, label: 'Payment', href: '/dashboard/payment' },
         { icon: UserCog, label: 'Team', href: '/dashboard/team' },
         { icon: UserCog, label: 'Client', href: '/dashboard/client' },
     ];
@@ -58,7 +58,7 @@ const DashboardLayout = () => {
             <nav className="fixed top-0 left-0 right-0 z-50 h-14 bg-white/80 backdrop-blur-xl shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] border-b border-slate-200/70">
                 <div className="px-3 h-full flex justify-between items-center">
                     {/* Logo */}
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-4 cur">
                         <div className="relative group">
                             <div className="absolute -inset-1 bg-gradient-to-r from-green-300 to-blue-300 rounded-lg blur opacity-25 group-hover:opacity-75 transition duration-1000 group-hover:duration-200"></div>
                             <span className="relative text-3xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent group-hover:bg-gradient-to-l">
@@ -145,7 +145,7 @@ const DashboardLayout = () => {
                                     <Link
                                         to={item.href}
                                         key={index}
-                                        className={`flex items-center px-3 py-2.5 rounded-xl transition-all duration-300 group relative
+                                        className={`flex items-center px-3 py-2.5 rounded transition-all duration-300 group relative
                                             ${activeItem === item.href
                                                 ? 'bg-gradient-to-r from-green-500 to-blue-600 shadow-lg shadow-blue-200/50'
                                                 : 'hover:bg-gradient-to-r from-green-50 to-blue-50'

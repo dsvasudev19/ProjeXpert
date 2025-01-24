@@ -13,7 +13,7 @@ const taskValidationSchema = Yup.object({
     dueDate: Yup.date().required("Due date is required"),
     assigneeId: Yup.string().required("Assignee is required"),
     projectId: Yup.string().required("Project is required"),
-    parentTaskId: Yup.string().optional(), // Optional field
+    parentTaskId: Yup.string().optional(), 
     progress: Yup.number().min(0, "Progress must be at least 0").max(100, "Progress cannot exceed 100").required("Progress is required")
 });
 
@@ -209,7 +209,7 @@ const AddTask = ({ showAddModal, closeModal, getTasks, proId }: { showAddModal: 
                                         </button>
                                         <button
                                             type="submit"
-                                            className="px-4 py-2 bg-blue-300 text-white rounded-lg hover:bg-blue-400"
+                                            className={`px-4 py-2 ${isSubmitting ? "bg-blue-400" : "bg-blue-600"} text-white rounded-lg hover:bg-blue-700`}
                                             disabled={isSubmitting}
                                         >
                                             {isSubmitting ? "Adding..." : "Add Task"}

@@ -3,7 +3,8 @@ const bcrypt = require('bcrypt');
 const { Op } = require('sequelize');
 const crypto = require("crypto")
 
-
+const {sendEmail}=require("./../../utils/nodeMailer")
+const {registrationSuccess}=require("./../../helpers/emailTemplates")
 
 // Get all users
 const getAllUsers = async (req, res) => {
@@ -69,6 +70,13 @@ const createUser = async (req, res) => {
             const roleInstances = await Role.findByPk(roleId);
             await newUser.setRoles(roleInstances);
         }
+        const verificationLink = `${process.env.FRONTEND_URL}/verify-email?token=${newUser.id}`
+        const emailData = {
+            to: newUser.email,
+            subject: "Welcome to Projexpert!",
+            html: registrationSuccess({...newUser,verificationLink,tempPassword})
+        }
+        await sendEmail(emailData.to,emailData.subject,emailData.html)
 
         return res.status(201).json({ message: 'User created successfully.', newUser });
     } catch (error) {

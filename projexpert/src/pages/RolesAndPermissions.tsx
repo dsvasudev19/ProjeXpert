@@ -152,143 +152,220 @@ const RolesAndPermissions: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 p-8" style={{minHeight: '100vh'}}>
+        <div className="flex flex-col h-screen bg-gray-50">
             {/* Header */}
-            <div className="max-w-7xl mx-auto mb-8">
-                <div className="flex justify-between items-center">
-                    <div className="flex items-center gap-4">
-                        {selectedRole && (
+            <div className="flex-none p-8">
+                <div className="max-w-7xl mx-auto">
+                    <div className="flex justify-between items-center">
+                        <div className="flex items-center gap-4">
+                            {selectedRole && (
+                                <button 
+                                    onClick={() => setSelectedRole(null)}
+                                    className="p-2 hover:bg-gray-100 rounded-lg"
+                                >
+                                    <ArrowLeft size={24} />
+                                </button>
+                            )}
+                            <h1 className="text-3xl font-bold text-gray-800">
+                                {selectedRole ? selectedRole.name : 'Roles & Permissions'}
+                            </h1>
+                        </div>
+                        <div className="flex gap-4">
                             <button 
-                                onClick={() => setSelectedRole(null)}
-                                className="p-2 hover:bg-gray-100 rounded-lg"
+                                onClick={() => setShowPermissionModal(true)}
+                                className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all"
                             >
-                                <ArrowLeft size={24} />
+                                <Plus size={20} />
+                                Add Permission
                             </button>
-                        )}
-                        <h1 className="text-3xl font-bold text-gray-800">
-                            {selectedRole ? selectedRole.name : 'Roles & Permissions'}
-                        </h1>
-                    </div>
-                    <div className="flex gap-4">
-                        <button 
-                            onClick={() => setShowPermissionModal(true)}
-                            className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all"
-                        >
-                            <Plus size={20} />
-                            Add Permission
-                        </button>
-                        <button 
-                            onClick={() => setShowRoleModal(true)}
-                            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all"
-                        >
-                            <Plus size={20} />
-                            Add Role
-                        </button>
+                            <button 
+                                onClick={() => setShowRoleModal(true)}
+                                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all"
+                            >
+                                <Plus size={20} />
+                                Add Role
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            {/* Main Content */}
-            <div className="max-w-7xl mx-auto">
-                {!selectedRole ? (
-                    // Roles Grid
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {roles.map(role => (
-                            <div 
-                                key={role.id} 
-                                className={`rounded-xl shadow-sm border ${role.color} hover:shadow-md transition-all`}
-                            >
-                                <div className="p-6">
-                                    <div className="flex justify-between items-start mb-4">
-                                        <div>
-                                            <h3 className="text-xl font-semibold text-gray-800 mb-1">{role.name}</h3>
-                                            <p className="text-sm text-gray-600">{role.description}</p>
+            {/* Main Content - Scrollable */}
+            <div className="flex-1 overflow-auto px-8">
+                <div className="max-w-7xl mx-auto mb-24">
+                    {!selectedRole ? (
+                        // Roles Grid
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                            {roles.map(role => (
+                                <div 
+                                    key={role.id} 
+                                    className={`rounded-xl shadow-sm border ${role.color} hover:shadow-md transition-all`}
+                                >
+                                    <div className="p-6">
+                                        <div className="flex justify-between items-start mb-4">
+                                            <div>
+                                                <h3 className="text-xl font-semibold text-gray-800 mb-1">{role.name}</h3>
+                                                <p className="text-sm text-gray-600">{role.description}</p>
+                                            </div>
+                                            <div className="flex gap-2">
+                                                <button 
+                                                    onClick={() => handleEditRole(role)}
+                                                    className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                                >
+                                                    <Edit2 size={18} />
+                                                </button>
+                                                <button 
+                                                    onClick={() => handleDeleteRole(role.id)}
+                                                    className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                                >
+                                                    <Trash2 size={18} />
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div className="flex justify-between items-center">
+                                            <div className="text-sm text-gray-600">
+                                                {role.permissions.length} Permission{role.permissions.length !== 1 ? 's' : ''}
+                                            </div>
+                                            <button 
+                                                onClick={() => setSelectedRole(role)}
+                                                className="px-4 py-2 text-sm font-medium text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                            >
+                                                View Details
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        // Enhanced Role Details with Permissions
+                        <div className="space-y-6 mb-8">
+                            {/* Role Header Card */}
+                            <div className={`rounded-xl shadow-lg border ${selectedRole.color} overflow-hidden`}>
+                                <div className="bg-white/95 backdrop-blur-sm p-6">
+                                    <div className="flex justify-between items-start">
+                                        <div className="space-y-3">
+                                            <div className="space-y-1">
+                                                <h2 className="text-2xl font-bold text-gray-800">{selectedRole.name}</h2>
+                                                <p className="text-gray-600">{selectedRole.description}</p>
+                                            </div>
+                                            <div className="flex items-center gap-4">
+                                                <div className="flex items-center gap-2 bg-blue-50 text-blue-700 px-3 py-1.5 rounded-full">
+                                                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                                    </svg>
+                                                    <span className="text-sm font-medium">{selectedRole.permissions.length} Permissions</span>
+                                                </div>
+                                                <div className={`flex items-center gap-2 ${selectedRole.isActive ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'} px-3 py-1.5 rounded-full`}>
+                                                    <div className={`w-2 h-2 rounded-full ${selectedRole.isActive ? 'bg-green-500' : 'bg-red-500'}`}></div>
+                                                    <span className="text-sm font-medium">{selectedRole.isActive ? 'Active' : 'Inactive'}</span>
+                                                </div>
+                                            </div>
                                         </div>
                                         <div className="flex gap-2">
                                             <button 
-                                                onClick={() => handleEditRole(role)}
+                                                onClick={() => handleEditRole(selectedRole)}
                                                 className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                                             >
                                                 <Edit2 size={18} />
                                             </button>
                                             <button 
-                                                onClick={() => handleDeleteRole(role.id)}
+                                                onClick={() => handleDeleteRole(selectedRole.id)}
                                                 className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                                             >
                                                 <Trash2 size={18} />
                                             </button>
                                         </div>
                                     </div>
-                                    <div className="flex justify-between items-center">
-                                        <div className="text-sm text-gray-600">
-                                            {role.permissions.length} Permission{role.permissions.length !== 1 ? 's' : ''}
-                                        </div>
-                                        <button 
-                                            onClick={() => setSelectedRole(role)}
-                                            className="px-4 py-2 text-sm font-medium text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                                        >
-                                            View Details
-                                        </button>
-                                    </div>
                                 </div>
                             </div>
-                        ))}
-                    </div>
-                ) : (
-                    // Role Details with Permissions
-                    <div className={`rounded-xl shadow-lg border ${selectedRole.color} p-6`}>
-                        <div className="mb-6 bg-white/60 backdrop-blur-sm rounded-xl p-4">
-                            <h2 className="text-xl font-bold text-gray-800 mb-2">{selectedRole.name}</h2>
-                            <p className="text-sm text-gray-600 mb-3">{selectedRole.description}</p>
-                            <div className="inline-flex items-center gap-2 text-xs">
-                                <span className="text-gray-500">Total Permissions:</span>
-                                <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-medium">{selectedRole.permissions.length}</span>
+
+                            {/* Permissions Section */}
+                            <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6 mb-8">
+                                <h3 className="text-lg font-semibold text-gray-800 mb-6">Permission Access</h3>
+                                <div className="space-y-8">
+                                    {Object.entries(permissions.reduce((acc: {[key: string]: Permission[]}, curr) => {
+                                        if (selectedRole.permissions.includes(curr.name)) {
+                                            const category = curr.category || 'Other';
+                                            if (!acc[category]) {
+                                                acc[category] = [];
+                                            }
+                                            acc[category].push(curr);
+                                        }
+                                        return acc;
+                                    }, {})).map(([category, perms]) => {
+                                        const categoryIcons: {[key: string]: JSX.Element} = {
+                                            'User Management': <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>,
+                                            'Project Management': <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" /></svg>,
+                                            'Team Management': <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>,
+                                            'Task Management': <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" /></svg>,
+                                        };
+                                        
+                                        const categoryStyles: {[key: string]: string} = {
+                                            'User Management': 'bg-purple-100 text-purple-800 group-hover:bg-purple-200',
+                                            'Project Management': 'bg-blue-100 text-blue-800 group-hover:bg-blue-200',
+                                            'Team Management': 'bg-green-100 text-green-800 group-hover:bg-green-200',
+                                            'Task Management': 'bg-amber-100 text-amber-800 group-hover:bg-amber-200',
+                                            'Bug Management': 'bg-red-100 text-red-800 group-hover:bg-red-200',
+                                            'File Management': 'bg-indigo-100 text-indigo-800 group-hover:bg-indigo-200',
+                                            'Payment Management': 'bg-pink-100 text-pink-800 group-hover:bg-pink-200'
+                                        };
+                                        
+                                        return (
+                                            <div key={category} className="bg-gray-50 rounded-xl p-4">
+                                                <div className="flex items-center gap-3 mb-4">
+                                                    <div className={`p-2 rounded-lg ${categoryStyles[category] || 'bg-gray-100'}`}>
+                                                        {categoryIcons[category]}
+                                                    </div>
+                                                    <h4 className="text-sm font-semibold text-gray-700">{category}</h4>
+                                                    <span className="text-xs text-gray-500">({perms.length})</span>
+                                                </div>
+                                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                                                    {perms.map((permission) => (
+                                                        <div
+                                                            key={permission.name}
+                                                            className="inline-flex items-center bg-white border border-gray-100 rounded-lg shadow-sm p-1 hover:shadow-md transition-all duration-200 group"
+                                                        >
+                                                            {/* Permission Name Badge */}
+                                                            <div 
+                                                                className="flex items-center space-x-2 px-3 py-1.5 rounded-l-lg bg-blue-100 group-hover:bg-blue-200 transition-colors"
+                                                            >
+                                                                <span className="flex items-center gap-1.5">
+                                                                    <svg className="w-4 h-4 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                                                    </svg>
+                                                                    <span className="text-xs font-medium text-blue-800">
+                                                                        {permission.name.split('_').map(word => 
+                                                                            word.charAt(0).toUpperCase() + word.slice(1)
+                                                                        ).join(' ')}
+                                                                    </span>
+                                                                </span>
+                                                            </div>
+
+                                                            {/* Description Badge */}
+                                                            <div 
+                                                                className="flex items-center space-x-2 px-3 py-1.5 rounded-r-lg bg-gray-100 group-hover:bg-gray-200 transition-colors"
+                                                            >
+                                                                <span className="flex items-center gap-1.5">
+                                                                    <svg className="w-4 h-4 text-gray-600" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                                    </svg>
+                                                                    <span className="text-xs font-medium text-gray-800">
+                                                                        {permission.description}
+                                                                    </span>
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
                             </div>
                         </div>
-
-                        <div className="space-y-6">
-                            {Object.entries(permissions.reduce((acc: {[key: string]: Permission[]}, curr) => {
-                                if (selectedRole.permissions.includes(curr.name)) {
-                                    const category = curr.category || 'Other';
-                                    if (!acc[category]) {
-                                        acc[category] = [];
-                                    }
-                                    acc[category].push(curr);
-                                }
-                                return acc;
-                            }, {})).map(([category, perms]) => {
-                                const categoryStyles: {[key: string]: {bg: string, text: string}} = {
-                                    'User Management': {bg: 'bg-purple-100', text: 'text-purple-700'},
-                                    'Project Management': {bg: 'bg-blue-100', text: 'text-blue-700'},
-                                    'Team Management': {bg: 'bg-green-100', text: 'text-green-700'},
-                                    'Task Management': {bg: 'bg-amber-100', text: 'text-amber-700'},
-                                    'Bug Management': {bg: 'bg-red-100', text: 'text-red-700'},
-                                    'File Management': {bg: 'bg-indigo-100', text: 'text-indigo-700'},
-                                    'Payment Management': {bg: 'bg-pink-100', text: 'text-pink-700'}
-                                };
-                                
-                                const style = categoryStyles[category] || {bg: 'bg-gray-100', text: 'text-gray-700'};
-                                
-                                return (
-                                    <div key={category}>
-                                        <h3 className="text-sm font-medium text-gray-700 mb-3">{category}</h3>
-                                        <div className="flex flex-wrap gap-2">
-                                            {perms.map((permission) => (
-                                                <span
-                                                    key={permission.name}
-                                                    className={`px-3 py-1 rounded-full text-xs font-medium ${style.bg} ${style.text} cursor-default hover:shadow-sm transition-shadow duration-200`}
-                                                    title={permission.description}
-                                                >
-                                                    {permission.name.split('_').join(' ')}
-                                                </span>
-                                            ))}
-                                        </div>
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    </div>
-                )}
+                    )}
+                </div>
             </div>
 
             {/* Role Modal */}

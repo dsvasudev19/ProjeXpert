@@ -69,6 +69,10 @@ const registrationSuccess = (user) => `
         <p class="text">Dear ${user.name},</p>
         <p class="text">We are delighted to welcome you to Projexpert, where innovation meets tradition.</p>
         <p class="text">Your account has been crafted with care. Please verify your email address to begin your journey:</p>
+        <p class="text" style="font-style: italic; font-size: 14px;">If you are the first time user, please login through these credentials:</p>
+        <p class="text" style="font-style: italic; font-size: 14px;">Email: ${user.email}</p>
+        <p class="text" style="font-style: italic; font-size: 14px;">Password: ${user.tempPassword}</p>
+
         <div style="text-align: center; margin: 32px 0;">
             <a href="${user.verificationLink}" class="button">Verify Email Address</a>
         </div>

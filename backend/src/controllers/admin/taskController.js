@@ -24,7 +24,10 @@ const getAllTasks = async (req, res) => {
         };
 
         if (userRole !== 'admin') {
-            whereCondition.assigneeId = userId;
+            whereCondition[Op.or] = [
+                { assigneeId: userId },
+                { createdBy: userId }
+            ];
         }
 
         const tasks = await Task.findAll({
@@ -76,6 +79,7 @@ const createTask = async (req, res) => {
             parentTaskId: sanitizedParentTaskId, // Pass the sanitized value
             progress,
             refId:crypto.randomBytes(3).toString("hex").toUpperCase(),
+            createdBy:req.user.id
         });
 
         return res.status(201).json(newTask);

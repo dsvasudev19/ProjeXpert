@@ -1,13 +1,32 @@
 // controllers/projectController.js
-const { Project, User, Bug, Task, File,TeamMember } = require('../../models');
+const { Project, User, Bug, Task, File,TeamMember,Role } = require('../../models');
 
 const getAllProjects = async (req, res) => {
     try {
+        const userId = req.user.id;
+
+        const user = await User.findOne({
+            where: { id: userId },
+            include: [{ model: Role }]
+        });
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        const userRole = user.Roles[0].name;
+        
         const includeModels = req.query.include === 'true' || req.query.include === undefined; 
-        const includeFiles = req.query.files === 'true'; // Check if files should be included
+        const includeFiles = req.query.files === 'true';
         console.log(req.query)
+
+        let whereCondition = {};
+        if (userRole !== 'admin') {
+            whereCondition.clientId = userId;
+        }
         
         const projects = await Project.findAll({
+            where: whereCondition,
             include: [
                 ...(includeModels ? [
                     { model: User, as: 'Client', attributes: ['name', 'id', 'email'] },
@@ -26,18 +45,34 @@ const getAllProjects = async (req, res) => {
 
 const getProjectById = async (req, res) => {
     try {
+        const userId = req.user.id;
+        const user = await User.findOne({
+            where: { id: userId },
+            include: [{ model: Role }]
+        });
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        const userRole = user.Roles[0].name;
         const project = await Project.findByPk(req.params.id, {
             include: [
                 { model: User, as: 'Client', attributes: ['id', 'name'] },
                 { model: Bug, as: 'Bugs' },
-                { model: Task, as: 'Tasks' ,include:[{model:User,as:"Assignee"}]},
+                { model: Task, as: 'Tasks', include: [{ model: User, as: "Assignee" }] },
                 { model: File },
-                { model: TeamMember,include:{model:User,as:"User"} }
+                { model: TeamMember, include: { model: User, as: "User" } }
             ],
         });
 
         if (!project) {
             return res.status(404).json({ message: 'Project not found.' });
+        }
+
+        // Check if user has access to this project
+        if (userRole !== 'admin' && project.clientId !== userId) {
+            return res.status(403).json({ message: 'Access denied' });
         }
 
         return res.status(200).json(project);
@@ -50,18 +85,29 @@ const getProjectById = async (req, res) => {
 
 const createProject = async (req, res) => {
     try {
-        // if (req.user.role !== 'client') {
-        //     return res.status(403).json({ message: 'Forbidden: Only clients can create projects.' });
-        // }
+        const userId = req.user.id;
+        const user = await User.findOne({
+            where: { id: userId },
+            include: [{ model: Role }]
+        });
 
-        const { name, description, budget, status, startDate, endDate, priority } = req.body;
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        const userRole = user.Roles[0].name;
+        if (userRole !== 'admin' || userRole !== 'client') {
+            return res.status(403).json({ message: 'Only admins and clients can create projects' });
+        }
+
+        const { name, description, budget, status, startDate, endDate, priority,clientId } = req.body;
 
         const project = await Project.create({
             name,
             description,
             budget,
             status,
-            clientId: req.user.id,
+            clientId,
             startDate,
             endDate,
             priority
@@ -76,16 +122,29 @@ const createProject = async (req, res) => {
 
 const updateProject = async (req, res) => {
     try {
-        const { title, description, budget, status, clientId } = req.body;
+        const userId = req.user.id;
+        const user = await User.findOne({
+            where: { id: userId },
+            include: [{ model: Role }]
+        });
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        const userRole = user.Roles[0].name;
         const project = await Project.findByPk(req.params.id);
 
         if (!project) {
             return res.status(404).json({ message: 'Project not found.' });
         }
 
-        if (req.user.role !== 'client' && req.user.role !== 'freelancer') {
-            return res.status(403).json({ message: 'Forbidden: Insufficient permissions.' });
+        // Allow admin to update any project, clients can only update their own projects
+        if (userRole !== 'admin' || project.clientId !== userId) {
+            return res.status(403).json({ message: 'Access denied' });
         }
+
+        const { title, description, budget, status, clientId } = req.body;
 
         project.title = title || project.title;
         project.description = description || project.description;
@@ -104,14 +163,26 @@ const updateProject = async (req, res) => {
 
 const deleteProject = async (req, res) => {
     try {
+        const userId = req.user.id;
+        const user = await User.findOne({
+            where: { id: userId },
+            include: [{ model: Role }]
+        });
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        const userRole = user.Roles[0].name;
         const project = await Project.findByPk(req.params.id);
 
         if (!project) {
             return res.status(404).json({ message: 'Project not found.' });
         }
 
-        if (req.user.role !== 'client' || project.clientId !== req.user.id) {
-            return res.status(403).json({ message: 'Forbidden: Only clients can delete their projects.' });
+        // Only admin can delete any project, clients can only delete their own projects
+        if (userRole !== 'admin' || project.clientId !== userId) {
+            return res.status(403).json({ message: 'Access denied' });
         }
 
         await project.destroy();
@@ -124,12 +195,28 @@ const deleteProject = async (req, res) => {
 
 const getProjectBugs = async (req, res) => {
     try {
+        const userId = req.user.id;
+        const user = await User.findOne({
+            where: { id: userId },
+            include: [{ model: Role }]
+        });
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        const userRole = user.Roles[0].name;
         const project = await Project.findByPk(req.params.id, {
             include: [{ model: Bug, as: 'Bugs' }],
         });
 
         if (!project) {
             return res.status(404).json({ message: 'Project not found.' });
+        }
+
+        // Check if user has access to this project
+        if (userRole !== 'admin' || project.clientId !== userId) {
+            return res.status(403).json({ message: 'Access denied' });
         }
 
         return res.status(200).json({ project });
