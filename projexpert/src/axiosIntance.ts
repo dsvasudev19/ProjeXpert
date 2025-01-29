@@ -5,19 +5,19 @@ export const axiosInstance = axios.create({
   withCredentials: true,
 });
 
-axiosInstance.interceptors.request.use(
-  (config: any) => {
-    const token = localStorage.getItem("__auth");
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
+// axiosInstance.interceptors.request.use(
+//   (config: any) => {
+//     // const token = localStorage.getItem("__auth");
+//     // if (token) {
+//     //   config.headers.Authorization = `Bearer ${token}`;
+//     // }
 
-    return config;
-  },
-  (error: any) => {
-    return Promise.reject(error);
-  }
-);
+//     return config;
+//   },
+//   (error: any) => {
+//     return Promise.reject(error);
+//   }
+// );
 
 // axiosInstance.interceptors.response.use(
 //   (response) => {

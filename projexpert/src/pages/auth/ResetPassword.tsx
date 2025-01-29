@@ -3,13 +3,15 @@ import { Formik, Field, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { axiosInstance } from "../../axiosIntance";
 import toast from "react-hot-toast";
+import { useEffect, useState } from "react";
 
 const ResetPassword = () => {
-  const initialValues = {
+  const [token, setToken] = useState("");
+  const [initialValues, setInitialValues] = useState({
     email: "",
     password: "",
     confirmPassword: "",
-  };
+  });
 
   // Yup validation schema
   const validationSchema = Yup.object({
@@ -29,7 +31,7 @@ const ResetPassword = () => {
 
   const handleSubmit = async (values: any) => {
     try {
-      const res = await axiosInstance.post("/auth/reset-password", values);
+      const res = await axiosInstance.post("/auth/reset-password?token=" + token, values);
       if (res.status === 200) {
         toast.success("Password reset successful! Please login with your new password.");
         window.location.href = "/auth/login";
@@ -38,6 +40,36 @@ const ResetPassword = () => {
       toast.error(error.response?.data?.message || "Failed to reset password");
     }
   };
+
+  const getUserByToken = async (token: string) => {
+    try {
+      const res = await axiosInstance.get("/auth/reset-password?token=" + token);
+      if (res.status === 200) {
+        setInitialValues({
+          email: res.data.user.email,
+          password: "",
+          confirmPassword: "",
+        })
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get("token");
+    if (!token) {
+      window.location.href = "/auth/forgot-password";
+    }
+    if (token) {
+      setToken(token);
+      getUserByToken(token);
+    }
+
+  }, []);
+
+
 
   return (
     <div className="min-h-screen flex bg-gradient-to-br from-blue-50 to-white">
@@ -57,8 +89,8 @@ const ResetPassword = () => {
             Don't worry! We'll help you get back to managing your projects with a simple password reset process.
           </p>
           <div className="space-y-6">
-            <div className="flex items-center space-x-4 p-4 bg-white rounded-xl shadow-sm">
-              <div className="p-2 bg-blue-100 rounded-lg">
+            <div className="flex items-center space-x-4 p-4 bg-white rounded shadow-sm">
+              <div className="p-2 bg-blue-100 rounded">
                 <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                 </svg>
@@ -74,7 +106,7 @@ const ResetPassword = () => {
 
       {/* Right Section */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-6">
-        <div className="max-w-md w-full bg-white rounded-2xl shadow-lg p-8">
+        <div className="max-w-md w-full bg-white rounded shadow-lg p-8">
           <div className="text-center mb-10">
             <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent mb-2">
               Reset Your Password
@@ -86,6 +118,7 @@ const ResetPassword = () => {
             initialValues={initialValues}
             validationSchema={validationSchema}
             onSubmit={handleSubmit}
+            enableReinitialize={true}
           >
             {({ isSubmitting }) => (
               <Form className="space-y-5">
@@ -102,7 +135,8 @@ const ResetPassword = () => {
                       id="email"
                       name="email"
                       type="email"
-                      className="pl-10 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                      disabled={true}
+                      className="pl-10 w-full px-4 py-3 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
                       placeholder="you@company.com"
                     />
                   </div>
@@ -126,7 +160,7 @@ const ResetPassword = () => {
                       id="password"
                       name="password"
                       type="password"
-                      className="pl-10 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                      className="pl-10 w-full px-4 py-3 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
                       placeholder="••••••••"
                     />
                   </div>
@@ -150,7 +184,7 @@ const ResetPassword = () => {
                       id="confirmPassword"
                       name="confirmPassword"
                       type="password"
-                      className="pl-10 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                      className="pl-10 w-full px-4 py-3 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
                       placeholder="••••••••"
                     />
                   </div>
@@ -164,7 +198,7 @@ const ResetPassword = () => {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full flex items-center justify-center px-4 py-3 border border-transparent rounded-lg text-white bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 font-medium"
+                  className="w-full flex items-center justify-center px-4 py-3 border border-transparent rounded text-white bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 font-medium"
                 >
                   {isSubmitting ? "Resetting Password..." : "Reset Password"}
                   <ArrowRight className="ml-2 h-5 w-5" />

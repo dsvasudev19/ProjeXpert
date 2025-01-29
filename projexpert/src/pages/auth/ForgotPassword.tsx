@@ -4,6 +4,7 @@ import * as Yup from 'yup';
 import toast from 'react-hot-toast';
 import { axiosInstance } from "../../axiosIntance";
 
+
 const ForgotPassword = () => {
   const validationSchema = Yup.object({
     email: Yup.string()
@@ -11,11 +12,21 @@ const ForgotPassword = () => {
       .required("Email is required"),
   });
 
+
   const handleSubmit = async (values: any, { setSubmitting }: any) => {
     try {
       const res = await axiosInstance.post('/auth/forgot-password', values);
       if (res.status === 200) {
-        toast.success("Password reset link has been sent to your email!");
+        toast.loading("Password reset link has been sent to your email!",{
+          duration:2000,
+          style:{
+            background:"#000",
+            color:"#fff",
+          }
+        });
+        setTimeout(() => {
+          window.location.href = "/auth/reset-password?token="+res.data.token;
+        }, 1000);
       }
     } catch (error: any) {
       toast.error(error.response?.data?.message || "Failed to send reset link");
@@ -42,8 +53,8 @@ const ForgotPassword = () => {
             Don't worry! We'll help you get back to managing your projects with a simple password reset process.
           </p>
           <div className="space-y-6">
-            <div className="flex items-center space-x-4 p-4 bg-white rounded-xl shadow-sm">
-              <div className="p-2 bg-blue-100 rounded-lg">
+            <div className="flex items-center space-x-4 p-4 bg-white rounded shadow-sm">
+              <div className="p-2 bg-blue-100 rounded">
                 <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                 </svg>
@@ -59,7 +70,7 @@ const ForgotPassword = () => {
 
       {/* Right Section */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-6">
-        <div className="max-w-md w-full bg-white rounded-2xl shadow-lg p-8">
+        <div className="max-w-md w-full bg-white rounded shadow-lg p-8">
           <div className="text-center mb-10">
             <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent mb-2">
               Password Recovery
@@ -88,7 +99,7 @@ const ForgotPassword = () => {
                       type="email"
                       className={`pl-10 w-full px-4 py-3 border ${
                         errors.email && touched.email ? 'border-red-500' : 'border-gray-300'
-                      } rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200`}
+                      } rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200`}
                       placeholder="Enter your email"
                     />
                   </div>
@@ -100,10 +111,10 @@ const ForgotPassword = () => {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full flex items-center justify-center px-4 py-3 border border-transparent rounded-lg text-white bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transform transition-all duration-200 hover:scale-[1.02]"
+                  className="w-full flex items-center justify-center px-4 py-3 border border-transparent rounded text-white bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transform transition-all duration-200 hover:scale-[1.02]"
                 >
                   {isSubmitting ? "Sending..." : "Send Reset Link"}
-                  <ArrowRight className="ml-2 h-5 w-5" />
+                  {!isSubmitting && <ArrowRight className="ml-2 h-5 w-5" />}
                 </button>
 
                 <p className="text-center text-sm text-gray-600">

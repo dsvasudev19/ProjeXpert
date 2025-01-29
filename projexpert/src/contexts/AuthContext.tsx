@@ -6,6 +6,7 @@ const AuthContext = createContext<any>(undefined);
 export const AuthProvider = ({ children }: any) => {
   const [loading, setLoading] = useState<boolean>(true); // Start with loading true
   const [user, setUser] = useState<any>(null);
+  const [authChecked, setAuthChecked] = useState(false); // Add this state
 
   const login = useCallback(async (data: any) => {
     try {
@@ -23,26 +24,18 @@ export const AuthProvider = ({ children }: any) => {
 
   const getUserByToken = useCallback(async () => {
     try {
-      const token = localStorage.getItem("__auth");
-      if (!token) {
-        setLoading(false); // Reset loading if no token is present
-        return;
-      }
-
-      axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       const res = await axiosInstance.get("/auth/user/token");
       if (res?.status === 200) {
         setUser(res.data);
       } else {
         setUser(null);
-        window.location.href = '/auth/login';
       }
     } catch (error) {
       console.error("Error fetching user by token:", error);
       setUser(null);
-      window.location.href = '/auth/login';
     } finally {
       setLoading(false);
+      setAuthChecked(true);
     }
   }, []);
 
@@ -53,8 +46,10 @@ export const AuthProvider = ({ children }: any) => {
   }, []);
 
   useEffect(() => {
-    getUserByToken();
-  }, [getUserByToken]);
+    if (!authChecked) {
+      getUserByToken();
+    }
+  }, [authChecked, getUserByToken]);
 
   const contextValue = useMemo(() => ({
     loading,
