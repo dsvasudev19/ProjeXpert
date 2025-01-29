@@ -54,7 +54,7 @@ export const AuthProvider = ({ children }: any) => {
 
   useEffect(() => {
     getUserByToken();
-  }, [getUserByToken]);
+  }, []);
 
   const contextValue = useMemo(() => ({
     loading,
