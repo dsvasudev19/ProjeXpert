@@ -112,7 +112,7 @@ const ClientOrDeveloper = () => {
                                                         <>
                                                             <Github className="w-4 h-4 text-emerald-600" />
                                                             <a href={`https://github.com/${client.githubUsername}`} className="text-sm text-gray-700 hover:text-emerald-600 transition-colors">
-                                                                {client.email}
+                                                                {client.githubUsername}
                                                             </a></>
                                                     )
                                                 }
