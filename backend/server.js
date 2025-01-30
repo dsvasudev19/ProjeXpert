@@ -1,14 +1,25 @@
 require("dotenv").config()
 const express = require("express")
-const { sequelize,PersonalTodo } = require("./src/models")
+const { sequelize, PersonalTodo } = require("./src/models")
 const PORT = process.env.PORT || 3000
-const cors=require("cors")
-const path=require("path")
-const adminRoutes=require("./src/routes/adminRoutes")
-const routes=require("./src/routes")
+const cors = require("cors")
+const path = require("path")
+const adminRoutes = require("./src/routes/adminRoutes")
+const routes = require("./src/routes")
 const cookieParser = require('cookie-parser');
-
+const session = require('express-session');
+const passport = require('passport');
 const app = express()
+
+require('./src/config/passport');
+
+app.use(
+    session({
+        secret: process.env.SESSION_SECRET,
+        resave: false,
+        saveUninitialized: true,
+    })
+);
 
 
 var corsOptions = {
@@ -16,11 +27,11 @@ var corsOptions = {
         "http://localhost:5173",
         "http://localhost:4200",
         "https://projexpert.vercel.app",
-        "*"
-
+        "https://github.com"
     ],
     credentials: true,
-    allowedHeaders: "Content-Type,Authorization,Set-Cookie",
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Set-Cookie'],
 };
 app.use(express.static("./uploads"));
 app.use(cors(corsOptions));
@@ -29,7 +40,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use("/api/v1", routes);
 
@@ -46,7 +58,7 @@ app.use((err, req, res, next) => {
 });
 
 
-app.get("/",(req,res)=>{
+app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 })
 

@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { User, Role, RefreshToken } = require('../models'); // Adjust the path based on your project structure
+const { User, Role, RefreshToken,ForgotPasswordToken} = require('../models'); // Adjust the path based on your project structure
 const { Op, where } = require('sequelize');
 const crypto = require("crypto")
 const {registrationSuccess,sendEmail} = require("../utils/nodeMailer")
@@ -79,8 +79,14 @@ const login = async (req, res) => {
 
         await user.save();
 
-        res.cookie('token', token, { httpOnly: process.env.NODE_ENV === 'production', secure: process.env.NODE_ENV === 'production', maxAge: 15 * 60 * 1000 });
-        res.cookie('refreshToken', refreshToken.token, { httpOnly: process.env.NODE_ENV === 'production', secure: process.env.NODE_ENV === 'production', maxAge: 60 * 60 * 1000 });
+        res.cookie('token', token, { 
+            // sameSite: 'none',
+            // secure:true,
+             maxAge: 15 * 60 * 1000 });
+        res.cookie('refreshToken', refreshToken.token, { 
+            // sameSite: 'none',
+            // secure:true,
+             maxAge: 60 * 60 * 1000 });
         return res.status(200).json({ message: 'Login successful.', token, user:{name:user.name,email:user.email,phone:user.phone,lastLogin:user.lastLogin}, refreshToken: refreshToken.token });
     } catch (error) {
         console.log(error)
@@ -90,15 +96,18 @@ const login = async (req, res) => {
 
 // Log out a user
 const logout = (req, res) => {
-
+    req.logout();
+    res.clearCookie('token');
+    res.clearCookie('refreshToken');
     return res.status(200).json({ message: 'Logout successful.' });
 }
 
 const getUserByToken = async (req, res) => {
     try {
-        const token = req.headers.authorization?.split(' ')[1];
+        // const token = req.headers.authorization?.split(' ')[1];
+        const token = req.cookies.token;
         if (!token) {
-            return res.status(401).json({ message: 'Unauthorized: No token provided.' });
+            return res.status(401).json({ message: 'Unauthorized: No token provided. --> From getUserByToken' });
         }
 
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -148,10 +157,78 @@ const generateAccessTokenBasedOnRefreshToken = async (req, res, next) => {
     }
 }
 
+
+const generateForgotPasswordToken = async (req, res, next) => {
+    try {
+        const { email } = req.body;
+        const user = await User.findOne({ where: { email } });
+        if (!user) {
+            return res.status(404).json({ message: 'User not found.' });
+        }
+        const forgotPasswordToken = crypto.randomBytes(16).toString('hex');
+        const forgotPasswordTokenExpiry = new Date(Date.now() + 10 * 60 * 1000);
+        await ForgotPasswordToken.create({
+            userId: user.id,
+            token: forgotPasswordToken,
+            expiryDate: forgotPasswordTokenExpiry
+        });
+        return res.status(200).json({ message: 'Forgot password token generated successfully.', token: forgotPasswordToken });
+    } catch (error) {
+        console.log(error)
+        next(error)
+    }
+}
+
+const resetPassword = async (req, res, next) => {
+    try {
+        const { email,password } = req.body;
+        const { token } = req.query;
+        const user = await User.findOne({ where: { email } });
+        if (!user) {
+            return res.status(404).json({ message: 'User not found.' });
+        }
+        const forgotPasswordToken = await ForgotPasswordToken.findOne({ where: { token } });
+        if (!forgotPasswordToken || forgotPasswordToken.expiryDate < new Date()) {
+            return res.status(404).json({ message: 'Forgot password token not found.' });
+        }
+        const hashedPassword = await bcrypt.hash(password, 10);
+        user.password = hashedPassword;
+        await user.save();
+        await ForgotPasswordToken.destroy({ where: { userId: user.id } });
+        return res.status(200).json({ message: 'Password reset successfully.' });
+        
+    } catch (error) {
+        console.log(error)
+        next(error)
+    }
+}
+
+
+const getUserForResetPassword = async (req, res) => {
+    try {
+        const { token } = req.query;
+        const forgotPasswordToken = await ForgotPasswordToken.findOne({ where: { token } });
+        if (!forgotPasswordToken || forgotPasswordToken.expiryDate < new Date()) {
+            return res.status(404).json({ message: 'Forgot password token not found.' });
+        }
+        const user = await User.findByPk(forgotPasswordToken.userId);
+        if(!user){
+            return res.status(404).json({ message: 'User not found.' });
+        }
+        return res.status(200).json({success:true,message:"User found successfully",user});
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({ message: 'Internal server error.' });
+    }
+}
+
 module.exports = {
     register,
     login,
     logout,
     getUserByToken,
-    generateAccessTokenBasedOnRefreshToken
+    generateAccessTokenBasedOnRefreshToken,
+    generateForgotPasswordToken,
+    resetPassword,
+    getUserForResetPassword
 }
