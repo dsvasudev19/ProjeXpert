@@ -29,7 +29,8 @@ const SignInPage = () => {
   };
 
   const handleGitHubLogin = () => {
-    window.location.href = 'http://localhost:3000/api/v1/auth/github';
+    const baseURL= import.meta.env.VITE_RUNTIME == "production" ? import.meta.env.VITE_API_PROD_URL : import.meta.env.VITE_API_URL;
+    window.location.href = `${baseURL}/auth/github`;
   }; 
 
   return (
