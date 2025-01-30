@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Plus, Mail, Trash2 } from "lucide-react";
+import { Plus, Mail, Trash2, Github } from "lucide-react";
 import AddClient from "../modals/AddClient";
 import { axiosInstance } from "../axiosIntance";
 import toast from "react-hot-toast";
@@ -97,10 +97,25 @@ const ClientOrDeveloper = () => {
 
                                         <div className="space-y-3">
                                             <div className="flex items-center gap-3 px-3 py-2 bg-gradient-to-r from-emerald-50 to-emerald-100 rounded-lg transition-all hover:shadow-sm">
-                                                <Mail className="w-4 h-4 text-emerald-600" />
-                                                <a href={`mailto:${client.email}`} className="text-sm text-gray-700 hover:text-emerald-600 transition-colors">
-                                                    {client.email}
-                                                </a>
+                                                {
+                                                    client.email && (
+                                                        <>
+                                                            <Mail className="w-4 h-4 text-emerald-600" />
+                                                            <a href={`mailto:${client.email}`} className="text-sm text-gray-700 hover:text-emerald-600 transition-colors">
+                                                                {client.email}
+                                                            </a>
+                                                        </>
+                                                    )
+                                                }
+                                                {
+                                                    client.githubUsername && (
+                                                        <>
+                                                            <Github className="w-4 h-4 text-emerald-600" />
+                                                            <a href={`https://github.com/${client.githubUsername}`} className="text-sm text-gray-700 hover:text-emerald-600 transition-colors">
+                                                                {client.email}
+                                                            </a></>
+                                                    )
+                                                }
                                             </div>
 
                                         </div>
