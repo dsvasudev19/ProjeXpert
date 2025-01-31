@@ -19,6 +19,7 @@ import UnauthorizedAccess from "./../components/UnauthorizedAccess";
 import ClientOrDeveloper from "../pages/ClientOrDeveloper";
 import RolesAndPermissions from "../pages/RolesAndPermissions";
 import EmailTemplateShowcase from "../components/EmailTemplates";
+import BugsPage from "../pages/Bugs";
 
 
 
@@ -39,6 +40,7 @@ const AppRoutes = () => {
             <Route path="settings" element={<Settings />} />
             <Route path="client" element={<ClientOrDeveloper />} />
             <Route path="roles-and-permissions" element={<RolesAndPermissions />} />
+            <Route path="bugs" element={<BugsPage />} />
             
           </Route>
         <Route path="/auth/*">
