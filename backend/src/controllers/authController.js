@@ -54,7 +54,8 @@ const login = async (req, res) => {
         const { email, password } = req.body;
 
         // Find the user by email
-        const user = await User.findOne({ where: { email } });
+        const user = await User.findOne({ where: { email },include:[{model:Role}] });
+        console.log(user)
         if (!user) {
             return res.status(401).json({ message: 'Invalid credentials.' });
         }
@@ -87,7 +88,7 @@ const login = async (req, res) => {
             // sameSite: 'none',
             // secure:true,
              maxAge: 60 * 60 * 1000 });
-        return res.status(200).json({ message: 'Login successful.', token, user:{name:user.name,email:user.email,phone:user.phone,lastLogin:user.lastLogin}, refreshToken: refreshToken.token });
+        return res.status(200).json({ message: 'Login successful.', token, user:{name:user.name,email:user.email,phone:user.phone,lastLogin:user.lastLogin,role:user.Roles[0].name}, refreshToken: refreshToken.token });
     } catch (error) {
         console.log(error)
         return res.status(500).json({ message: 'Internal server error.', error });

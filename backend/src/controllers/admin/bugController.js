@@ -21,8 +21,18 @@ const getAllBugs = async (req, res) => {
                     {
                         model: Project,
                         as: 'Project',
-                        where: { [Op.or]: [{ clientId: userId }, { freelancerId: userId }] },
+                        where: { [Op.or]: [{ clientId: userId }] },
+                        attributes:['name']
                     },
+                    {
+                        model:User,
+                        as:"Assignee",
+                        attributes:['name']
+                    },
+                    {
+                        model:User,
+                        as:"Reporter"
+                    }
                 ],
             });
         }

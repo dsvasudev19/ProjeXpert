@@ -1,11 +1,13 @@
 import { Formik, Field, Form } from 'formik';
 import * as Yup from 'yup';
 import { axiosInstance } from '../../axiosIntance';
-import { Mail, Lock, ArrowRight, Briefcase } from 'lucide-react';
+import { Mail, Lock, ArrowRight, Briefcase, LockOpen } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { useState } from 'react';
 
 const SignInPage = () => {
   const initialValues = { email: '', password: '' };
+  const [isLocked, setIsLocked] = useState(true);
 
   const validationSchema = Yup.object({
     email: Yup.string().email('Invalid email address').required('Required'),
@@ -14,28 +16,34 @@ const SignInPage = () => {
 
   const handleSubmit = async (values: any, { setSubmitting }: any) => {
     try {
+      setIsLocked(false);
       const res = await axiosInstance.post('/auth/login', values);
       if (res.status === 200) {
+        await new Promise(resolve => setTimeout(resolve, 800));
         localStorage.setItem("__auth", res.data.token)
         localStorage.setItem("refreshToken", res.data.refreshToken)
         toast.success("Welcome back to ProjeXpert!");
         window.location.href = "/dashboard/analytics";
       }
     } catch (error: any) {
+      setIsLocked(true);
       toast.error(error.response?.data?.message || "Invalid credentials");
     } finally {
       setSubmitting(false);
     }
   };
 
-  const handleGitHubLogin = () => {
-    const baseURL= import.meta.env.VITE_RUNTIME == "production" ? import.meta.env.VITE_API_PROD_URL : import.meta.env.VITE_API_URL;
+  const handleGitHubLogin = async () => {
+    
+    setIsLocked(true);
+    await new Promise(resolve => setTimeout(resolve, 800));
+    const baseURL = import.meta.env.VITE_RUNTIME == "production" ? import.meta.env.VITE_API_PROD_URL : import.meta.env.VITE_API_URL;
     window.location.href = `${baseURL}/auth/github`;
+    setIsLocked(false);
   }; 
 
   return (
     <div className="min-h-screen flex bg-gradient-to-br from-blue-50 to-white">
-      {/* Left Section */}
       <div className="hidden lg:flex lg:w-1/2 items-center justify-center p-12 bg-gradient-to-br from-blue-100 to-blue-50">
         <div className="max-w-lg">
           <div className="flex items-center gap-3 mb-8">
@@ -66,7 +74,6 @@ const SignInPage = () => {
         </div>
       </div>
 
-      {/* Right Section */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8">
         <div className="max-w-md w-full space-y-8 bg-white p-10 rounded shadow-xl">
           <div className="text-center">
@@ -157,8 +164,23 @@ const SignInPage = () => {
                   className="w-full flex items-center justify-center px-4 py-3 border border-transparent rounded text-white bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transform transition-all duration-200 hover:scale-[1.02]"
                   disabled={isSubmitting}
                 >
-                  {isSubmitting ? 'Signing in...' : 'Sign in'}
-                  <ArrowRight className="ml-2 h-4 w-4" />
+                  {isSubmitting ? (
+                    <>
+                      Signing in...
+                      <div className="ml-2 transition-transform duration-500">
+                        {isLocked ? (
+                          <Lock className="h-4 w-4 animate-pulse" />
+                        ) : (
+                          <LockOpen className="h-4 w-4 animate-bounce" />
+                        )}
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      Sign in
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </>
+                  )}
                 </button>
 
                 <div className="relative">
@@ -174,11 +196,27 @@ const SignInPage = () => {
                   type="button"
                   onClick={handleGitHubLogin}
                   className="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transform transition-all duration-200 hover:scale-[1.02]"
+                  disabled={isSubmitting}
                 >
-                  <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
-                  </svg>
-                  Sign in with GitHub
+                  {isSubmitting ? (
+                    <>
+                      <div className="transition-transform duration-500">
+                        {isLocked ? (
+                          <Lock className="h-5 w-5 animate-pulse" />
+                        ) : (
+                          <LockOpen className="h-5 w-5 animate-bounce" />
+                        )}
+                      </div>
+                      <span className="ml-2">Connecting to GitHub...</span>
+                    </>
+                  ) : (
+                    <>
+                      <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
+                      </svg>
+                      Sign in with GitHub
+                    </>
+                  )}
                 </button>
 
                 <p className="text-center text-sm text-gray-600">
