@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { axiosInstance } from "../axiosIntance";
 import TabularComponent from "./../components/TabularComponent";
 import toast from "react-hot-toast";
-import AdvancedTabularComponent from "../components/AdvancedTabularComponent";
 
 const StatusBadge = ({ status }: { status: string }) => {
     let color = "bg-gray-500";
@@ -98,6 +97,7 @@ const BugsPage = () => {
     //   }
 
     setBugs(dummyBugs);
+    setTotal(dummyBugs.length);
     } catch (error) {
       console.error(error);
     } finally {
