@@ -20,6 +20,7 @@ import ClientOrDeveloper from "../pages/ClientOrDeveloper";
 import RolesAndPermissions from "../pages/RolesAndPermissions";
 import EmailTemplateShowcase from "../components/EmailTemplates";
 import BugsPage from "../pages/Bugs";
+import EmployeeOnboarding from "../pages/EmployeeOnboarding";
 
 
 
@@ -54,6 +55,7 @@ const AppRoutes = () => {
         <Route path="/" element={<Navigate to="/auth/login" />} />
         <Route path="401" element={<UnauthorizedAccess />} />
         <Route path="email-templates" element={<EmailTemplateShowcase />} />
+        <Route path="employee-onboarding" element={<EmployeeOnboarding />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>

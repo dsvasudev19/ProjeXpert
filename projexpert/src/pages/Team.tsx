@@ -1,18 +1,20 @@
+
 import { useEffect, useState } from "react";
-import { Plus, Mail, Phone, X, FolderGit2, ListTodo, Bug, Clock, Users } from "lucide-react";
+import { Plus, Mail, Phone, X, FolderGit2, ListTodo, Bug, Clock, Users, Edit, Trash2 } from "lucide-react";
 import { axiosInstance } from "../axiosIntance";
 import AddTeam from "../modals/AddTeam";
 import AllocateMemberToTeam from "../modals/AllocateMemberToTeam";
 
 const Team = () => {
+  const [activeTab, setActiveTab] = useState<'team' | 'dev'>('team');
   const [teams, setTeams] = useState<any>();
-
-  const [showAddTeamModal, setShowAddTeamModal] = useState(false)
-
+  const [developers, setDevelopers] = useState<any[]>([]);
+  const [showAddTeamModal, setShowAddTeamModal] = useState(false);
   const [expandedTeamId, setExpandedTeamId] = useState<number | null>(null);
   const [selectedMember, setSelectedMember] = useState<any>(null);
-  const [loading,setLoading]=useState(false);
-  const [isModalOpen,setIsModalOpen]=useState(false);
+  const [loading, setLoading] = useState(false);
+  const [devLoading, setDevLoading] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const toggleTeam = (teamId: number) => {
     setExpandedTeamId(expandedTeamId === teamId ? null : teamId);
@@ -20,64 +22,91 @@ const Team = () => {
 
   const getAllTeams = async () => {
     try {
-      setLoading(true)
-      const res = await axiosInstance.get("/admin/team")
+      setLoading(true);
+      const res = await axiosInstance.get("/admin/team");
       if (res.status === 200) {
-        setTeams(res.data)
+        setTeams(res.data);
       }
     } catch (error) {
-      console.log(error)
-    }finally{
-      setLoading(false)
+      console.log(error);
+    } finally {
+      setLoading(false);
     }
-  }
+  };
 
-  // const getTeamMembers=async(id:any)=>{
-  //   try {
-  //     const res=await axiosInstance.get(`/admin/team/members/${id}`)
-  //     if(res.status===200){
-  //       setMembers(res.data)
-  //     }
-  //   } catch (error) {
-  //     console.log(error)
-  //   }
-  // }
-
+  const getAllDevelopers = async () => {
+    try {
+      setDevLoading(true);
+      const res = await axiosInstance.get("/admin/client/team/internal-only");
+      if (res.status === 200) {
+        setDevelopers(res.data.data);
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setDevLoading(false);
+    }
+  };
 
   useEffect(() => {
-    getAllTeams()
-  }, [])
-
+    if (activeTab === 'team') {
+      getAllTeams();
+    } else {
+      getAllDevelopers();
+    }
+  }, [activeTab]);
 
   return (
     <div className="w-full h-full p-6 overflow-y-auto">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
-          Teams Overview
+          {activeTab === 'team' ? 'Teams Overview' : 'Employees Overview'}
         </h1>
         <div className="flex gap-3">
-          <button onClick={() => { setShowAddTeamModal(true) }} className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-500 to-blue-500 text-white rounded-lg hover:opacity-90 transition-all duration-200 shadow-md hover:shadow-lg">
-            <Users className="w-4 h-4" />
-            New Team
-          </button>
-          <button onClick={()=>{setIsModalOpen(true)}} className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-500 text-white rounded-lg hover:opacity-90 transition-all duration-200 shadow-md hover:shadow-lg">
-            <Plus className="w-4 h-4" />
-            Add Member
-          </button>
+          {activeTab === 'team' && (
+            <>
+              <button
+                onClick={() => setShowAddTeamModal(true)}
+                className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-500 to-blue-500 text-white rounded-lg hover:opacity-90 transition-all duration-200 shadow-md hover:shadow-lg"
+              >
+                <Users className="w-4 h-4" />
+                New Team
+              </button>
+              <button
+                onClick={() => setIsModalOpen(true)}
+                className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-500 text-white rounded-lg hover:opacity-90 transition-all duration-200 shadow-md hover:shadow-lg"
+              >
+                <Plus className="w-4 h-4" />
+                Add Member
+              </button>
+            </>
+          )}
         </div>
-        {
-          showAddTeamModal && <AddTeam isOpen={showAddTeamModal} onClose={() => { setShowAddTeamModal(false) }} getTeams={getAllTeams} />
-        }
-        {
-          isModalOpen && <AllocateMemberToTeam 
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          refreshData={getAllTeams}
-        />
-        }
       </div>
 
-      {!expandedTeamId ? (
+      {/* Tabs */}
+      <div className="flex mb-6 border-b border-gray-200">
+        <button
+          onClick={() => setActiveTab('team')}
+          className={`px-4 py-2 text-sm font-medium ${activeTab === 'team' 
+            ? 'text-blue-500 border-b-2 border-blue-500' 
+            : 'text-gray-500 hover:text-gray-700'}`}
+        >
+          Team Overview
+        </button>
+        <button
+          onClick={() => setActiveTab('dev')}
+          className={`px-4 py-2 text-sm font-medium ${activeTab === 'dev' 
+            ? 'text-blue-500 border-b-2 border-blue-500' 
+            : 'text-gray-500 hover:text-gray-700'}`}
+        >
+          Dev Overview
+        </button>
+      </div>
+
+      {activeTab === 'team' ? (
+        <>
+        {!expandedTeamId ? (
         loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[1, 2, 3, 4, 5, 6].map((index) => (
@@ -278,6 +307,85 @@ const Team = () => {
 
         </div>
       )}
+        </>
+      ) : (
+        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date of Joining</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {devLoading ? (
+                  <tr>
+                    <td colSpan={5} className="px-6 py-4 text-center">
+                      Loading...
+                    </td>
+                  </tr>
+                ) : developers.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="px-6 py-4 text-center text-gray-500">
+                      No developers found
+                    </td>
+                  </tr>
+                ) : (
+                  developers?.map((developer:any) => (
+                    <tr key={developer.id}>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center">
+                          <div className="flex-shrink-0 w-8 h-8 bg-gradient-to-r from-blue-200 via-green-300 to-blue-500 rounded-full flex items-center justify-center text-white">
+                            {developer.name.charAt(0)}
+                          </div>
+                          <div className="ml-4">
+                            <div className="text-sm font-medium text-gray-900">{developer.name}</div>
+                            <div className="text-xs text-gray-500">{developer.role?.toUpperCase()}</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{developer.email}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 capitalize">{developer.userType}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {new Date(developer.doj).toLocaleDateString()}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <button className="text-blue-600 hover:text-blue-900 mr-4">
+                          <Edit className="w-4 h-4" />
+                        </button>
+                        <button className="text-red-600 hover:text-red-900">
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* Modals (keep existing modal code) */}
+      {showAddTeamModal && (
+        <AddTeam
+          isOpen={showAddTeamModal}
+          onClose={() => setShowAddTeamModal(false)}
+          getTeams={getAllTeams}
+        />
+      )}
+      {isModalOpen && (
+        <AllocateMemberToTeam
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          refreshData={getAllTeams}
+        />
+      )}
+      {/* Member Profile Modal (keep existing code) */}
     </div>
   );
 };

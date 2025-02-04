@@ -10,7 +10,7 @@ const StatusBadge = ({ status }: { status: string }) => {
   if (status === "In-Progress") color = "bg-yellow-500";
   if (status === "resolved") color = "bg-green-500";
   return (
-    <span className={`px-1.5 py-0.5 text-[10px] text-white rounded-full ${color}`}>
+    <span className={`px-1 py-0.5 text-[8px] text-white rounded-full ${color}`}>
       {status}
     </span>
   );
@@ -23,7 +23,7 @@ const PriorityBadge = ({ priority }: { priority: string }) => {
   if (priority === "high") color = "bg-orange-500";
   if (priority === "critical") color = "bg-red-500";
   return (
-    <span className={`px-1.5 py-0.5 text-[10px] text-white rounded-full ${color}`}>
+    <span className={`px-1.5 py-0.5 text-[8px] text-white rounded-full ${color}`}>
       {priority}
     </span>
   );

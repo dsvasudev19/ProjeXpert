@@ -1,4 +1,4 @@
-import { AlertCircle, Bug, CheckCircle, ChevronDown, ChevronUp, Clock, FileText, FolderGit2, ListTodo, Plus, Users } from "lucide-react";
+import { AlertCircle, Bug, CheckCircle, ChevronDown, ChevronUp, Clock, FileText, FolderGit2, ListTodo, Plus, SquareArrowOutUpRight, Users } from "lucide-react";
 import { useEffect, useState } from "react";
 import { axiosInstance } from "../axiosIntance";
 import AddTask from "../modals/AddTask";
@@ -292,7 +292,7 @@ const RenderProjectDetails = ({ projectId }: any) => {
                     {expandedSection === 'bugs' && (
                         <div>
                             <div className="flex justify-between items-center mb-4">
-                                <h3 className="text-lg font-semibold">Active Bugs</h3>
+                                <h3 className="text-lg font-semibold flex gap-3 items-center"><a href="/dashboard/bugs"><SquareArrowOutUpRight className="w-4 h-4 cursor-pointer"/></a>Active Bugs</h3>
                                 <button onClick={() => setOpenReportBugModal(true)} className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-lg hover:from-red-600 hover:to-pink-600 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200">
                                     <Plus className="w-4 h-4" />
                                     <span>Report Bug</span>

@@ -30,6 +30,13 @@ const DashboardLayout = () => {
         { icon: UserCog, label: 'Client', href: '/dashboard/client' },
     ];
 
+    const clientMenuItems=[
+        { icon: Home, label: 'Overview', href: '/dashboard/analytics' },
+        { icon: FolderGit2, label: 'Projects', href: '/dashboard/project' },
+        { icon: CalendarCheck2, label: 'Tasks', href: '/dashboard/task' },
+        { icon: FileCog, label: 'Files', href: '/dashboard/files' },
+    ]
+
     const getAnalyticsData=async()=>{
         try {
             const res=await axiosInstance.get("/admin/dashboard/side-data")
@@ -143,7 +150,7 @@ const DashboardLayout = () => {
 
                         <div className="flex-1 p-3 overflow-y-auto">
                             <div className="space-y-2 mt-2">
-                                {menuItems.map((item, index) => (
+                                {(user?.user?.Roles[0]?.name.toUpperCase() === "ADMIN" ? menuItems : clientMenuItems).map((item, index) => (
                                     <Link
                                         to={item.href}
                                         key={index}
@@ -184,7 +191,7 @@ const DashboardLayout = () => {
                             </div>
 
                             {/* Status Section */}
-                            {sidebarOpen && (
+                            {sidebarOpen && user?.user?.Roles[0]?.name.toUpperCase() === "ADMIN" && (
                                 <div className="mt-4 space-y-3">
                                     {/* Weekly Progress Card */}
                                     <div className="p-4 rounded-xl bg-gradient-to-br from-slate-50 to-slate-100 border border-slate-200">

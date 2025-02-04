@@ -34,9 +34,9 @@ const AllocateMemberToTeam = ({ isOpen, onClose, refreshData }:any) => {
         refreshData?.();
         onClose();
       }
-    } catch (error) {
+    } catch (error:any) {
       console.log(error);
-      toast.error("Failed to allocate member");
+      toast.error(error?.response?.data?.message)
     }
   };
 
@@ -57,8 +57,9 @@ const AllocateMemberToTeam = ({ isOpen, onClose, refreshData }:any) => {
       if (res.status === 200) {
         setUsers(res.data.data);
       }
-    } catch (error) {
+    } catch (error:any) {
       console.log(error);
+      
     }
   };
 

@@ -73,7 +73,7 @@ const TabularComponent = <T extends { id: number }>({
           <div className="bg-white shadow-md rounded-lg overflow-hidden">
             <div className="flex flex-col h-[82vh]">
               <div className="overflow-x-auto min-w-[1000px]">
-                <table className="w-full text-[11px]">
+                <table className="w-full text-[10px]">
                   <thead className="bg-gray-100 sticky top-0 z-10">
                     <tr>
                       {columns.map((column, index) => (
