@@ -11,6 +11,9 @@ const getAllUsers = async (req, res) => {
     try {
         const users = await User.findAll({
             include: [{ model: Role, attributes: ['name'] }],
+            where:{
+                userType:'client'
+            }
         });
         const newUsersMap = users.map(user => ({ ...user.toJSON(), role: user.Roles[0]?.name }));
         return res.status(200).json(newUsersMap);
@@ -217,7 +220,17 @@ const getAllClients = async (req, res, next) => {
     console.log("getting here")
     try {
         const clients = await User.findAll({
-            include: [{ model: Role, where: { name: 'client' }, attributes: ['name'] }]
+            where:{
+                userType:'client'
+            },
+            include:[
+                {
+                    model:Role,
+                    where:{
+                        
+                    }
+                }
+            ]
         });
 
         console.log(clients)
@@ -243,7 +256,7 @@ const getTeamOnlyMembers = async (req, res, next) => {
         });
 
        
-        const newClients = clients.map((client) => { return { id: client.id, name: client.name, email: client.email, role: client.Roles[0].name } })
+        const newClients = clients.map((client) => { return { id: client.id, name: client.name, email: client.email, role: client.Roles[0].name, userType:client.userType,doj:client.createdAt} })
 
         return res.status(200).json({ success: true, message: "Successfully fetched all TeamMembers", data: newClients });
     } catch (error) {

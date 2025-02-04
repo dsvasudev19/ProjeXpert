@@ -1,201 +1,131 @@
-const { Bug, User, Project } = require('../../models'); // Adjust the path based on your project structure
-const { Op } = require('sequelize');
+// controllers/admin/bugController.js
+const { Bug, User } = require('../../models');
+const bugService = require('../../services/bugService');
 
 const getAllBugs = async (req, res) => {
-    try {
-        const userId = req.user.id;
-        const user = await User.findByPk(userId);
+  try {
+    const userId = req.user.id;
+    const user = await User.findByPk(userId,{
+        include:[{model:Role}]
+    });
+    user.role=user.Roles[0].name
+    if (!user) return res.status(404).json({ message: 'User not found.' });
 
-        if (!user) {
-            return res.status(404).json({ message: 'User not found.' });
-        }
+    const bugs = await bugService.getAllBugsForUser(user);
+    return res.status(200).json(bugs);
+  } catch (error) {
+    return res.status(500).json({ message: 'Internal server error.', error });
+  }
+};
 
-        let bugs;
-        if (user.role === 'admin') {
-            bugs = await Bug.findAll({
-                include: [{ model: Project, as: 'Project' }],
-            });
-        } else {
-            bugs = await Bug.findAll({
-                include: [
-                    {
-                        model: Project,
-                        as: 'Project',
-                        where: { [Op.or]: [{ clientId: userId }] },
-                        attributes:['name']
-                    },
-                    {
-                        model:User,
-                        as:"Assignee",
-                        attributes:['name']
-                    },
-                    {
-                        model:User,
-                        as:"Reporter"
-                    }
-                ],
-            });
-        }
-
-        return res.status(200).json(bugs);
-    } catch (error) {
-        return res.status(500).json({ message: 'Internal server error.', error });
-    }
-}
-
-// Get a bug by ID (Admins can access any bug; others can access their related projects' bugs)
 const getBugById = async (req, res) => {
-    try {
-        const userId = req.user.id;
-        const user = await User.findByPk(userId);
-        const bug = await Bug.findByPk(req.params.id, {
-            include: [{ model: Project, as: 'Project' }],
-        });
+  try {
+    const userId = req.user.id;
+    const user = await User.findByPk(userId);
+    if (!user) return res.status(404).json({ message: 'User not found.' });
 
-        if (!user) {
-            return res.status(404).json({ message: 'User not found.' });
-        }
+    const bug = await bugService.getBugByIdWithProject(req.params.id);
+    if (!bug) return res.status(404).json({ message: 'Bug not found.' });
 
-        if (!bug) {
-            return res.status(404).json({ message: 'Bug not found.' });
-        }
-
-        if (
-            user.role !== 'admin' &&
-            bug.Project.clientId !== userId &&
-            bug.Project.freelancerId !== userId
-        ) {
-            return res.status(403).json({ message: 'Access denied.' });
-        }
-
-        return res.status(200).json(bug);
-    } catch (error) {
-        return res.status(500).json({ message: 'Internal server error.', error });
+    if (!bugService.isUserAuthorized(user, bug)) {
+      return res.status(403).json({ message: 'Access denied.' });
     }
-}
 
-// Create a bug (Freelancers and clients can create bugs for their projects)
+    return res.status(200).json(bug);
+  } catch (error) {
+    return res.status(500).json({ message: 'Internal server error.', error });
+  }
+};
+
 const createBug = async (req, res) => {
-    try {
-        const userId = req.user.id;
-        const user = await User.findByPk(userId);
-        const { title, description, status, priority, projectId,assigneeId } = req.body;
+  try {
+    const userId = req.user.id;
+    const user = await User.findByPk(userId);
+    if (!user) return res.status(404).json({ message: 'User not found.' });
 
-        if (!user) {
-            return res.status(404).json({ message: 'User not found.' });
-        }
+    const { title, description, status, priority, projectId, assigneeId } = req.body;
+    // Optional: add validations or authorization checks regarding project here.
 
-        const project = await Project.findByPk(projectId);
+    const bug = await bugService.createBug({
+      title,
+      description,
+      status,
+      priority,
+      projectId,
+      assigneeId
+    });
 
-       
+    return res.status(201).json({ message: 'Bug created successfully.', bug });
+  } catch (error) {
+    return res.status(500).json({ message: 'Internal server error.', error });
+  }
+};
 
-        const bug = await Bug.create({
-            title,
-            description,
-            status,
-            priority,
-            projectId,
-            assigneeId
-        });
-
-        return res.status(201).json({ message: 'Bug created successfully.', bug });
-    } catch (error) {
-        return res.status(500).json({ message: 'Internal server error.', error });
-    }
-}
-
-// Update a bug (Admins can update any bug; others can update their related projects' bugs)
 const updateBug = async (req, res) => {
-    try {
-        const userId = req.user.id;
-        const user = await User.findByPk(userId);
-        const { title, description, status, priority } = req.body;
-        const bug = await Bug.findByPk(req.params.id, {
-            include: [{ model: Project, as: 'Project' }],
-        });
+  try {
+    const userId = req.user.id;
+    const user = await User.findByPk(userId);
+    if (!user) return res.status(404).json({ message: 'User not found.' });
 
-        if (!user) {
-            return res.status(404).json({ message: 'User not found.' });
-        }
+    const bug = await bugService.getBugByIdWithProject(req.params.id);
+    if (!bug) return res.status(404).json({ message: 'Bug not found.' });
 
-        if (!bug) {
-            return res.status(404).json({ message: 'Bug not found.' });
-        }
-
-        if (
-            user.role !== 'admin' &&
-            bug.Project.clientId !== userId &&
-            bug.Project.freelancerId !== userId
-        ) {
-            return res.status(403).json({ message: 'Access denied.' });
-        }
-
-        bug.title = title || bug.title;
-        bug.description = description || bug.description;
-        bug.status = status || bug.status;
-        bug.priority = priority || bug.priority;
-
-        await bug.save();
-
-        return res.status(200).json({ message: 'Bug updated successfully.', bug });
-    } catch (error) {
-        return res.status(500).json({ message: 'Internal server error.', error });
+    if (!bugService.isUserAuthorized(user, bug)) {
+      return res.status(403).json({ message: 'Access denied.' });
     }
-}
 
-// Delete a bug (Admins can delete any bug; others can delete their related projects' bugs)
+    const { title, description, status, priority } = req.body;
+    const updatedBug = await bugService.updateBug(bug, {
+      title: title || bug.title,
+      description: description || bug.description,
+      status: status || bug.status,
+      priority: priority || bug.priority,
+    });
+
+    return res.status(200).json({ message: 'Bug updated successfully.', bug: updatedBug });
+  } catch (error) {
+    return res.status(500).json({ message: 'Internal server error.', error });
+  }
+};
+
 const deleteBug = async (req, res) => {
-    try {
-        const userId = req.user.id;
-        const user = await User.findByPk(userId);
-        const bug = await Bug.findByPk(req.params.id, {
-            include: [{ model: Project, as: 'Project' }],
-        });
+  try {
+    const userId = req.user.id;
+    const user = await User.findByPk(userId);
+    if (!user) return res.status(404).json({ message: 'User not found.' });
 
-        if (!user) {
-            return res.status(404).json({ message: 'User not found.' });
-        }
+    const bug = await bugService.getBugByIdWithProject(req.params.id);
+    if (!bug) return res.status(404).json({ message: 'Bug not found.' });
 
-        if (!bug) {
-            return res.status(404).json({ message: 'Bug not found.' });
-        }
-
-        if (
-            user.role !== 'admin' &&
-            bug.Project.clientId !== userId &&
-            bug.Project.freelancerId !== userId
-        ) {
-            return res.status(403).json({ message: 'Access denied.' });
-        }
-
-        await bug.destroy();
-        return res.status(200).json({ message: 'Bug deleted successfully.' });
-    } catch (error) {
-        return res.status(500).json({ message: 'Internal server error.', error });
+    if (!bugService.isUserAuthorized(user, bug)) {
+      return res.status(403).json({ message: 'Access denied.' });
     }
-}
 
+    await bugService.deleteBug(bug);
+    return res.status(200).json({ message: 'Bug deleted successfully.' });
+  } catch (error) {
+    return res.status(500).json({ message: 'Internal server error.', error });
+  }
+};
 
-const resolveBug=async(req,res,next)=>{
-    try {
-        const bug=await Bug.findByPk(req.params.id)
-        if(!bug){
-            return res.status(404).json({message:"Bug not found"})
-        }
-        bug.resolution=req.body.resolution;
-        bug.status="resolved"
-        await bug.save();
-        return res.status(200).json({success:true,message:"Successfully Closed the bug"})
-    } catch (error) {
-        console.log(error)
-    }
-}
+const resolveBug = async (req, res) => {
+  try {
+    const bug = await bugService.getBugByIdWithProject(req.params.id);
+    if (!bug) return res.status(404).json({ message: "Bug not found" });
+    
+    await bugService.resolveBug(bug, req.body.resolution);
+    return res.status(200).json({ success: true, message: "Successfully closed the bug" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Internal server error.', error });
+  }
+};
 
 module.exports = {
-    getAllBugs,
-    getBugById,
-    createBug,
-    updateBug,
-    deleteBug,
-    resolveBug
+  getAllBugs,
+  getBugById,
+  createBug,
+  updateBug,
+  deleteBug,
+  resolveBug,
 };

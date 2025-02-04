@@ -31,7 +31,11 @@ module.exports = (sequelize, DataTypes) => {
     phone:DataTypes.STRING,
     githubId:DataTypes.STRING,
     githubUsername:DataTypes.STRING,
-    avatar:DataTypes.STRING
+    avatar:DataTypes.STRING,
+    userType:{
+      type:DataTypes.STRING,
+      defaultValue:'client'
+    }
   }, {
     sequelize,
     modelName: 'User',

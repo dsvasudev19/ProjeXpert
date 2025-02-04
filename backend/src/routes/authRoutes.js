@@ -63,7 +63,7 @@ router.get('/github/callback',
             });
 
             res.cookie('token', token, {
-                maxAge: 15 * 60 * 1000,
+                maxAge: 30 * 60 * 1000,
                 httpOnly: true,
                 sameSite: 'lax'
             });

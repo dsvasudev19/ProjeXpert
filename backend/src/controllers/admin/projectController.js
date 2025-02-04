@@ -96,24 +96,28 @@ const createProject = async (req, res) => {
         }
 
         const userRole = user.Roles[0].name;
-        if (userRole !== 'admin' || userRole !== 'client') {
+        
+        if (userRole === 'admin' || userRole === 'client') {
+            const { name, description, budget, status, startDate, endDate, priority,clientId } = req.body;
+
+        
+            const project = await Project.create({
+                name,
+                description,
+                budget,
+                status,
+                clientId,
+                startDate,
+                endDate,
+                priority
+            });
+    
+            return res.status(201).json({ message: 'Project created successfully.', project });
+        } else {
             return res.status(403).json({ message: 'Only admins and clients can create projects' });
         }
 
-        const { name, description, budget, status, startDate, endDate, priority,clientId } = req.body;
-
-        const project = await Project.create({
-            name,
-            description,
-            budget,
-            status,
-            clientId,
-            startDate,
-            endDate,
-            priority
-        });
-
-        return res.status(201).json({ message: 'Project created successfully.', project });
+       
     } catch (error) {
         console.log(error);
         return res.status(500).json({ message: 'Internal server error.', error });
