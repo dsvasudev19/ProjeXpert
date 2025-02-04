@@ -8,10 +8,10 @@ function App() {
   return (
     <>
       <AuthProvider>
-        {/* <WithAuth> */}
+        <WithAuth>
           <Toaster reverseOrder={true} position="top-right" />
           <Router />
-        {/* </WithAuth> */}
+        </WithAuth>
       </AuthProvider>
     </>
   )
