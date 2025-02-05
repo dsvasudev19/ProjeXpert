@@ -4,10 +4,12 @@ import { useAuth } from '../contexts/AuthContext';
 
 import ConfirmationModal from '../modals/ConfirmationDialog';
 import { useState } from 'react';
+import InfoModal from '../modals/ProjectInfo';
 
 const DashboardHeader = () => {
     const { user, logout } = useAuth();
     const [logOutModal, setLogOutModal] = useState(false);
+    const [infoModal, setInfoModal] = useState(false);
 
     return (
         <>
@@ -41,10 +43,10 @@ const DashboardHeader = () => {
                             <button className="p-2 rounded-lg hover:bg-slate-100 text-slate-600 hover:text-green-600 transition-all duration-300">
                                 <NotificationPopup />
                             </button>
-                            <button className="p-2 rounded-lg hover:bg-slate-100 text-slate-600 hover:text-blue-600 transition-all duration-300">
+                            {user?.user?.Roles[0]?.name.toUpperCase() === "ADMIN" && <button className="p-2 rounded-lg hover:bg-slate-100 text-slate-600 hover:text-blue-600 transition-all duration-300" onClick={() => window.location.href = '/dashboard/settings'}>
                                 <Settings className="w-5 h-5" />
-                            </button>
-                            <button className="p-2 rounded-lg hover:bg-slate-100 text-slate-600 hover:text-purple-600 transition-all duration-300">
+                            </button>}
+                            <button className="p-2 rounded-lg hover:bg-slate-100 text-slate-600 hover:text-purple-600 transition-all duration-300" onClick={() => setInfoModal(true)}>
                                 <HelpCircle className="w-5 h-5" />
                             </button>
                             <button
@@ -61,7 +63,7 @@ const DashboardHeader = () => {
 
                         {/* User Profile */}
                         <div className="flex items-center gap-3">
-                            <button className="flex items-center gap-3 p-1.5 pl-3 rounded-xl transition-all duration-300 hover:bg-slate-100 group">
+                            <button className="flex items-center gap-3 p-1.5 pl-3 rounded-xl transition-all duration-300 hover:bg-slate-100 group" onClick={() => window.location.href = '/dashboard/u/profile'}>
                                 <div className="flex flex-col items-end">
                                     <span className="text-sm font-semibold text-slate-700 group-hover:text-slate-900">{user?.user?.name}</span>
                                     <span className="text-xs text-slate-500">{user?.user?.Roles[0]?.name.toUpperCase()}</span>
@@ -71,8 +73,8 @@ const DashboardHeader = () => {
                                 </div>
                             </button>
                             <div className="h-8 w-px bg-slate-200"></div>
-                            <button 
-                                className="p-2 rounded-lg text-red-500 hover:bg-red-50 hover:text-red-600 transition-all duration-300" 
+                            <button
+                                className="p-2 rounded-lg text-red-500 hover:bg-red-50 hover:text-red-600 transition-all duration-300"
                                 onClick={() => setLogOutModal(true)}
                             >
                                 <LogOut className="w-5 h-5" />
@@ -84,12 +86,18 @@ const DashboardHeader = () => {
 
             {/* Modal rendered outside of nav */}
             {logOutModal && (
-                <ConfirmationModal 
-                    action={logout} 
-                    actionText='Logout' 
-                    confirmationText='Are you sure you want to logout?' 
-                    isOpen={logOutModal} 
-                    onClose={() => setLogOutModal(false)} 
+                <ConfirmationModal
+                    action={logout}
+                    actionText='Logout'
+                    confirmationText='Are you sure you want to logout?'
+                    isOpen={logOutModal}
+                    onClose={() => setLogOutModal(false)}
+                />
+            )}
+            {infoModal && (
+                <InfoModal
+                    isOpen={infoModal}
+                    onClose={() => setInfoModal(false)}
                 />
             )}
         </>

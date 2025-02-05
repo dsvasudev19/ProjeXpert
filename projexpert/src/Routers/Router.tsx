@@ -14,13 +14,14 @@ import ForgotPassword from "./../pages/auth/ForgotPassword";
 import ResetPassword from "./../pages/auth/ResetPassword";
 import Files from "./../pages/Files";
 import Todo from "./../pages/Todo";
-import Settings from "./../pages/Settings";
 import UnauthorizedAccess from "./../components/UnauthorizedAccess";
 import ClientOrDeveloper from "../pages/ClientOrDeveloper";
 import RolesAndPermissions from "../pages/RolesAndPermissions";
 import EmailTemplateShowcase from "../components/EmailTemplates";
 import BugsPage from "../pages/Bugs";
 import EmployeeOnboarding from "../pages/EmployeeOnboarding";
+import SettingsDashboard from "../pages/SettingsDashboard";
+import UserProfilePage from "../pages/UserProfile";
 
 
 
@@ -38,11 +39,12 @@ const AppRoutes = () => {
             <Route path="payment" element={<Transactions />} />
             <Route path="task" element={<Tasks />} />
             <Route path="todo" element={<Todo />} />
-            <Route path="settings" element={<Settings />} />
+            {/* <Route path="settings" element={<Settings />} /> */}
             <Route path="client" element={<ClientOrDeveloper />} />
             <Route path="roles-and-permissions" element={<RolesAndPermissions />} />
             <Route path="bugs" element={<BugsPage />} />
-            
+            <Route path="settings" element={<SettingsDashboard />} />
+            <Route path="u/profile" element={<UserProfilePage />} />
           </Route>
         <Route path="/auth/*">
           <Route path="login" element={<SignInPage />} />
