@@ -1,0 +1,25 @@
+{
+    "general":{
+        "name":"Projexpert",
+        "description":"Projexpert is a project management tool that helps you manage your projects.",
+        "version":"1.0.0",
+        "author":"Projexpert",
+        "license":"MIT",
+        "email":"projexpert@gmail.com",
+        "website":"https://projexpert.com",
+        "support":"https://projexpert.com/support",
+        "support_email":"support@projexpert.com",
+        "support_phone":"+1234567890",
+        "support_address":"Hyderabad,Telangana,India",
+        "support_hours":"9:00 AM - 5:00 PM",
+        "support_days":"All Days"
+    },
+    "resources":{
+        "admin":{
+
+        },
+        "client":{
+
+        }
+    }
+}

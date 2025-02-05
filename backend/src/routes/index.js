@@ -21,5 +21,11 @@ router.use("/auth",authRoutes)
 const personalTodoRoutes=require("./personalTodoRoutes")
 router.use("/todo",personalTodoRoutes)
 
+const emailConfigRoutes=require("./admin/emailConfigRoutes")
+router.use("/email-config",emailConfigRoutes)
+
+const databaseConfigRoutes=require("./admin/databaseConfigRoutes")
+router.use("/database-config",databaseConfigRoutes)
+
 
 module.exports=router;
