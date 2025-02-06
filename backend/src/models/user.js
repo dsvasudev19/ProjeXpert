@@ -20,6 +20,18 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey:'userId',
         as:"Tasks"
       })
+      this.hasMany(models.ChatRoom, {
+        foreignKey: 'participant1Id',
+        as: 'chatRoomsAsParticipant1'
+      });
+      this.hasMany(models.ChatRoom, {
+        foreignKey: 'participant2Id',
+        as: 'chatRoomsAsParticipant2'
+      });
+      this.hasMany(models.Message, {
+        foreignKey: 'senderId',
+        as: 'sentMessages'
+      });
     }
   }
   User.init({

@@ -27,5 +27,7 @@ router.use("/email-config",emailConfigRoutes)
 const databaseConfigRoutes=require("./admin/databaseConfigRoutes")
 router.use("/database-config",databaseConfigRoutes)
 
+const chatRoutes=require("./chatRoutes")
+router.use("/rooms",chatRoutes)
 
 module.exports=router;
