@@ -1,24 +1,30 @@
-const socketIO = require('socket.io');
+const socketio=require("socket.io")
+let io;
 
-module.exports = (server) => {
-  const io = socketIO(server);
+const instantiateSocket=(server)=>{
+   if(!io){
+       io=socketio(server);
+       io.on("connection",(socket)=>{
+           socket.on("join",(user)=>{
+               socket.join(user.id)
+           })
 
-  io.on('connection', (socket) => {
-    // Join personal room
-    socket.on('join', (userId) => {
-      socket.join(`user_${userId}`);
-    });
+           socket.on("disconnect",()=>{
+               console.log("A user Disconnected")
+           })
+       })
 
-    // Handle new message
-    socket.on('new_message', (data) => {
-      // Emit to both participants
-      io.to(`user_${data.participant1Id}`).to(`user_${data.participant2Id}`).emit('receive_message', data);
-    });
+   }
+}
 
-    socket.on('disconnect', () => {
-      // Handle disconnect
-    });
-  });
-
-  return io;
-}; 
+function getIo() {
+   if (!io) {
+     throw new Error(
+       "Socket.io has not been initialized. Call initSocket(server) first."
+     );
+   }
+ 
+   return io;
+ }
+ 
+ module.exports = { instantiateSocket, getIo };

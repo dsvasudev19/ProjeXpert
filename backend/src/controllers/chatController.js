@@ -95,8 +95,9 @@ const sendMessage = async (req, res) => {
             { lastMessageAt: new Date() },
             { where: { id: chatRoomId } }
         );
-
-        res.json(message);
+        
+        
+        return res.status(200).json(message);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
