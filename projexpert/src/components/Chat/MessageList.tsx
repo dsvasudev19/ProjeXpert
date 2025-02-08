@@ -66,7 +66,7 @@ const MessageList = ({ messages }: { messages: Message[] }) => {
           }
 
           const isSentByMe = message.sender.id === user.user.id;
-          
+
           return (
             <div
               key={message.id || `msg-${Math.random()}`}
@@ -82,7 +82,7 @@ const MessageList = ({ messages }: { messages: Message[] }) => {
                 {!isSentByMe && (
                   <p className="text-xs text-gray-600 mb-1">{message.sender.name || 'Unknown User'}</p>
                 )}
-                
+
                 {/* Message content */}
                 {message.content && (
                   <p className="text-sm mb-2">{message.content}</p>
@@ -108,7 +108,7 @@ const MessageList = ({ messages }: { messages: Message[] }) => {
                 >
                   {formatTime(message.createdAt)}
                   {!isSentByMe && message.isRead === false && (
-                    <span className="ml-1 inline-block w-2 h-2 bg-blue-500 rounded-full"/>
+                    <span className="ml-1 inline-block w-2 h-2 bg-blue-500 rounded-full" />
                   )}
                 </p>
               </div>
@@ -119,7 +119,7 @@ const MessageList = ({ messages }: { messages: Message[] }) => {
 
       {/* Image Preview Modal */}
       {selectedImage && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/80 flex items-center justify-center z-50"
           onClick={closeModal}
         >
@@ -146,6 +146,7 @@ const MessageList = ({ messages }: { messages: Message[] }) => {
               className="max-w-full max-h-[90vh] object-contain"
               onClick={(e) => e.stopPropagation()}
             />
+             
           </div>
         </div>
       )}
