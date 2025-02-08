@@ -4,7 +4,7 @@ import * as Yup from "yup";
 import { axiosInstance } from "../../axiosIntance";
 import toast from "react-hot-toast";
 import { useEffect, useState } from "react";
-
+import { useConfig } from "../../contexts/ConfigurationsContext";
 const ResetPassword = () => {
   const [token, setToken] = useState("");
   const [initialValues, setInitialValues] = useState({
@@ -12,7 +12,7 @@ const ResetPassword = () => {
     password: "",
     confirmPassword: "",
   });
-
+  const { config } = useConfig();
   // Yup validation schema
   const validationSchema = Yup.object({
     email: Yup.string()
@@ -79,7 +79,7 @@ const ResetPassword = () => {
           <div className="flex items-center gap-3 mb-8">
             <Briefcase className="w-12 h-12 text-blue-600" />
             <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
-              ProjeXpert
+              {config.appName}
             </h1>
           </div>
           <h2 className="text-4xl font-bold text-gray-900 mb-6 leading-tight">
@@ -210,7 +210,7 @@ const ResetPassword = () => {
                     href="/auth/login"
                     className="font-medium text-blue-600 hover:text-blue-700 transition-colors duration-200"
                   >
-                    Sign in to ProjeXpert
+                    Sign in to {config.appName}
                   </a>
                 </p>
               </Form>

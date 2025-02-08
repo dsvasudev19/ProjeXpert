@@ -2,16 +2,48 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --primary-color: #2E7D32;
+  --primary-light: #4CAF50;
+  --primary-dark: #1B5E20;
+  --secondary-color: #1565C0;
+  --secondary-light: #42A5F5;
+  --secondary-dark: #0D47A1;
+}
+
+/* Replace your existing color classes with CSS variable versions */
+.text-primary {
+  color: var(--primary-color);
+}
+
+.bg-primary {
+  background-color: var(--primary-color);
+}
+
+.text-secondary {
+  color: var(--secondary-color);
+}
+
+.bg-secondary {
+  background-color: var(--secondary-color);
+}
+
+/* Add gradient utilities */
+.bg-gradient-primary-to-secondary {
+  background-image: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+}
+
+/* Update your scrollbar styles */
 ::-webkit-scrollbar {
-    width: 6px;
-  }
-  
-  ::-webkit-scrollbar-track {
-    background-color: #ffffff;
-    border-radius: 100px;
-  }
-  
-  ::-webkit-scrollbar-thumb {
-    background-color: #a0d0ce;
-    border-radius: 100px;
-  }
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: #ffffff;
+  border-radius: 100px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--primary-light);
+  border-radius: 100px;
+}

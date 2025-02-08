@@ -3,11 +3,13 @@ import { Users, Briefcase, DollarSign, CheckCircle, AlertTriangle, Calendar, Tre
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 import { axiosInstance } from '../axiosIntance';
+import { useAuth } from '../contexts/AuthContext';
 
 
 const Analytics = () => {
   const [selectedView, setSelectedView] = useState('overview');
   const [loading, setLoading] = useState(false)
+  const {user}=useAuth();
 
   const projectStats = {
     totalProjects: 24,
@@ -193,63 +195,71 @@ const Analytics = () => {
                 </div>
               </div>}
 
-              {loading ? (
-                <div className="bg-gray-200 rounded-2xl p-6 animate-pulse">
-                  <div className="flex items-center justify-between">
-                    <div className="flex-1">
-                      <div className="h-4 bg-gray-300 rounded mb-2"></div>
-                      <div className="h-6 bg-gray-300 rounded"></div>
+              {user?.user?.userType === "admin" && (
+                <>
+                  {loading ? (
+                    <div className="bg-gray-200 rounded-2xl p-6 animate-pulse">
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1">
+                          <div className="h-4 bg-gray-300 rounded mb-2"></div>
+                          <div className="h-6 bg-gray-300 rounded"></div>
+                        </div>
+                        <div className="h-12 w-12 bg-gray-300 rounded-full opacity-50"></div>
+                      </div>
+                      <div className="mt-4 flex items-center text-sm">
+                        <div className="h-4 bg-gray-300 rounded w-24"></div>
+                        <div className="ml-2 h-4 bg-gray-300 rounded w-24"></div>
+                      </div>
                     </div>
-                    <div className="h-12 w-12 bg-gray-300 rounded-full opacity-50"></div>
-                  </div>
-                  <div className="mt-4 flex items-center text-sm">
-                    <div className="h-4 bg-gray-300 rounded w-24"></div>
-                    <div className="ml-2 h-4 bg-gray-300 rounded w-24"></div>
-                  </div>
-                </div>
-              ) : <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded p-6 text-white">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-purple-100">Team Members</p>
-                    <h3 className="text-3xl font-bold mt-1">{overview?.team?.totalMembers}</h3>
-                  </div>
-                  <Users className="h-12 w-12 opacity-50" />
-                </div>
-                <div className="mt-4 text-sm">
-                  <span className="bg-purple-400/30 px-2 py-1 rounded">
-                    {overview?.team?.activeNow} Active Now
-                  </span>
-                </div>
-              </div>}
-
-              {loading ? (
-                <div className="bg-gray-200 rounded-2xl p-6 animate-pulse">
-                  <div className="flex items-center justify-between">
-                    <div className="flex-1">
-                      <div className="h-4 bg-gray-300 rounded mb-2"></div>
-                      <div className="h-6 bg-gray-300 rounded"></div>
+                  ) : (
+                    <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded p-6 text-white">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-purple-100">Team Members</p>
+                          <h3 className="text-3xl font-bold mt-1">{overview?.team?.totalMembers}</h3>
+                        </div>
+                        <Users className="h-12 w-12 opacity-50" />
+                      </div>
+                      <div className="mt-4 text-sm">
+                        <span className="bg-purple-400/30 px-2 py-1 rounded">
+                          {overview?.team?.activeNow} Active Now
+                        </span>
+                      </div>
                     </div>
-                    <div className="h-12 w-12 bg-gray-300 rounded-full opacity-50"></div>
-                  </div>
-                  <div className="mt-4 flex items-center text-sm">
-                    <div className="h-4 bg-gray-300 rounded w-24"></div>
-                    <div className="ml-2 h-4 bg-gray-300 rounded w-24"></div>
-                  </div>
-                </div>
-              ) : <div className="bg-gradient-to-br from-amber-500 to-amber-600 rounded p-6 text-white">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-amber-100">Total Budget</p>
-                    <h3 className="text-3xl font-bold mt-1">{overview?.budget?.total}</h3>
-                  </div>
-                  <DollarSign className="h-12 w-12 opacity-50" />
-                </div>
-                <div className="mt-4 text-sm">
-                  <span className="bg-amber-400/30 px-2 py-1 rounded">
-                    {overview?.hours?.total} Total Hours
-                  </span>
-                </div>
-              </div>}
+                  )}
+    
+                  {loading ? (
+                    <div className="bg-gray-200 rounded-2xl p-6 animate-pulse">
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1">
+                          <div className="h-4 bg-gray-300 rounded mb-2"></div>
+                          <div className="h-6 bg-gray-300 rounded"></div>
+                        </div>
+                        <div className="h-12 w-12 bg-gray-300 rounded-full opacity-50"></div>
+                      </div>
+                      <div className="mt-4 flex items-center text-sm">
+                        <div className="h-4 bg-gray-300 rounded w-24"></div>
+                        <div className="ml-2 h-4 bg-gray-300 rounded w-24"></div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="bg-gradient-to-br from-amber-500 to-amber-600 rounded p-6 text-white">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-amber-100">Total Budget</p>
+                          <h3 className="text-3xl font-bold mt-1">{overview?.budget?.total}</h3>
+                        </div>
+                        <DollarSign className="h-12 w-12 opacity-50" />
+                      </div>
+                      <div className="mt-4 text-sm">
+                        <span className="bg-amber-400/30 px-2 py-1 rounded">
+                          {overview?.hours?.total} Total Hours
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                </>
+              )}
             </div>
 
             {/* Additional KPI Cards */}

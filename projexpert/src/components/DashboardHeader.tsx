@@ -5,12 +5,13 @@ import { useAuth } from '../contexts/AuthContext';
 import ConfirmationModal from '../modals/ConfirmationDialog';
 import { useState } from 'react';
 import InfoModal from '../modals/ProjectInfo';
+import { useConfig } from '../contexts/ConfigurationsContext';
 
 const DashboardHeader = () => {
     const { user, logout } = useAuth();
     const [logOutModal, setLogOutModal] = useState(false);
     const [infoModal, setInfoModal] = useState(false);
-
+    const { config } = useConfig();
     return (
         <>
             <nav className="fixed top-0 left-0 right-0 z-50 h-14 bg-white/80 backdrop-blur-xl shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] border-b border-slate-200/70">
@@ -20,7 +21,7 @@ const DashboardHeader = () => {
                         <div className="relative group">
                             <div className="absolute -inset-1 bg-gradient-to-r from-green-300 to-blue-300 rounded-lg blur opacity-25 group-hover:opacity-75 transition duration-1000 group-hover:duration-200"></div>
                             <span className="relative text-3xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent group-hover:bg-gradient-to-l">
-                                ProjeXpert<span className='text-xl'>.in</span>
+                                {config.appName}
                             </span>
                         </div>
                     </div>

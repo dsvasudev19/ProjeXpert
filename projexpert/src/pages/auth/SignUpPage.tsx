@@ -3,8 +3,9 @@ import { Formik, Field, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import toast from "react-hot-toast";
 import { axiosInstance } from "../../axiosIntance";
-
+import { useConfig } from "../../contexts/ConfigurationsContext";
 const SignUpPage = () => {
+  const { config } = useConfig();
   // Yup validation schema
   const validationSchema = Yup.object({
     name: Yup.string().required("Name is required"),
@@ -28,7 +29,7 @@ const SignUpPage = () => {
       const res = await axiosInstance.post(`/auth/register`, values);
       if (res.status === 201) {
         setTimeout(()=>{
-          toast.success("Welcome to ProjeXpert! Your account has been created successfully.",{
+          toast.success(`Welcome to ${config.appName}! Your account has been created successfully.`,{
             id:registerToast
           });
           
@@ -53,14 +54,14 @@ const SignUpPage = () => {
           <div className="flex items-center gap-3 mb-8">
             <Briefcase className="w-12 h-12 text-blue-600" />
             <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
-              ProjeXpert
+              {config.appName}
             </h1>
           </div>
           <h2 className="text-4xl font-bold text-gray-900 mb-6 leading-tight">
             Transform Your Project Management Experience
           </h2>
           <p className="text-lg text-gray-600 mb-10">
-            Join thousands of successful teams who use ProjeXpert to streamline their projects,
+            Join thousands of successful teams who use {config.appName} to streamline their projects,
             enhance collaboration, and deliver outstanding results.
           </p>
           <div className="space-y-6">
@@ -218,7 +219,7 @@ const SignUpPage = () => {
                     href="/auth/login"
                     className="font-medium text-blue-600 hover:text-blue-700 transition-colors duration-200"
                   >
-                    Sign in to ProjeXpert
+                    Sign in to {config.appName}
                   </a>
                 </p>
               </Form>

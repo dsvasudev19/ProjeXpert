@@ -4,11 +4,11 @@ import { axiosInstance } from '../../axiosIntance';
 import { Mail, Lock, ArrowRight, Briefcase, LockOpen } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useState } from 'react';
-
+import { useConfig } from '../../contexts/ConfigurationsContext';
 const SignInPage = () => {
   const initialValues = { email: '', password: '' };
   const [isLocked, setIsLocked] = useState(true);
-
+  const { config } = useConfig();
   const validationSchema = Yup.object({
     email: Yup.string().email('Invalid email address').required('Required'),
     password: Yup.string().required('Password is required'),
@@ -22,7 +22,7 @@ const SignInPage = () => {
         await new Promise(resolve => setTimeout(resolve, 800));
         localStorage.setItem("__auth", res.data.token)
         localStorage.setItem("refreshToken", res.data.refreshToken)
-        toast.success("Welcome back to ProjeXpert!");
+        toast.success(`Welcome back to ${config.appName}!`);
         window.location.href = "/dashboard/analytics";
       }
     } catch (error: any) {
@@ -49,7 +49,7 @@ const SignInPage = () => {
           <div className="flex items-center gap-3 mb-8">
             <Briefcase className="w-12 h-12 text-blue-600" />
             <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
-              ProjeXpert
+              {config.appName}
             </h1>
           </div>
           <h2 className="text-4xl font-bold text-gray-900 mb-6 leading-tight">

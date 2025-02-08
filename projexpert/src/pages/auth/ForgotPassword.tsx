@@ -3,7 +3,7 @@ import { Formik, Field, Form } from 'formik';
 import * as Yup from 'yup';
 import toast from 'react-hot-toast';
 import { axiosInstance } from "../../axiosIntance";
-
+import { useConfig } from '../../contexts/ConfigurationsContext';
 
 const ForgotPassword = () => {
   const validationSchema = Yup.object({
@@ -11,6 +11,7 @@ const ForgotPassword = () => {
       .email("Invalid email address")
       .required("Email is required"),
   });
+  const { config } = useConfig();
 
 
   const handleSubmit = async (values: any, { setSubmitting }: any) => {
@@ -43,7 +44,7 @@ const ForgotPassword = () => {
           <div className="flex items-center gap-3 mb-8">
             <Briefcase className="w-12 h-12 text-blue-600" />
             <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
-              ProjeXpert
+              {config.appName}
             </h1>
           </div>
           <h2 className="text-4xl font-bold text-gray-900 mb-6 leading-tight">
