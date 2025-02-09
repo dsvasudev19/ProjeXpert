@@ -23,4 +23,6 @@ router.get("/users/clients",authenticateUser,userController.getAllClients)
 
 router.get("/team/internal-only",authenticateUser,userController.getTeamOnlyMembers)
 
+router.get("/team/admins",authenticateUser,userController.getAllAdmins)
+
 module.exports = router;

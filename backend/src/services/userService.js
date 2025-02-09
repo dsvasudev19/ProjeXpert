@@ -19,7 +19,6 @@ const userService = {
 
     createUser: async (userData) => {
         const { name, email, roleId } = userData;
-
         const existingUser = await User.findOne({ where: { email } });
         if (existingUser) {
             throw new Error('Email already in use.');

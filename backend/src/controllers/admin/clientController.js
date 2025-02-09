@@ -1,6 +1,6 @@
 const { User, Role, Project, Bug } = require('../../models'); // Adjust the path based on your project structure
 const bcrypt = require('bcrypt');
-const { Op } = require('sequelize');
+const { Op, where } = require('sequelize');
 const crypto = require("crypto")
 
 const {sendEmail}=require("./../../utils/nodeMailer")
@@ -48,8 +48,11 @@ const createUser = async (req, res) => {
         const user = await User.findByPk(req.user.id, { include: [Role] });
 
         const { name, email, roleId } = req.body;
+        let roleInstances;
+        if (roleId) {
+            roleInstances = await Role.findByPk(roleId);
 
-
+        }
         // Check if the email already exists
         const existingUser = await User.findOne({ where: { email } });
         if (existingUser) {
@@ -60,12 +63,15 @@ const createUser = async (req, res) => {
         // Hash the password
         const hashedPassword = await bcrypt.hash(tempPassword, 10);
 
+        
         // Create the user
         const newUser = await User.create({
             name,
             email,
             password: hashedPassword,
             status: 'active',
+            userType:roleInstances ? roleInstances.name === 'admin' ? 'admin' : 'client' : 'client',
+            ...req.body
         });
 
         // Assign roles to the user
@@ -124,8 +130,6 @@ const updateUser = async (req, res) => {
 const deleteUser = async (req, res) => {
     try {
         const user = await User.findByPk(req.user.id, { include: [Role] });
-
-
 
         const targetUser = await User.findByPk(req.params.id);
         if (!targetUser) {
@@ -265,6 +269,21 @@ const getTeamOnlyMembers = async (req, res, next) => {
     }
 }
 
+const getAllAdmins = async (req, res, next) => {
+    try {
+        const admins = await User.findAll({
+            where: {
+                userType: 'admin'
+            },
+            include: [{ model: Role, attributes: ['name'] ,where:{name:{[Op.eq]:'admin'}}}]
+        });
+        return res.status(200).json({ success: true, message: "Successfully fetched all admins", data: admins });
+    } catch (error) {
+        console.log(error)
+        next(error)
+    }
+}
+
 module.exports = {
     getAllUsers,
     getUserById,
@@ -275,5 +294,6 @@ module.exports = {
     getUserProjects,
     getUserBugs,
     getAllClients,
-    getTeamOnlyMembers
+    getTeamOnlyMembers,
+    getAllAdmins
 };

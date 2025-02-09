@@ -1,19 +1,37 @@
-const { Project, Task, TeamMember,File } = require("../../models");
+const { Project, Task, TeamMember,File, User, Role } = require("../../models");
 const { Sequelize } = require("./../../models")
 const moment = require('moment');
 
 const getDashboardData = async (req, res, next) => {
-  const currentDate = new Date();
-
-  // Get the start and end of the current week (from Sunday to Saturday)
-  const startOfWeek = new Date(currentDate.setDate(currentDate.getDate() - currentDate.getDay())); // Start of the current week (Sunday)
-  const endOfWeek = new Date(new Date(startOfWeek).setDate(startOfWeek.getDate() + 7)); // End of the current week (Saturday)
-
-  // Reset the current date after manipulation
-  currentDate.setHours(0, 0, 0, 0); // Set time to the start of the day for accurate comparisons
-
   try {
-    // Fetch all necessary data concurrently using Promise.all
+    const userId = req.user.id;
+    const user = await User.findOne({
+      where: { id: userId },
+      include: [{ model: Role }]
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const userRole = user.Roles[0].name;
+    const currentDate = new Date();
+    const startOfWeek = new Date(currentDate.setDate(currentDate.getDate() - currentDate.getDay()));
+    const endOfWeek = new Date(new Date(startOfWeek).setDate(startOfWeek.getDate() + 7));
+    currentDate.setHours(0, 0, 0, 0);
+
+    // Set conditions based on user role
+    let projectWhereCondition = {};
+    let taskWhereCondition = {};
+
+    if (userRole !== 'admin') {
+      projectWhereCondition.clientId = userId;
+      taskWhereCondition[Sequelize.Op.or] = [
+        { assigneeId: userId },
+        { createdBy: userId }
+      ];
+    }
+
     const [
       tasksCompletedThisWeek,
       tasksInProgressDueThisWeek,
@@ -24,9 +42,10 @@ const getDashboardData = async (req, res, next) => {
     ] = await Promise.all([
       Task.count({
         where: {
+          ...taskWhereCondition,
           status: 'Completed',
           updatedAt: {
-            [Sequelize.Op.gte]: startOfWeek, // Completed this week
+            [Sequelize.Op.gte]: startOfWeek,
             [Sequelize.Op.lt]: endOfWeek
           }
         }
@@ -34,9 +53,10 @@ const getDashboardData = async (req, res, next) => {
 
       Task.count({
         where: {
+          ...taskWhereCondition,
           status: 'In Progress',
           dueDate: {
-            [Sequelize.Op.gte]: currentDate, // In progress and due this week
+            [Sequelize.Op.gte]: currentDate,
             [Sequelize.Op.lt]: endOfWeek
           }
         }
@@ -44,9 +64,10 @@ const getDashboardData = async (req, res, next) => {
 
       Task.count({
         where: {
+          ...taskWhereCondition,
           status: 'Pending',
           dueDate: {
-            [Sequelize.Op.gte]: currentDate, // Pending tasks due this week
+            [Sequelize.Op.gte]: currentDate,
             [Sequelize.Op.lt]: endOfWeek
           }
         }
@@ -54,20 +75,24 @@ const getDashboardData = async (req, res, next) => {
 
       Project.count({
         where: {
-          status: 'active' // Active projects
+          ...projectWhereCondition,
+          status: 'active'
         }
       }),
 
       Project.count({
         where: {
+          ...projectWhereCondition,
           endDate: {
-            [Sequelize.Op.gte]: currentDate, // Projects due this week
+            [Sequelize.Op.gte]: currentDate,
             [Sequelize.Op.lt]: endOfWeek
           }
         }
       }),
 
-      Project.count()
+      Project.count({
+        where: projectWhereCondition
+      })
     ]);
 
     return res.json({
@@ -87,31 +112,68 @@ const getDashboardData = async (req, res, next) => {
 
 const getDashboardOverview = async (req, res) => {
   try {
+    const userId = req.user.id;
+    const user = await User.findOne({
+      where: { id: userId },
+      include: [{ model: Role }]
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const userRole = user.Roles[0].name;
+
+    // Set conditions based on user role
+    let projectWhereCondition = {};
+    let taskWhereCondition = {};
+
+    if (userRole !== 'admin') {
+      projectWhereCondition.clientId = userId;
+      taskWhereCondition[Sequelize.Op.or] = [
+        { assigneeId: userId },
+        { createdBy: userId }
+      ];
+    }
+
     // Project-related statistics
-    const totalProjects = await Project.count();
-    const activeProjects = await Project.count({ where: { status: 'active' } });
-    const completedProjects = await Project.count({ where: { status: 'completed' } });
+    const totalProjects = await Project.count({ where: projectWhereCondition });
+    const activeProjects = await Project.count({ 
+      where: { ...projectWhereCondition, status: 'active' } 
+    });
+    const completedProjects = await Project.count({ 
+      where: { ...projectWhereCondition, status: 'completed' } 
+    });
 
     // Task-related statistics
-    const totalTasks = await Task.count();
-    const completedTasks = await Task.count({ where: { status: 'completed' } });
-    const taskCompletionPercentage = totalTasks > 0 ? ((completedTasks / totalTasks) * 100).toFixed(2) : 0;
+    const totalTasks = await Task.count({ where: taskWhereCondition });
+    const completedTasks = await Task.count({ 
+      where: { ...taskWhereCondition, status: 'completed' } 
+    });
+    const taskCompletionPercentage = totalTasks > 0 ? 
+      ((completedTasks / totalTasks) * 100).toFixed(2) : 0;
 
-    // Team-related statistics
-    const totalTeamMembers = await TeamMember.count();
-    const activeMembers = await TeamMember.count({ where: { status: 'active' } });
+    // Team-related statistics (only for admin)
+    const teamWhereCondition = userRole !== 'admin' ? { userId } : {};
+    const totalTeamMembers = await TeamMember.count({ where: teamWhereCondition });
+    const activeMembers = await TeamMember.count({ 
+      where: { ...teamWhereCondition, status: 'active' } 
+    });
 
     // Budget-related statistics
-    const totalBudget = await Project.sum('budget');
+    const totalBudget = await Project.sum('budget', { where: projectWhereCondition });
 
-    // Total Hours from tasks (assuming `hoursSpent` is a field in Task)
-    const totalHours = Math.ceil(Math.random() * 90);  // Simulated data for now
+    // Documents statistics
+    const fileWhereCondition = userRole !== 'admin' ? {
+      [Sequelize.Op.or]: [
+        { uploaderId: userId }
+      ]
+    } : {};
 
-    // Documents statistics (File model)
-    const totalDocuments = await File.count();
+    const totalDocuments = await File.count({
+      where: fileWhereCondition
+    });
 
-
-    // Return the response grouped by categories
     return res.status(200).json({
       projects: {
         total: totalProjects,
@@ -128,10 +190,10 @@ const getDashboardOverview = async (req, res) => {
         activeNow: activeMembers
       },
       budget: {
-        total: `${totalBudget.toLocaleString()}`
+        total: totalBudget ? totalBudget.toLocaleString() : '0'
       },
       hours: {
-        total: `${totalHours}`
+        total: Math.ceil(Math.random() * 90)  // Keeping the simulated data
       },
       documents: {
         total: totalDocuments

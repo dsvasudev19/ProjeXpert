@@ -39,4 +39,7 @@ router.use("/team",teamRoutes)
 const projectAssignment=require("./admin/projectAssignmentRoutes")
 router.use("/project-assignment",projectAssignment)
 
+const exportRoutes = require('./admin/exportRoutes')
+router.use('/export', exportRoutes)
+
 module.exports=router;

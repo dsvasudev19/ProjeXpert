@@ -17,7 +17,6 @@ redisClient.on('error', (err) => {
     console.error('Redis Client Error', err);
     // Don't exit here - let reconnectStrategy handle connection issues
 });
-
 // Connect and handle initial connection error
 (async () => {
     try {

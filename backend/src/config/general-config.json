@@ -1,0 +1,7 @@
+{
+  "appName": "Projexpert.com",
+  "appUrl": "https://projexpert.vercel.app",
+  "supportEmail": "support@vasudev.dev",
+  "maxFileSize": 20,
+  "sessionTimeout": 60
+}

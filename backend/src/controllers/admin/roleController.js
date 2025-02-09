@@ -1,11 +1,14 @@
 // controllers/roleController.js
 const { Role, Permission, User } = require('../../models');
-
+const { Op } = require('sequelize');
 // Create a new role
 const createRole = async (req, res) => {
     try {
         const { name, description, isActive } = req.body;
         const role = await Role.create({ name, description, isActive });
+        const permissions = await Permission.findAll({where:{id:{[Op.in]:req.body.permissions}}})
+        await role.setPermissions(permissions)
+        await role.save()
         return res.status(201).json({ message: 'Role created successfully.', role });
     } catch (error) {
         return res.status(500).json({ message: 'Internal server error.', error });
@@ -43,18 +46,19 @@ const getRoleById = async (req, res) => {
 const updateRole = async (req, res) => {
     try {
         const { name, description, isActive } = req.body;
-        const role = await Role.findByPk(req.params.id);
+        const role = await Role.findByPk(req.params.id,{include:[{model:Permission}]});
         if (!role) {
             return res.status(404).json({ message: 'Role not found.' });
         }
-
         role.name = name || role.name;
         role.description = description || role.description;
         role.isActive = isActive !== undefined ? isActive : role.isActive;
-
+        const newPermissionsInstances=await Permission.findAll({where:{id:{[Op.in]:req.body.permissions}}})
+        await role.setPermissions(newPermissionsInstances)  
         await role.save();
         return res.status(200).json({ message: 'Role updated successfully.', role });
     } catch (error) {
+        console.log(error)
         return res.status(500).json({ message: 'Internal server error.', error });
     }
 };
@@ -88,7 +92,9 @@ const assignPermissionsToRole = async (req, res) => {
         // Find permissions
         const permissions = await Permission.findAll({
             where: {
-                id: permissionIds
+                id: {
+                    [Op.in]: permissionIds
+                }
             }
         });
 

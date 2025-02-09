@@ -1,0 +1,137 @@
+{
+  "github": {
+    "enabled": true,
+    "clientId": "asdkjfasdfkjadsf",
+    "clientSecret": "aksjldfklajsdf"
+  },
+  "google": {
+    "enabled": false,
+    "encryptedClientId": null,
+    "encryptedClientSecret": null
+  },
+  "linkedin": {
+    "enabled": false,
+    "encryptedClientId": null,
+    "encryptedClientSecret": null
+  },
+  "facebook": {
+    "enabled": false,
+    "encryptedClientId": null,
+    "encryptedClientSecret": null
+  },
+  "twitter": {
+    "enabled": false,
+    "encryptedClientId": null,
+    "encryptedClientSecret": null
+  },
+  "instagram": {
+    "enabled": false,
+    "encryptedClientId": null,
+    "encryptedClientSecret": null
+  },
+  "tiktok": {
+    "enabled": false,
+    "encryptedClientId": null,
+    "encryptedClientSecret": null
+  },
+  "pinterest": {
+    "enabled": false,
+    "encryptedClientId": null,
+    "encryptedClientSecret": null
+  },
+  "snapchat": {
+    "enabled": false,
+    "encryptedClientId": null,
+    "encryptedClientSecret": null
+  },
+  "youtube": {
+    "enabled": false,
+    "encryptedClientId": null,
+    "encryptedClientSecret": null
+  },
+  "twitch": {
+    "enabled": false,
+    "encryptedClientId": null,
+    "encryptedClientSecret": null
+  },
+  "discord": {
+    "enabled": false,
+    "encryptedClientId": null,
+    "encryptedClientSecret": null
+  },
+  "reddit": {
+    "enabled": false,
+    "encryptedClientId": null,
+    "encryptedClientSecret": null
+  },
+  "telegram": {
+    "enabled": false,
+    "encryptedClientId": null,
+    "encryptedClientSecret": null
+  },
+  "whatsapp": {
+    "enabled": false,
+    "encryptedClientId": null,
+    "encryptedClientSecret": null
+  },
+  "spotify": {
+    "enabled": false,
+    "encryptedClientId": null,
+    "encryptedClientSecret": null
+  },
+  "apple": {
+    "enabled": false,
+    "encryptedClientId": null,
+    "encryptedClientSecret": null
+  },
+  "microsoft": {
+    "enabled": false,
+    "encryptedClientId": null,
+    "encryptedClientSecret": null
+  },
+  "yahoo": {
+    "enabled": false,
+    "encryptedClientId": null,
+    "encryptedClientSecret": null
+  },
+  "openAi": {
+    "enabled": false,
+    "encryptedClientId": null,
+    "encryptedClientSecret": null
+  },
+  "stripe": {
+    "enabled": false,
+    "encryptedClientId": null,
+    "encryptedClientSecret": null
+  },
+  "paypal": {
+    "enabled": false,
+    "encryptedClientId": null,
+    "encryptedClientSecret": null
+  },
+  "razorpay": {
+    "enabled": false,
+    "encryptedClientId": null,
+    "encryptedClientSecret": null
+  },
+  "deepseekAi": {
+    "enabled": false,
+    "encryptedClientId": null,
+    "encryptedClientSecret": null
+  },
+  "openRouter": {
+    "enabled": false,
+    "encryptedClientId": null,
+    "encryptedClientSecret": null
+  },
+  "claude": {
+    "enabled": false,
+    "encryptedClientId": null,
+    "encryptedClientSecret": null
+  },
+  "groq": {
+    "enabled": false,
+    "encryptedClientId": null,
+    "encryptedClientSecret": null
+  }
+}

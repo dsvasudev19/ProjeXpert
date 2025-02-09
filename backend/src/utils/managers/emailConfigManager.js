@@ -3,7 +3,7 @@ const path = require('path');
 const nodemailer = require('nodemailer');
 
 function createEmailConfigManager() {
-  const CONFIG_PATH = path.resolve('./../../config/email-config.json');
+  const CONFIG_PATH = path.resolve(__dirname,'./../../config/email-config.json');
 
   // Load initial configuration
   function loadConfig() {

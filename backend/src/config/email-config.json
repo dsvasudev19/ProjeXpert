@@ -1,0 +1,12 @@
+{
+  "host": "smtp.gmail.com",
+  "port": "467",
+  "secure": false,
+  "auth": {
+    "user": "vasudev",
+    "pass": "vasudev"
+  },
+  "fromName": "Vasudev",
+  "fromEmail": "vasudev@gmail.com",
+  "enableSSL": true
+}
