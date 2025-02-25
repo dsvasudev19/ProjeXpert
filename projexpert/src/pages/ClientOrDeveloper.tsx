@@ -3,12 +3,14 @@ import { Plus, Mail, Trash2, Github } from "lucide-react";
 import AddClient from "../modals/AddClient";
 import { axiosInstance } from "../axiosIntance";
 import toast from "react-hot-toast";
-
+import ConfirmationModal from "../modals/ConfirmationDialog";
 
 const ClientOrDeveloper = () => {
     const [clients, setClients] = useState<any>();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [loadingData, setLoadingData] = useState(false);
+    const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
+    const [clientToDelete, setClientToDelete] = useState<any>(null);
     // const [expandedClientId, setExpandedClientId] = useState<number | null>(null);
 
     const getAllClients = async () => {
@@ -46,8 +48,13 @@ const ClientOrDeveloper = () => {
                 toast.success("Client Deleted Successfully")
                 getAllClients()
             }
-        } catch (error) {
+        } catch (error: any) {
             console.log(error)
+            if (error.response.data.error.name === "SequelizeForeignKeyConstraintError") {
+                toast.error("Client is associated with a project and cannot be deleted")
+            }
+        } finally {
+            setIsConfirmationModalOpen(false)
         }
     };
 
@@ -78,7 +85,10 @@ const ClientOrDeveloper = () => {
                                     className="bg-white rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-shadow relative group"
                                 >
                                     <button
-                                        onClick={() => deleteClient(client.id)}
+                                        onClick={() => {
+                                            setClientToDelete(client);
+                                            setIsConfirmationModalOpen(true);
+                                        }}
                                         className="absolute top-2 right-2 text-red-500 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity"
                                     >
                                         <Trash2 className="w-5 h-5 border m-1 rounded transition-transform transform hover:scale-110" />
@@ -127,6 +137,19 @@ const ClientOrDeveloper = () => {
                 }
 
                 <AddClient isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} getClients={getAllClients} />
+
+                {
+                    isConfirmationModalOpen && (
+                        <ConfirmationModal
+                            isOpen={isConfirmationModalOpen}
+                            confirmationText={`Are you sure you want to delete ${clientToDelete.name}?`}
+                            onClose={() => setIsConfirmationModalOpen(false)}
+                            action={() => deleteClient(clientToDelete.id)}
+                            actionText={`Delete`}
+                            title={`Delete Client or Team Member`}
+                        />
+                    )
+                }
             </div>
         </div>
     );

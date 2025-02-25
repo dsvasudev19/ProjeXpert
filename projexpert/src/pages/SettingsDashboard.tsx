@@ -11,9 +11,9 @@ import EmailSettings from '../components/DashboardSettings/EmailSettings';
 import DataExport from '../components/DashboardSettings/DataExport';
 import RolesAndPermissions from '../components/DashboardSettings/RolesAndPermissions';
 import Security from '../components/DashboardSettings/Security';
-import Integrations from '../components/DashboardSettings/Integrations';
 import AuditLogs from '../components/DashboardSettings/AuditLogs';
 import DatabaseSettings from '../components/DashboardSettings/DatabaseSettings';
+import UnderMaintenance from '../components/UnderMaintenance';
 
 
 
@@ -115,7 +115,9 @@ export default function SettingsDashboard() {
 
               {/* Integrations Tab */}
               {activeTab === 'integrations' && (
-                <Integrations />
+                // <Integrations />
+                 <UnderMaintenance />
+                
               )}
 
               {/* Audit Logs Tab */}

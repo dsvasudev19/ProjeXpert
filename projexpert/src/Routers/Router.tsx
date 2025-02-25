@@ -23,6 +23,7 @@ import EmployeeOnboarding from "../pages/EmployeeOnboarding";
 import SettingsDashboard from "../pages/SettingsDashboard";
 import UserProfilePage from "../pages/UserProfile";
 import ChatPage from "../pages/ChatPage";
+import TestPage from "../pages/TestPage";
 
 
 
@@ -47,6 +48,8 @@ const AppRoutes = () => {
             <Route path="settings" element={<SettingsDashboard />} />
             <Route path="u/profile" element={<UserProfilePage />} />
             <Route path="chat" element={<ChatPage />} />
+            <Route path="test" element={<TestPage />} />
+            <Route path="*" element={<NotFound />} />
           </Route>
         <Route path="/auth/*">
           <Route path="login" element={<SignInPage />} />
