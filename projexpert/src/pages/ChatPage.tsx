@@ -6,6 +6,7 @@ import { axiosInstance } from '../axiosIntance';
 import axios from 'axios';
 import { useSocket } from '../contexts/SocketContext';
 import { useAuth } from '../contexts/AuthContext';
+import ChatSidebar from '../components/Chat/ChatSidebar';
 
 const ChatPage = () => {
   const [activeChat, setActiveChat] = useState<any>(null);
@@ -209,11 +210,11 @@ const ChatPage = () => {
           Reconnecting...
         </div>
       )}
-      {/* <ChatSidebar 
+      <ChatSidebar 
         chats={chats} 
         activeChat={activeChat} 
         setActiveChat={setActiveChat} 
-      /> */}
+      />
       {!activeChat ? (
         <div className="flex-1 flex items-center justify-center bg-[#f0f2f5]">
           <p className="text-gray-500">Select a chat to start messaging</p>
