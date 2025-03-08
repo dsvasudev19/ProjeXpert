@@ -25,4 +25,8 @@ router.get("/team/internal-only",authenticateUser,userController.getTeamOnlyMemb
 
 router.get("/team/admins",authenticateUser,userController.getAllAdmins)
 
+router.patch("/bio",authenticateUser,userController.updateUserBio)
+
+router.patch("/password",authenticateUser,userController.updateCredentials)
+
 module.exports = router;

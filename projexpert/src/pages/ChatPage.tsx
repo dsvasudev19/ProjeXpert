@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import MessageList from '../components/Chat/MessageList';
-import ChatSidebar from '../components/Chat/ChatSidebar';
 import MessageInput from '../components/Chat/MessageInput';
 import ChatHeader from '../components/Chat/ChatHeader';
 import { axiosInstance } from '../axiosIntance';
@@ -210,11 +209,11 @@ const ChatPage = () => {
           Reconnecting...
         </div>
       )}
-      <ChatSidebar 
+      {/* <ChatSidebar 
         chats={chats} 
         activeChat={activeChat} 
         setActiveChat={setActiveChat} 
-      />
+      /> */}
       {!activeChat ? (
         <div className="flex-1 flex items-center justify-center bg-[#f0f2f5]">
           <p className="text-gray-500">Select a chat to start messaging</p>

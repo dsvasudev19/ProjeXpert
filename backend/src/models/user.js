@@ -44,6 +44,7 @@ module.exports = (sequelize, DataTypes) => {
     githubId:DataTypes.STRING,
     githubUsername:DataTypes.STRING,
     avatar:DataTypes.STRING,
+    bio:DataTypes.TEXT,
     userType:{
       type:DataTypes.STRING,
       defaultValue:'client'

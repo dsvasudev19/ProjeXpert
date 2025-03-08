@@ -31,7 +31,7 @@ var corsOptions = {
         "https://github.com"
     ],
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS','PATCH'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Set-Cookie'],
 };
 
@@ -70,7 +70,7 @@ app.get("/status", (req, res) => {
 const io = new Server(server, {
     cors: {
       origin: ["https://chatter.interactweb.agency", "http://localhost:5173"],
-      methods: ["GET", "POST", "PUT", "DELETE"],
+      methods: ["GET", "POST", "PUT", "DELETE","PATCH"],
       credentials: true,
     },
   });

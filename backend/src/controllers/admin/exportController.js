@@ -49,7 +49,7 @@ const exportData = async (req, res) => {
         tasks: { model: Task, include: [{ model: User, as: 'Assignee' }, { model: Project }] },
         bugs: { model: Bug, include: [{ model: Project }] },
         teams: { model: Team, include: [{ model: User, as: 'Lead' }] },
-        teamMembers: { model: TeamMember, include: [{ model: User }] },
+        teamMembers: { model: TeamMember, include: [{ model: User,as: 'User'},] },
         payments: { model: Payment, include: [{ model: Project }] }
       };
 

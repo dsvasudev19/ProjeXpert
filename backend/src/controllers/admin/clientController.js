@@ -3,16 +3,16 @@ const bcrypt = require('bcrypt');
 const { Op, where } = require('sequelize');
 const crypto = require("crypto")
 
-const {sendEmail}=require("./../../utils/nodeMailer")
-const {registrationSuccess}=require("./../../helpers/emailTemplates")
+const { sendEmail } = require("./../../utils/nodeMailer")
+const { registrationSuccess } = require("./../../helpers/emailTemplates")
 
 // Get all users
 const getAllUsers = async (req, res) => {
     try {
         const users = await User.findAll({
             include: [{ model: Role, attributes: ['name'] }],
-            where:{
-                userType:'client'
+            where: {
+                userType: 'client'
             }
         });
         const newUsersMap = users.map(user => ({ ...user.toJSON(), role: user.Roles[0]?.name }));
@@ -63,14 +63,14 @@ const createUser = async (req, res) => {
         // Hash the password
         const hashedPassword = await bcrypt.hash(tempPassword, 10);
 
-        
+
         // Create the user
         const newUser = await User.create({
             name,
             email,
             password: hashedPassword,
             status: 'active',
-            userType:roleInstances ? roleInstances.name === 'admin' ? 'admin' : 'client' : 'client',
+            userType: roleInstances ? roleInstances.name === 'admin' ? 'admin' : 'client' : 'client',
             ...req.body
         });
 
@@ -83,9 +83,9 @@ const createUser = async (req, res) => {
         const emailData = {
             to: newUser.email,
             subject: "Welcome to Projexpert!",
-            html: registrationSuccess({...newUser,verificationLink,tempPassword})
+            html: registrationSuccess({ ...newUser, verificationLink, tempPassword })
         }
-        await sendEmail(emailData.to,emailData.subject,emailData.html)
+        await sendEmail(emailData.to, emailData.subject, emailData.html)
 
         return res.status(201).json({ message: 'User created successfully.', newUser });
     } catch (error) {
@@ -224,14 +224,14 @@ const getAllClients = async (req, res, next) => {
     console.log("getting here")
     try {
         const clients = await User.findAll({
-            where:{
-                userType:'client'
+            where: {
+                userType: 'client'
             },
-            include:[
+            include: [
                 {
-                    model:Role,
-                    where:{
-                        
+                    model: Role,
+                    where: {
+
                     }
                 }
             ]
@@ -259,8 +259,8 @@ const getTeamOnlyMembers = async (req, res, next) => {
             }]
         });
 
-       
-        const newClients = clients.map((client) => { return { id: client.id, name: client.name, email: client.email, role: client.Roles[0].name, userType:client.userType,doj:client.createdAt} })
+
+        const newClients = clients.map((client) => { return { id: client.id, name: client.name, email: client.email, role: client.Roles[0].name, userType: client.userType, doj: client.createdAt } })
 
         return res.status(200).json({ success: true, message: "Successfully fetched all TeamMembers", data: newClients });
     } catch (error) {
@@ -275,9 +275,44 @@ const getAllAdmins = async (req, res, next) => {
             where: {
                 userType: 'admin'
             },
-            include: [{ model: Role, attributes: ['name'] ,where:{name:{[Op.eq]:'admin'}}}]
+            include: [{ model: Role, attributes: ['name'], where: { name: { [Op.eq]: 'admin' } } }]
         });
         return res.status(200).json({ success: true, message: "Successfully fetched all admins", data: admins });
+    } catch (error) {
+        console.log(error)
+        next(error)
+    }
+}
+
+const updateUserBio = async (req, res, next) => {
+    try {
+        const user = await User.findByPk(req.user.id, { include: [Role] });
+        if (!user) {
+            return res.status(404).json({ message: 'User not found.' });
+        }
+        user.bio = req.body.bio
+        user.name = req.body.name
+        await user.save()
+        return res.status(200).json({ message: 'User bio updated successfully.', user });
+    } catch (error) {
+        console.log(error)
+        next(error)
+    }
+}
+
+const updateCredentials=async(req,res,next)=>{
+    try {
+        const user=await User.findByPk(req.user.id, { include: [Role] });
+        if(!user){
+            return res.status(404).json({ message: 'User not found.' });
+        }
+        const verified=await bcrypt.compareSync(req.body.currentPassword,user.password)
+        if(!verified){
+            return res.status(401).json({ message: 'Invalid password.' });
+        }
+        user.password=await bcrypt.hash(req.body.newPassword,10)
+        await user.save()
+        return res.status(200).json({ message: 'User credentials updated successfully.', user });
     } catch (error) {
         console.log(error)
         next(error)
@@ -295,5 +330,7 @@ module.exports = {
     getUserBugs,
     getAllClients,
     getTeamOnlyMembers,
-    getAllAdmins
+    getAllAdmins,
+    updateUserBio,
+    updateCredentials
 };
