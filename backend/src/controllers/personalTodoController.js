@@ -6,22 +6,26 @@ const getAllTodos = async (req, res) => {
   try {
     const today = new Date();
     today.setHours(0, 0, 0, 0); // Set to the start of the day
+
+    // Find todos for today and beyond, where status is not 'completed' or 'completed' after today.
     const todos = await PersonalTodo.findAll({
       where: {
         userId: req.user.id,
         createdAt: {
-          [Op.gte]: today 
+          [Op.gte]: today // Only todos created from today onward
         },
+        // Check for all todos (status pending, in-progress, etc.), and completed todos after today
         [Op.or]: [
           { status: { [Op.ne]: 'completed' } },
-          { status: 'completed', createdAt: { [Op.gte]: today } }
+          { status: 'completed', updatedAt: { [Op.gte]: today } } // Completed todos that were updated today or after
         ]
       },
-      order: [['dueDate', 'ASC']]
+      order: [['dueDate', 'ASC']] // Order todos by their due date
     });
+
     return res.json(todos);
   } catch (error) {
-    console.log(error)
+    console.log(error);
     return res.status(500).json({ message: 'Error retrieving todos', error });
   }
 };
