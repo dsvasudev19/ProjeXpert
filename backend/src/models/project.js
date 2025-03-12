@@ -60,14 +60,12 @@ module.exports = (sequelize, DataTypes) => {
     
     // Timeline Information
     startDate: DataTypes.DATE,
-    endDate:DataTypes.DATE,
     targetEndDate: DataTypes.DATE,
     estimatedDuration: DataTypes.INTEGER,
     
     // Resource Management
-    projectManager: DataTypes.STRING,
-    teamMembers: DataTypes.TEXT, // Stored as comma-separated values
-    
+    projectManager: DataTypes.INTEGER,
+
     // Financial Information
     budget: DataTypes.DECIMAL(10, 2),
     billingRate: DataTypes.DECIMAL(10, 2),
