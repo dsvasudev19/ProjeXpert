@@ -62,12 +62,6 @@ const ChevronRightIcon = () => (
   </svg>
 );
 
-const UserIcon = ({ className }:any) => (
-  <svg xmlns="http://www.w3.org/2000/svg" className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-    <circle cx="12" cy="7" r="4"></circle>
-  </svg>
-);
 
 const CalendarIcon = ({ className }:any) => (
   <svg xmlns="http://www.w3.org/2000/svg" className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -85,14 +79,16 @@ const FilterIcon = ({ className }:any) => (
 );
 
 const EmployeeCalendarView = () => {
-  const [selectedEmployee, setSelectedEmployee] = useState<any>(employees[0]);
   const [viewType, setViewType] = useState('week');
   const [date, setDate] = useState(new Date());
   const [filterType, setFilterType] = useState('all');
 
-  // Filter events based on selected employee and filter type
+  // Filter events based on logged in user (using first employee as example)
+  const currentUser = employees[0]; // This would come from auth context in a real app
+  
+  // Filter events based on filter type
   const filteredEvents = sampleEvents.filter(event => {
-    if (event.employeeId !== selectedEmployee.id) return false;
+    if (event.employeeId !== currentUser.id) return false;
     if (filterType === 'all') return true;
     return event.type === filterType;
   });
@@ -124,100 +120,94 @@ const EmployeeCalendarView = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen max-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white shadow-sm px-6 py-4">
+    <div className="flex flex-col h-full bg-gray-50 overflow-auto">
+      {/* Header with Legend */}
+      <div className="bg-white shadow-sm px-2 py-4 border-b border-gray-200">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-gray-800">Employee Schedule</h1>
-          <div className="flex items-center space-x-2">
-            <UserIcon className="h-5 w-5 text-gray-500" />
-            <span className="font-medium">{selectedEmployee.name}</span>
-            <span className="text-sm text-gray-500">({selectedEmployee.department})</span>
+          <h1 className="text-xl font-semibold text-gray-800">My Schedule</h1>
+          
+          {/* Legend moved to header */}
+          <div className="flex items-center space-x-4 text-xs">
+            <div className="flex items-center">
+              <span className="inline-block w-2.5 h-2.5 bg-purple-500 rounded-sm mr-1.5"></span>
+              <span className="text-gray-600">Meetings</span>
+            </div>
+            <div className="flex items-center">
+              <span className="inline-block w-2.5 h-2.5 bg-emerald-500 rounded-sm mr-1.5"></span>
+              <span className="text-gray-600">Tasks</span>
+            </div>
           </div>
         </div>
       </div>
       
       {/* Controls */}
-      <div className="flex flex-wrap items-center justify-between px-6 py-4 bg-white border-b">
-        <div className="flex items-center space-x-4">
-          <div className="flex items-center space-x-2">
-            <button 
-              onClick={() => {
-                const newDate = new Date(date);
-                if (viewType === 'day') newDate.setDate(newDate.getDate() - 1);
-                else if (viewType === 'week') newDate.setDate(newDate.getDate() - 7);
-                else newDate.setMonth(newDate.getMonth() - 1);
-                setDate(newDate);
-              }}
-              className="p-2 rounded hover:bg-gray-100"
-            >
-              <ChevronLeftIcon />
-            </button>
-            
-            <button 
-              onClick={() => setDate(new Date())} 
-              className="px-3 py-1 text-sm bg-blue-50 text-blue-600 rounded hover:bg-blue-100"
-            >
-              Today
-            </button>
-            
-            <button 
-              onClick={() => {
-                const newDate = new Date(date);
-                if (viewType === 'day') newDate.setDate(newDate.getDate() + 1);
-                else if (viewType === 'week') newDate.setDate(newDate.getDate() + 7);
-                else newDate.setMonth(newDate.getMonth() + 1);
-                setDate(newDate);
-              }}
-              className="p-2 rounded hover:bg-gray-100"
-            >
-              <ChevronRightIcon />
-            </button>
-            
-            <h2 className="text-lg font-medium text-gray-800">
-              {viewType === 'month' 
-                ? moment(date).format('MMMM YYYY')
-                : viewType === 'week'
-                  ? `${moment(date).startOf('week').format('MMM D')} - ${moment(date).endOf('week').format('MMM D, YYYY')}`
-                  : moment(date).format('dddd, MMMM D, YYYY')
-              }
-            </h2>
-          </div>
+      <div className="flex items-center justify-between px-2 py-3 bg-white border-b border-gray-200">
+        <div className="flex items-center space-x-2">
+          <button 
+            onClick={() => {
+              const newDate = new Date(date);
+              if (viewType === 'day') newDate.setDate(newDate.getDate() - 1);
+              else if (viewType === 'week') newDate.setDate(newDate.getDate() - 7);
+              else newDate.setMonth(newDate.getMonth() - 1);
+              setDate(newDate);
+            }}
+            className="p-1.5 rounded-full hover:bg-gray-100 text-gray-600"
+            aria-label="Previous"
+          >
+            <ChevronLeftIcon />
+          </button>
+          
+          <button 
+            onClick={() => setDate(new Date())} 
+            className="px-3 py-1 text-xs bg-blue-50 text-blue-600 rounded hover:bg-blue-100 font-medium"
+          >
+            Today
+          </button>
+          
+          <button 
+            onClick={() => {
+              const newDate = new Date(date);
+              if (viewType === 'day') newDate.setDate(newDate.getDate() + 1);
+              else if (viewType === 'week') newDate.setDate(newDate.getDate() + 7);
+              else newDate.setMonth(newDate.getMonth() + 1);
+              setDate(newDate);
+            }}
+            className="p-1.5 rounded-full hover:bg-gray-100 text-gray-600"
+            aria-label="Next"
+          >
+            <ChevronRightIcon />
+          </button>
+          
+          <h2 className="text-sm font-medium text-gray-800 ml-1">
+            {viewType === 'month' 
+              ? moment(date).format('MMMM YYYY')
+              : viewType === 'week'
+                ? `${moment(date).startOf('week').format('MMM D')} - ${moment(date).endOf('week').format('MMM D, YYYY')}`
+                : moment(date).format('dddd, MMMM D, YYYY')
+            }
+          </h2>
         </div>
         
-        <div className="flex items-center space-x-4 mt-4 sm:mt-0">
-          <div className="flex items-center space-x-2">
-            <UserIcon className="h-4 w-4 text-gray-500" />
-            <select 
-              value={selectedEmployee.id}
-              onChange={(e) => setSelectedEmployee(employees.find((emp:any) => emp.id === parseInt(e.target.value)))}
-              className="border rounded px-2 py-1 text-sm"
-            >
-              {employees.map(emp => (
-                <option key={emp.id} value={emp.id}>{emp.name}</option>
-              ))}
-            </select>
-          </div>
-          
-          <div className="flex items-center space-x-2">
-            <FilterIcon className="h-4 w-4 text-gray-500" />
+        <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-1 bg-white rounded border border-gray-200 px-2 py-1">
+            <FilterIcon className="h-3 w-3 text-gray-500" />
             <select 
               value={filterType}
               onChange={(e) => setFilterType(e.target.value)}
-              className="border rounded px-2 py-1 text-sm"
+              className="text-xs border-none bg-transparent focus:ring-0 py-0"
             >
               <option value="all">All Events</option>
-              <option value="meeting">Meetings Only</option>
-              <option value="task">Tasks Only</option>
+              <option value="meeting">Meetings</option>
+              <option value="task">Tasks</option>
             </select>
           </div>
           
-          <div className="flex items-center space-x-2">
-            <CalendarIcon className="h-4 w-4 text-gray-500" />
+          <div className="flex items-center space-x-1 bg-white rounded border border-gray-200 px-2 py-1">
+            <CalendarIcon className="h-3 w-3 text-gray-500" />
             <select 
               value={viewType}
               onChange={(e) => setViewType(e.target.value)}
-              className="border rounded px-2 py-1 text-sm"
+              className="text-xs border-none bg-transparent focus:ring-0 py-0"
             >
               <option value="month">Month</option>
               <option value="week">Week</option>
@@ -228,35 +218,21 @@ const EmployeeCalendarView = () => {
       </div>
       
       {/* Calendar */}
-      <div className="flex-1 overflow-hidden p-6">
-        <div className="h-full bg-white rounded-lg shadow">
-          <Calendar
-            localizer={localizer}
-            events={filteredEvents}
-            startAccessor="start"
-            endAccessor="end"
-            onView={setViewType}
-            date={date}
-            onNavigate={setDate}
-            eventPropGetter={eventStyleGetter}
-            views={['month', 'week', 'day']}
-            className="h-full"
-          />
-        </div>
-      </div>
-      
-      {/* Legend */}
-      <div className="flex items-center justify-end px-6 py-3 bg-white border-t">
-        <div className="flex items-center space-x-4 text-sm">
-          <div className="flex items-center">
-            <span className="inline-block w-3 h-3 bg-purple-500 rounded-sm mr-2"></span>
-            <span>Meetings</span>
-          </div>
-          <div className="flex items-center">
-            <span className="inline-block w-3 h-3 bg-emerald-500 rounded-sm mr-2"></span>
-            <span>Tasks</span>
-          </div>
-        </div>
+      <div className="flex-1 p-0">
+        <Calendar
+          localizer={localizer}
+          events={filteredEvents}
+          startAccessor="start"
+          endAccessor="end"
+          view={viewType as any}
+          onView={(view) => setViewType(view)}
+          date={date}
+          onNavigate={setDate}
+          eventPropGetter={eventStyleGetter}
+          views={['month', 'week', 'day']}
+          className="h-full"
+          toolbar={false}
+        />
       </div>
     </div>
   );
