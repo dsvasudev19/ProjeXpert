@@ -23,7 +23,10 @@ module.exports = (sequelize, DataTypes) => {
     createdBy: DataTypes.INTEGER,
     isRecurring: DataTypes.BOOLEAN,
     recurrencePattern: DataTypes.STRING,
-    status: DataTypes.ENUM
+    status: {
+      type:DataTypes.ENUM,
+      values:["Scheduled","Started","Cancelled","Ended"]
+    }
   }, {
     sequelize,
     modelName: 'Meeting',
