@@ -24,6 +24,8 @@ import SettingsDashboard from "../pages/SettingsDashboard";
 import UserProfilePage from "../pages/UserProfile";
 import ChatPage from "../pages/ChatPage";
 import TestPage from "../pages/TestPage";
+import MultiStepProjectForm from "../pages/AddProject";
+import EmployeeCalendarView from "../pages/EmployeeCalendarView";
 
 
 
@@ -49,6 +51,8 @@ const AppRoutes = () => {
             <Route path="u/profile" element={<UserProfilePage />} />
             <Route path="chat" element={<ChatPage />} />
             <Route path="test" element={<TestPage />} />
+            <Route path="new-project" element={<MultiStepProjectForm />} />
+            <Route path="cal" element={<EmployeeCalendarView />} />
             <Route path="*" element={<NotFound />} />
           </Route>
         <Route path="/auth/*">
