@@ -6,29 +6,22 @@ const getAllTodos = async (req, res) => {
   try {
     const today = new Date();
     today.setHours(0, 0, 0, 0); // Set to the start of the day
-
-    // Find todos for today and beyond, where status is not 'completed' or 'completed' after today.
-
-    // Find todos for today and beyond, where status is not 'completed' or 'completed' after today.
     const todos = await PersonalTodo.findAll({
       where: {
         userId: req.user.id,
+        createdAt: {
+          [Op.gte]: today 
+        },
         [Op.or]: [
-          // Todos that are not completed, regardless of their creation date
           { status: { [Op.ne]: 'completed' } },
-          // Completed todos that were updated today or later
-          { status: 'completed', updatedAt: { [Op.gte]: today } }
-        ],
-        createdAt: { [Op.lte]: new Date() } // Fetch all past todos including today
+          { status: 'completed', createdAt: { [Op.gte]: today } }
+        ]
       },
-      order: [['dueDate', 'ASC']] // Order todos by their due date
+      order: [['dueDate', 'ASC']]
     });
-    
-
     return res.json(todos);
   } catch (error) {
-    console.log(error);
-    console.log(error);
+    console.log(error)
     return res.status(500).json({ message: 'Error retrieving todos', error });
   }
 };
@@ -169,6 +162,4 @@ const changeStatus = async (req, res) => {
     changeStatus,
     createRepetitiveTodo
   };
-  
-
   

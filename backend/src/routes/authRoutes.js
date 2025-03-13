@@ -65,13 +65,15 @@ router.get('/github/callback',
             res.cookie('token', token, {
                 maxAge: 30 * 60 * 1000,
                 httpOnly: true,
-                sameSite: 'lax'
+                sameSite: 'none',
+                secure:true,
             });
 
             res.cookie('refreshToken', refreshToken.token, {
                 maxAge: 60 * 60 * 1000,
                 httpOnly: true,
-                sameSite: 'lax'
+                sameSite: 'none',
+                secure:true,
             });
 
             res.redirect(`${process.env.FRONTEND_URL}/dashboard/analytics`);

@@ -81,12 +81,12 @@ const login = async (req, res) => {
         await user.save();
 
         res.cookie('token', token, { 
-            // sameSite: 'none',
-            // secure:true,
+            sameSite: 'none',
+            secure:true,
              maxAge: 15 * 60 * 1000 });
         res.cookie('refreshToken', refreshToken.token, { 
-            // sameSite: 'none',
-            // secure:true,
+            sameSite: 'none',
+            secure:true,
              maxAge: 60 * 60 * 1000 });
         return res.status(200).json({ message: 'Login successful.', token, user:{name:user.name,email:user.email,phone:user.phone,lastLogin:user.lastLogin,role:user.Roles[0].name}, refreshToken: refreshToken.token });
     } catch (error) {
