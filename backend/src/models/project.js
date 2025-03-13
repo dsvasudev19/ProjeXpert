@@ -25,6 +25,12 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey:'projectId'
       })
       this.belongsToMany(models.TeamMember, { foreignKey: 'projectId', through:models.ProjectAssignment });
+      this.hasMany(models.ClientFeedback,{
+        foreignKey:'projectId'
+      })
+      this.hasMany(models.Milestone,{
+        foreignKey:'projectId'
+      })
     }
   }
   Project.init({

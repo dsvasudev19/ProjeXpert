@@ -42,4 +42,7 @@ router.use("/project-assignment",projectAssignment)
 const exportRoutes = require('./admin/exportRoutes')
 router.use('/export', exportRoutes)
 
+const clientFeedbackRoutes=require("./admin/clientFeedbackRoutes")
+router.use("/client-feedback",clientFeedbackRoutes)
+
 module.exports=router;
