@@ -26,6 +26,14 @@ import ChatPage from "../pages/ChatPage";
 import TestPage from "../pages/TestPage";
 import MultiStepProjectForm from "../pages/AddProject";
 import EmployeeCalendarView from "../pages/EmployeeCalendarView";
+import ProjectManagementDashboard from "../pages/Project/ProjectManagementDashboard";
+import ProjectDashboardLayout from "../layout/ProjectDashboardLayout";
+import TaskManagement from "../pages/Project/TaskManagement";
+import SettingsPage from "../pages/Project/Setting";
+import BugsOverview from "../pages/Project/BugsOverview";
+import ProjectsListingPage from "../pages/Project/ProjectListingPage";
+import TeamsListingPage from "../pages/Project/Team";
+import TeamMembersListingPage from "../pages/Project/TeamMembersListing";
 
 
 
@@ -33,28 +41,39 @@ const AppRoutes = () => {
   return (
     <BrowserRouter>
       <Routes>
-          <Route path="/dashboard/*" element={<DashboardLayout />}>
-            <Route path="analytics" element={<Analytics />} />
-            <Route path="files" element={<ProjectFileManagement />} />
-            <Route path="projects/files" element={<Files />} />
-            <Route path="team" element={<Team />} />
-            <Route path="project" element={<Projects />} />
-            <Route path="kanban" element={<Kanban />} />
-            <Route path="payment" element={<Transactions />} />
-            <Route path="task" element={<Tasks />} />
-            <Route path="todo" element={<Todo />} />
-            {/* <Route path="settings" element={<Settings />} /> */}
-            <Route path="client" element={<ClientOrDeveloper />} />
-            <Route path="roles-and-permissions" element={<RolesAndPermissions />} />
-            <Route path="bugs" element={<BugsPage />} />
-            <Route path="settings" element={<SettingsDashboard />} />
-            <Route path="u/profile" element={<UserProfilePage />} />
-            <Route path="chat" element={<ChatPage />} />
-            <Route path="test" element={<TestPage />} />
-            <Route path="new-project" element={<MultiStepProjectForm />} />
-            <Route path="cal" element={<EmployeeCalendarView />} />
-            <Route path="*" element={<NotFound />} />
+        <Route path="/dashboard/*" element={<DashboardLayout />}>
+          <Route path="analytics" element={<Analytics />} />
+          <Route path="files" element={<ProjectFileManagement />} />
+          <Route path="projects/files" element={<Files />} />
+          <Route path="team" element={<Team />} />
+          <Route path="project" element={<Projects />} />
+          <Route path="kanban" element={<Kanban />} />
+          <Route path="payment" element={<Transactions />} />
+          <Route path="task" element={<Tasks />} />
+          <Route path="todo" element={<Todo />} />
+          {/* <Route path="settings" element={<Settings />} /> */}
+          <Route path="client" element={<ClientOrDeveloper />} />
+          <Route path="roles-and-permissions" element={<RolesAndPermissions />} />
+          <Route path="bugs" element={<BugsPage />} />
+          <Route path="settings" element={<SettingsDashboard />} />
+          <Route path="u/profile" element={<UserProfilePage />} />
+          <Route path="chat" element={<ChatPage />} />
+          <Route path="test" element={<TestPage />} />
+          <Route path="new-project" element={<MultiStepProjectForm />} />
+          <Route path="cal" element={<EmployeeCalendarView />} />
+          <Route path="*" element={<NotFound />} />
+          <Route path="project/*" element={<ProjectDashboardLayout />}>
+            <Route path="analytics" element={<ProjectManagementDashboard />} />
+            <Route path="tasks" element={<TaskManagement />} />
+            <Route path="settings" element={<SettingsPage />} />
+            <Route path="bugs" element={<BugsOverview />} />
+            <Route path="projects" element={<ProjectsListingPage />} />
+            {/* <Route path="team" element={<TeamsListingPage />} /> */}
+            <Route path="team" element={<TeamMembersListingPage />} />
           </Route>
+
+        </Route>
+
         <Route path="/auth/*">
           <Route path="login" element={<SignInPage />} />
           <Route path="register" element={<SignUpPage />} />
