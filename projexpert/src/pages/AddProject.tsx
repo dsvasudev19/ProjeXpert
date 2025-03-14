@@ -1,9 +1,13 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ProjectFormData } from '../types/ProjectData';
 import Select from 'react-select';
+import { axiosInstance } from '../axiosIntance';
+import toast from 'react-hot-toast';
 
 const MultiStepProjectForm = () => {
   const [currentStep, setCurrentStep] = useState(1);
+  const [clients,setClients]=useState<any>([])
+  const [employees,setEmployees]=useState<any>([])
   const [formData, setFormData] = useState<ProjectFormData>({
     projectName: '',
     description: '',
@@ -140,7 +144,32 @@ const MultiStepProjectForm = () => {
     });
   };
 
+  const getAllClients=async()=>{
+    try {
+      const res=await axiosInstance.get("/admin/client/users/clients")
+      if(res.status===200){
+        setClients(res.data.data)
+      }
+    } catch (error:any) {
+      toast.error(error.message)
+      console.dir(error)
+    }
+  }
+
+  const getAllEmployees=async()=>{
+    try {
+      const res=await axiosInstance.get("/admin/client/team/internal-only")
+      if(res.status===200){
+        setEmployees(res.data.data)
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+
   const handleSubmit = async (e:any) => {
+    console.log("submitting")
     e.preventDefault();
     setIsSubmitting(true);
     setSubmitError('');
@@ -149,20 +178,16 @@ const MultiStepProjectForm = () => {
       // Simulate API call
       console.log('Project Data:', formData);
       
-      // Here you would make an API call to your backend
-      // const response = await fetch('/api/projects', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(formData)
-      // });
+      const response = await axiosInstance.post('/admin/project',formData);
       
-      // if (!response.ok) throw new Error('Failed to create project');
-      
-      // For demo, we'll simulate a successful request
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
+      if(response.status===201){
+        toast.success("Project Onboarding Success")
+        window.location.href="/dashboard/project/projects/list"
+      }
+  
       setSubmitSuccess(true);
     } catch (error:any) {
+      toast.error(error.message)
       setSubmitError(error.message || 'Failed to create project');
     } finally {
       setIsSubmitting(false);
@@ -216,16 +241,15 @@ const MultiStepProjectForm = () => {
     }
   };
 
+  useEffect(()=>{
+    getAllClients();
+    getAllEmployees()
+  },[])
+
   // Step 1: Core Project Information
   const renderCoreInformation = () => {
     // Sample client list (this could come from an API or state in a real app)
-    const clients = [
-      { id: 'client1', name: 'Acme Corp' },
-      { id: 'client2', name: 'TechTrend Innovations' },
-      { id: 'client3', name: 'Global Solutions' },
-      { id: 'client4', name: 'Bright Future Inc.' },
-      { id: 'client5', name: 'None (Internal Project)' },
-    ];
+    
   
     return (
       <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 transition-all duration-300 hover:shadow-md">
@@ -283,7 +307,7 @@ const MultiStepProjectForm = () => {
               className="w-full px-4 py-2 border border-gray-200 rounded-lg bg-gray-50 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none transition-colors duration-200"
             >
               <option value="">Select Client</option>
-              {clients.map((client) => (
+              {clients.map((client:any) => (
                 <option key={client.id} value={client.id}>
                   {client.name}
                 </option>
@@ -545,22 +569,11 @@ const MultiStepProjectForm = () => {
   
 
   const renderResourceManagement = () => {
-    // Sample project managers and team members (could come from an API or state)
-    const projectManagers = [
-      { value: 'pm1', label: 'Alice Johnson' },
-      { value: 'pm2', label: 'Bob Smith' },
-      { value: 'pm3', label: 'Clara Davis' },
-      { value: 'pm4', label: 'David Lee' },
-    ];
-  
-    const teamMembersList = [
-      { value: 'tm1', label: 'John Smith' },
-      { value: 'tm2', label: 'Mary Jones' },
-      { value: 'tm3', label: 'Peter Brown' },
-      { value: 'tm4', label: 'Sarah Wilson' },
-      { value: 'tm5', label: 'Tom Clark' },
-      { value: 'tm6', label: 'Emma Taylor' },
-    ];
+    // Transform employees data to match react-select's expected format
+    const employeeOptions = employees.map((employee:any) => ({
+      value: employee.id,
+      label: employee.name
+    }));
   
     const handleMultiSelectChange = (selectedOptions:any) => {
       const selectedValues = selectedOptions ? selectedOptions.map((option:any) => option.value) : [];
@@ -581,9 +594,15 @@ const MultiStepProjectForm = () => {
             <Select
               id="projectManager"
               name="projectManager"
-              options={projectManagers}
-              value={projectManagers.find((pm:any) => pm.value === formData.projectManager)}
-              onChange={(selected) => handleChange({ target: { name: 'projectManager', value: selected ? selected.value : '' } })}
+              options={employeeOptions}
+              // Find the selected option by value (id)
+              value={employeeOptions.find((option:any) => option.value === formData.projectManager)}
+              onChange={(selected) => handleChange({ 
+                target: { 
+                  name: 'projectManager', 
+                  value: selected ? selected.value : '' 
+                }
+              })}
               className="basic-single"
               classNamePrefix="select"
             />
@@ -597,8 +616,9 @@ const MultiStepProjectForm = () => {
             <Select
               id="teamMembers"
               name="teamMembers"
-              options={teamMembersList}
-              value={teamMembersList.filter(member => formData.teamMembers.includes(member.value))}
+              options={employeeOptions}
+              // Filter options that match the selected values
+              value={employeeOptions.filter((option:any) => formData.teamMembers.includes(option.value))}
               onChange={handleMultiSelectChange}
               isMulti
               className="basic-multi-select"
@@ -988,7 +1008,7 @@ const MultiStepProjectForm = () => {
   };
 
   return (
-    <div className="h-full bg-gray-50 p-4 overflow-auto">
+    <div className="h-full bg-gray-50 p-4 overflow-auto pb-16 mb-2">
       <div className="mx-auto">
         <div className="bg-white rounded shadow-md p-6">
           <h1 className="text-2xl font-bold text-gray-800 mb-1">Create New Project</h1>
@@ -1020,7 +1040,8 @@ const MultiStepProjectForm = () => {
                 </button>
               ) : (
                 <button
-                  type="submit"
+                  type="button"
+                  onClick={handleSubmit}
                   disabled={isSubmitting}
                   className={`px-6 py-3 bg-green-600 text-white font-medium rounded hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors
                     ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}

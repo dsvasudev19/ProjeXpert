@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Search, Users, BarChart2, Calendar, ChevronRight, Grid, List, Star, Award, Briefcase } from 'lucide-react';
+import { useState } from 'react';
+import { Search, Users, BarChart2, Calendar, ChevronRight, Grid, List, Award, Briefcase } from 'lucide-react';
 
 // Sample teams data
 const sampleTeams = [

@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Search, Mail, Phone, Calendar, Briefcase, MapPin, Star, ArrowLeft, Filter, User, Clock, ChevronDown } from 'lucide-react';
+import { useState } from 'react';
+import { Search, Mail, Phone,  Briefcase, MapPin,  ArrowLeft, Filter, User, Clock, ChevronDown } from 'lucide-react';
 
 // Sample team members data (unchanged from your input)
 const sampleMembers = [

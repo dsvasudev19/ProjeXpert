@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BugIcon, CalendarIcon, CheckIcon, UserIcon, AlertCircleIcon, Edit, Eye, Trash2 } from 'lucide-react'; // Assuming Lucide icons
+import { BugIcon, CalendarIcon, CheckIcon, UserIcon,  Edit, Eye, Trash2 } from 'lucide-react'; // Assuming Lucide icons
 import DynamicTabularComponent from '../../components/shared/DynamicTabularComponent';
 
 // Define the Bug interface

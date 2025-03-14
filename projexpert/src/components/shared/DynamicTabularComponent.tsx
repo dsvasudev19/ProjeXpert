@@ -1,4 +1,4 @@
-import { Edit, Edit2, Pencil, PencilIcon, PencilOffIcon } from 'lucide-react';
+
 import { useState, useEffect, ReactNode } from 'react';
 
 // Define types for column configuration
@@ -86,7 +86,7 @@ function DynamicTabularComponent<T extends Record<string, any>>({
   
   // Actions
   actions = [],
-  onDelete,
+  onDelete=()=>{},
   
   // UI customization
   dropdowns = [],
@@ -111,6 +111,7 @@ function DynamicTabularComponent<T extends Record<string, any>>({
     ...col,
     header: col.header || col.title || '',
   }));
+  console.log(onDelete)
   
   // State
   const [sortConfig, setSortConfig] = useState<SortConfig>({ key: null, direction: 'ascending' });
@@ -264,7 +265,7 @@ function DynamicTabularComponent<T extends Record<string, any>>({
     if (!title && dropdowns.length === 0) return null;
     
     return (
-      <div className="mb-1 flex justify-between items-center">
+      <div className="mb-1 flex justify-between items-center -z-50">
         {title && (
           <h1 className="text-xl font-bold bg-gradient-to-r from-green-500 to-blue-500 bg-clip-text text-transparent p-2">
             {title}

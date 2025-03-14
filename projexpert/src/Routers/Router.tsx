@@ -32,8 +32,12 @@ import TaskManagement from "../pages/Project/TaskManagement";
 import SettingsPage from "../pages/Project/Setting";
 import BugsOverview from "../pages/Project/BugsOverview";
 import ProjectsListingPage from "../pages/Project/ProjectListingPage";
-import TeamsListingPage from "../pages/Project/Team";
 import TeamMembersListingPage from "../pages/Project/TeamMembersListing";
+import ChatbotInterface from "../pages/AIChatInterface";
+import ReportBugPage from "../pages/Project/ReportBug";
+
+import AddTaskPage from "../pages/Project/AddTask";
+import ProjectDetails from "../pages/Project/ProjectDetails";
 
 
 
@@ -61,17 +65,21 @@ const AppRoutes = () => {
           <Route path="test" element={<TestPage />} />
           <Route path="new-project" element={<MultiStepProjectForm />} />
           <Route path="cal" element={<EmployeeCalendarView />} />
-          <Route path="*" element={<NotFound />} />
+          <Route path="ai-chat" element={<ChatbotInterface />} />
           <Route path="project/*" element={<ProjectDashboardLayout />}>
             <Route path="analytics" element={<ProjectManagementDashboard />} />
-            <Route path="tasks" element={<TaskManagement />} />
+            <Route path="tasks/list" element={<TaskManagement />} />
+            <Route path="tasks/add" element={<AddTaskPage />} />
             <Route path="settings" element={<SettingsPage />} />
-            <Route path="bugs" element={<BugsOverview />} />
-            <Route path="projects" element={<ProjectsListingPage />} />
+            <Route path="bugs/list" element={<BugsOverview />} />
+            <Route path="bugs/report" element={<ReportBugPage />} />
+            <Route path="projects/list" element={<ProjectsListingPage />} />
+            <Route path="projects/add" element={<MultiStepProjectForm />} />
+            <Route path="projects/:id" element={<ProjectDetails />} />
             {/* <Route path="team" element={<TeamsListingPage />} /> */}
             <Route path="team" element={<TeamMembersListingPage />} />
           </Route>
-
+          <Route path="*" element={<NotFound />} />
         </Route>
 
         <Route path="/auth/*">

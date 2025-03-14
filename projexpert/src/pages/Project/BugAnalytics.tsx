@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, 
-  PieChart, Pie, Cell, LineChart, Line, ResponsiveContainer,
+  PieChart, Pie, Cell,  ResponsiveContainer,
   AreaChart, Area
 } from 'recharts';
-import { Calendar, Clock, ArrowUp, ArrowDown, Bug, CheckCircle, AlertTriangle } from 'lucide-react';
+import {  ArrowUp, ArrowDown, Bug, CheckCircle, AlertTriangle } from 'lucide-react';
 
 const BugAnalytics = () => {
   // Sample bug data
