@@ -8,7 +8,6 @@ const {
     updateProject,
     deleteProject,
     getProjectBugs,
-    assignFreelancer,
 } = require('../../controllers/admin/projectController');
 const { authenticateUser } = require('../../middlewares/authenticate');
 const { checkRole } = require('../../middlewares/authorize');

@@ -1,6 +1,6 @@
 const apiKey = process.env.GEMINI_API_KEY; // Store the API key in an environment variable
 const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-
+const axios=require('axios')
 const generateProjectReadme = async (req, res, next) => {
     const { description } = req.body
     try {

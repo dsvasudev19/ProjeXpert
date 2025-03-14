@@ -31,17 +31,70 @@ module.exports = (sequelize, DataTypes) => {
       this.hasMany(models.Milestone,{
         foreignKey:'projectId'
       })
+      this.hasOne(models.GithubDetail, { foreignKey: 'projectId', as: 'GithubDetails' });
+      this.hasMany(models.ProjectCollaborator,{foreignKey:'projectId',as:'collaborators'})
+      this.belongsToMany(models.Department, {foreignKey: 'projectId' , through: models.ProjectDepartment });
+      this.belongsTo(models.User,{foreignKey:'projectManager',as:'ProjectManager'})
     }
   }
   Project.init({
-    name: DataTypes.STRING,
-    description: DataTypes.STRING,
-    status: DataTypes.STRING,
-    startDate: DataTypes.DATE,
-    endDate: DataTypes.DATE,
-    budget: DataTypes.DECIMAL,
-    priority: DataTypes.STRING,
-    clientId: DataTypes.INTEGER
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    description: {
+      type: DataTypes.TEXT,
+    },
+    projectType: {
+      type: DataTypes.STRING,
+    },
+    status: {
+      type: DataTypes.ENUM('Not Started', 'In Progress', 'Completed', 'On Hold','Cancelled'),
+      allowNull: false,
+    },
+    priority: {
+      type: DataTypes.ENUM('Low', 'Medium', 'High','Critical'),
+      allowNull: false,
+    },
+    startDate: {
+      type: DataTypes.DATEONLY,
+    },
+    endDate: {
+      type: DataTypes.DATEONLY,
+    },
+    estimatedDuration: {
+      type: DataTypes.STRING,
+    },
+    budget: {
+      type: DataTypes.DECIMAL(15, 2),
+    },
+    billingRate: {
+      type: DataTypes.DECIMAL(10, 2),
+    },
+    revenueProjection: {
+      type: DataTypes.DECIMAL(15, 2),
+    },
+    projectGoals: {
+      type: DataTypes.TEXT,
+    },
+    deliverables: {
+      type: DataTypes.TEXT,
+    },
+    requirements: {
+      type: DataTypes.TEXT,
+    },
+    constraints: {
+      type: DataTypes.TEXT,
+    },
+    acceptanceCriteria: {
+      type: DataTypes.TEXT,
+    },
+    clientId: {
+      type: DataTypes.INTEGER,
+    },
+    projectManager: {
+      type: DataTypes.INTEGER,
+    },
   }, {
     sequelize,
     modelName: 'Project',

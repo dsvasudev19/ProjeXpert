@@ -17,12 +17,28 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Payment.init({
-    amount: DataTypes.DECIMAL,
-    status: DataTypes.STRING,
-    paymentDate: DataTypes.DATE,
-    paymentMethod: DataTypes.STRING,
-    transactionId: DataTypes.STRING,
-    projectId: DataTypes.INTEGER
+    amount: {
+      type: DataTypes.DECIMAL(15, 2),
+      allowNull: false,
+      validate: { min: 0 },
+    },
+    status: {
+      type: DataTypes.ENUM('Pending', 'Completed', 'Failed'),
+      allowNull: false,
+    },
+    paymentDate: {
+      type: DataTypes.DATE,
+    },
+    paymentMethod: {
+      type: DataTypes.STRING,
+    },
+    transactionId: {
+      type: DataTypes.STRING,
+    },
+    projectId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
   }, {
     sequelize,
     modelName: 'Payment',

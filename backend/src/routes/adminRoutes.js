@@ -45,4 +45,7 @@ router.use('/export', exportRoutes)
 const clientFeedbackRoutes=require("./admin/clientFeedbackRoutes")
 router.use("/client-feedback",clientFeedbackRoutes)
 
+const geminiRoutes=require("./admin/geminiRoutes")
+router.use("/ai",geminiRoutes)
+
 module.exports=router;

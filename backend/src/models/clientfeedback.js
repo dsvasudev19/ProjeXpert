@@ -17,16 +17,41 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   ClientFeedback.init({
-    projectId: DataTypes.INTEGER,
-    clientId: DataTypes.INTEGER,
-    feedbackType: DataTypes.STRING,
-    title: DataTypes.STRING,
-    content: DataTypes.TEXT,
-    status: DataTypes.STRING,
-    priority: DataTypes.STRING,
-    responseDetails: DataTypes.TEXT,
-    responseDate: DataTypes.DATE,
-    respondedById: DataTypes.INTEGER
+    projectId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    clientId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    feedbackType: {
+      type: DataTypes.STRING,
+    },
+    title: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    content: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+    },
+    status: {
+      type: DataTypes.ENUM('Open', 'In Review', 'Resolved'),
+      defaultValue: 'Open',
+    },
+    priority: {
+      type: DataTypes.ENUM('Low', 'Medium', 'High'),
+    },
+    responseDetails: {
+      type: DataTypes.TEXT,
+    },
+    responseDate: {
+      type: DataTypes.DATE,
+    },
+    respondedById: {
+      type: DataTypes.INTEGER,
+    },
   }, {
     sequelize,
     modelName: 'ClientFeedback',

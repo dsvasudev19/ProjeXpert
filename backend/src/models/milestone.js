@@ -17,18 +17,50 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Milestone.init({
-    title: DataTypes.STRING,
-    description: DataTypes.TEXT,
-    projectId: DataTypes.INTEGER,
-    dueDate: DataTypes.DATE,
-    completionDate: DataTypes.DATE,
-    status: DataTypes.STRING,
-    progress: DataTypes.INTEGER,
-    deliverables: DataTypes.TEXT,
-    clientApprovalRequired: DataTypes.BOOLEAN,
-    clientApproved: DataTypes.BOOLEAN,
-    clientApprovalDate: DataTypes.DATE,
-    paymentPercentage: DataTypes.INTEGER
+    title: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    description: {
+      type: DataTypes.TEXT,
+    },
+    projectId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: { model: 'Projects', key: 'id' },
+    },
+    dueDate: {
+      type: DataTypes.DATEONLY,
+    },
+    completionDate: {
+      type: DataTypes.DATEONLY,
+    },
+    status: {
+      type: DataTypes.ENUM('Pending', 'In Progress', 'Completed', 'Delayed'),
+      allowNull: false,
+    },
+    progress: {
+      type: DataTypes.INTEGER,
+      validate: { min: 0, max: 100 },
+    },
+    deliverables: {
+      type: DataTypes.TEXT,
+    },
+    clientApprovalRequired: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
+    clientApproved: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
+    clientApprovalDate: {
+      type: DataTypes.DATEONLY,
+    },
+    paymentPercentage: {
+      type: DataTypes.DECIMAL(5, 2),
+      validate: { min: 0, max: 100 },
+    },
   }, {
     sequelize,
     modelName: 'Milestone',

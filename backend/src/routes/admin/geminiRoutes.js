@@ -3,6 +3,6 @@ const geminiController=require("./../../controllers/admin/geminiController")
 
 router.post("/project/readme-generator",geminiController.generateProjectReadme)
 
-router.post("/gen-ai",geminiController.generateResponse);
+router.post("/gen",geminiController.generateResponse);
 
 module.exports=router;
