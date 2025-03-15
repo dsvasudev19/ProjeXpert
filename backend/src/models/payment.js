@@ -26,6 +26,9 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.ENUM('Pending', 'Completed', 'Failed'),
       allowNull: false,
     },
+    dueDate:{type:DataTypes.DATE},
+    percentage:{type:DataTypes.FLOAT},
+    clientApproved:{type:DataTypes.BOOLEAN},
     paymentDate: {
       type: DataTypes.DATE,
     },

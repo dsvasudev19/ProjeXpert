@@ -18,13 +18,14 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey:"leadId",
         as:"Lead"
       })
+      this.belongsTo(models.Department,{foreignKey:'departmentId'})
     }
   }
   Team.init({
     name: DataTypes.STRING,
     description: DataTypes.STRING,
     leadId: DataTypes.INTEGER,
-    department: DataTypes.STRING
+    departmentId: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'Team',

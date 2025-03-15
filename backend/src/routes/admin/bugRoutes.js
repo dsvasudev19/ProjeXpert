@@ -7,7 +7,8 @@ const {
   createBug,
   updateBug,
   deleteBug,
-  resolveBug
+  resolveBug,
+  getProjectBugs
 } = require('../../controllers/admin/bugController');
 const { authenticateUser } = require('../../middlewares/authenticate');
 const { checkRole } = require("../../middlewares/authorize");
@@ -18,5 +19,7 @@ router.post('/', authenticateUser, checkRole(['admin', 'client', 'freelancer']),
 router.put('/:id', authenticateUser, checkRole(['admin', 'client', 'freelancer']), updateBug);
 router.delete('/:id', authenticateUser, checkRole(['admin', 'client', 'freelancer']), deleteBug);
 router.patch("/resolve/:id", authenticateUser, checkRole(['admin','client']), resolveBug);
+
+router.get("/project/:id",authenticateUser,checkRole(['admin','client','freelancer','project manager','employee']),getProjectBugs)
 
 module.exports = router;

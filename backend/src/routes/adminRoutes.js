@@ -48,4 +48,16 @@ router.use("/client-feedback",clientFeedbackRoutes)
 const geminiRoutes=require("./admin/geminiRoutes")
 router.use("/ai",geminiRoutes)
 
-module.exports=router;
+const projectDashboardRoutes=require("./admin/projectDashboardRoutes")
+router.use("/project-dashboard",projectDashboardRoutes)
+
+const timelineRoutes=require("./admin/timelineRoutes")
+router.use("/timeline",timelineRoutes)
+
+const departmentRoutes=require("./admin/departmentRoutes")
+router.use("/department",departmentRoutes)
+
+const timeEntryRoutes=require("./admin/timeentryRoutes")
+router.use("/timers",timeEntryRoutes)
+
+module.exports=router; 

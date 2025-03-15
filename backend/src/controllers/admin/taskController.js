@@ -33,8 +33,8 @@ const getAllTasks = async (req, res) => {
         const tasks = await Task.findAll({
             where: whereCondition,
             include: [
-                { model: User, as: 'Assignee' },
-                { model: Project },
+                { model: User, as: 'Assignee',attributes:['id','name'] },
+                { model: Project ,attributes:['id','name']},
                 { model: Task, as: 'ParentTask' },
                 { model: Task, as: 'SubTasks' }
             ]
@@ -63,7 +63,7 @@ const getTaskById = async (req, res) => {
 // Example logic for handling task creation in your controller
 const createTask = async (req, res) => {
     try {
-        const { title, description, status, priority, dueDate, assigneeId, projectId, parentTaskId, progress } = req.body;
+        const { title, description, status, priority, dueDate, assignee:assigneeId, project:projectId, parentTaskId, progress,tags,bugId } = req.body;
 
         // If parentTaskId is an empty string, set it to null
         const sanitizedParentTaskId = parentTaskId === '' ? null : parentTaskId;
@@ -79,7 +79,9 @@ const createTask = async (req, res) => {
             parentTaskId: sanitizedParentTaskId, // Pass the sanitized value
             progress,
             refId:crypto.randomBytes(3).toString("hex").toUpperCase(),
-            createdBy:req.user.id
+            createdBy:req.user.id,
+            tags:tags,
+            bugId
         });
 
         return res.status(201).json(newTask);

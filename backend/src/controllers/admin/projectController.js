@@ -267,7 +267,7 @@
 
 'use strict';
 
-const { Project, GithubDetail, ProjectAssignment, Milestone, User, Role, Bug, Task, File, ProjectCollaborator } = require('../../models');
+const { Project, GithubDetail, ProjectAssignment, Milestone, User, Role, Bug, Task, File, ProjectCollaborator, PaymentSchedule } = require('../../models');
 const GitHubService = require("./../../services/githubService")
 const readmeService = require("./../../services/readmeService")
 // Get all projects with basic associations
@@ -339,6 +339,7 @@ exports.getProjectById = async (req, res) => {
                 { model: Milestone },
                 { model: Bug, as: 'Bugs' },
                 { model: Task, as: 'Tasks', include: [{ model: User, as: "Assignee" }] },
+                { model: PaymentSchedule }
                 // { model: File },
                 // { model: TeamMember, include: { model: User, as: "User" } }
             ],
@@ -393,7 +394,7 @@ exports.createProject = async (req, res) => {
             // Step 1: Create the repository on GitHub
             const repoData = await GitHubService.createRepository(
                 projectData.repoName,
-                projectData.description,
+                projectData.description.slice(0, 310),
                 projectData.repoVisibility === "private"
             );
 
@@ -416,14 +417,63 @@ exports.createProject = async (req, res) => {
 
         }
 
-        // Create milestones if provided
+        let payments = [];
         if (Array.isArray(projectData.milestones) && projectData.milestones.length > 0) {
             const milestones = projectData.milestones.map(milestone => ({
-                ...milestone,
+                title: milestone.title,
+                description: milestone.description || null,
                 projectId: project.id,
-                clientApprovalDate: null
+                dueDate: milestone.dueDate,
+                completionDate: milestone.completionDate || null,
+                status: milestone.status,
+                progress: milestone.progress,
+                deliverables: milestone.deliverables || null,
+                clientApprovalRequired: milestone.clientApprovalRequired,
+                clientApproved: milestone.clientApproved,
+                clientApprovalDate: milestone.clientApprovalDate || null,
+                paymentPercentage: milestone.paymentPercentage,
             }));
-            await Milestone.bulkCreate(milestones, { transaction });
+
+            const createdMilestones = await Milestone.bulkCreate(milestones, { transaction, returning: true });
+
+            // Create Payment records based on milestones
+            payments = createdMilestones.map((milestone, index) => {
+                const milestoneData = projectData.milestones[index]; // Original milestone data for paymentPercentage
+                const paymentAmount = (project.budget * (milestoneData.paymentPercentage / 100)).toFixed(2);
+
+                return {
+                    milestoneTitle:milestone.title,
+                    amount: paymentAmount,
+                    status: 'Pending', // Default status
+                    projectId: project.id,
+                    dueDate: milestone.dueDate,
+                    percentage: milestone.paymentPercentage,
+                    clientApproval: 'Pending'
+                };
+            });
+
+            // Calculate total payment percentage and create additional payment if needed
+            const totalPaymentPercentage = projectData.milestones.reduce(
+                (sum, milestone) => sum + (milestone.paymentPercentage || 0),
+                0
+            );
+
+            if (totalPaymentPercentage < 100) {
+                const remainingPercentage = 100 - totalPaymentPercentage;
+                const remainingAmount = (project.budget * (remainingPercentage / 100)).toFixed(2);
+
+                payments.push({
+                    amount: remainingAmount,
+                    status: 'Pending',
+                    milestoneTitle:'Remaining Amount',
+                    projectId: project.id,
+                    dueDate: new Date(projectData.targetEndDate),
+                    percentage: remainingPercentage,
+                    clientApproval: 'Pending'
+                });
+            }
+
+            await PaymentSchedule.bulkCreate(payments, { transaction });
         }
 
         // Create team member assignments
@@ -445,6 +495,8 @@ exports.createProject = async (req, res) => {
         //     }));
         //     await Department.bulkCreate(departmentEntries, { transaction });
         //   }
+
+
         const collaborators = req.body.collaborators.split(",")
         if (Array.isArray(collaborators) && collaborators.length > 0) {
             const collaboratorsMap = collaborators.map((item) => {

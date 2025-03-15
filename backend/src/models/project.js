@@ -35,6 +35,9 @@ module.exports = (sequelize, DataTypes) => {
       this.hasMany(models.ProjectCollaborator,{foreignKey:'projectId',as:'collaborators'})
       this.belongsToMany(models.Department, {foreignKey: 'projectId' , through: models.ProjectDepartment });
       this.belongsTo(models.User,{foreignKey:'projectManager',as:'ProjectManager'})
+      this.hasMany(models.PaymentSchedule,{
+        foreignKey:'projectId'
+      });
     }
   }
   Project.init({

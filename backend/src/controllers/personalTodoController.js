@@ -5,26 +5,32 @@ const { Op } = require('sequelize');
 const getAllTodos = async (req, res) => {
   try {
     const today = new Date();
-    today.setHours(0, 0, 0, 0); // Set to the start of the day
+    today.setHours(0, 0, 0, 0); // Set time to the start of the day
+
     const todos = await PersonalTodo.findAll({
       where: {
         userId: req.user.id,
-        createdAt: {
-          [Op.gte]: today 
-        },
         [Op.or]: [
-          { status: { [Op.ne]: 'completed' } },
-          { status: 'completed', createdAt: { [Op.gte]: today } }
+          { status: { [Op.ne]: 'completed' } }, // Include all non-completed todos
+          { 
+            status: 'completed', 
+            [Op.or]: [
+              { updatedAt: { [Op.gte]: today } }, // Include completed todos updated today or later
+              { createdAt: { [Op.gte]: today } }  // Include completed todos created today
+            ]
+          }
         ]
       },
       order: [['dueDate', 'ASC']]
     });
+
     return res.json(todos);
   } catch (error) {
-    console.log(error)
+    console.log(error);
     return res.status(500).json({ message: 'Error retrieving todos', error });
   }
 };
+
 
 // Create a new todo
 const createTodo = async (req, res) => {

@@ -51,6 +51,7 @@ module.exports = (sequelize, DataTypes) => {
     bugId: DataTypes.INTEGER,
     parentTaskId: {type:DataTypes.INTEGER,allowNull: true },
     progress: DataTypes.INTEGER,
+    tags:DataTypes.STRING,
     createdBy:DataTypes.INTEGER
   }, {
     sequelize,

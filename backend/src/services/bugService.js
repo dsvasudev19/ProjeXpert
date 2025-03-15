@@ -1,4 +1,6 @@
 // services/bugService.js
+'use strict';
+
 const { Bug, User, Project } = require('../models');
 const { Op } = require('sequelize');
 
@@ -10,7 +12,21 @@ const { Op } = require('sequelize');
 const getAllBugsForUser = async (user) => {
   if (user.role === 'admin') {
     return await Bug.findAll({
-      include: [{ model: Project, as: 'Project' }],
+      include: [{
+        model: Project,
+        as: 'Project',
+        attributes: ['name'],
+      },
+      {
+        model: User,
+        as: 'Assignee',
+        attributes: ['name'],
+      },
+      {
+        model: User,
+        as: 'Reporter',
+        attributes: ['name'],
+      }],
     });
   } else {
     return await Bug.findAll({
@@ -18,18 +34,18 @@ const getAllBugsForUser = async (user) => {
         {
           model: Project,
           as: 'Project',
+          attributes: ['name'],
           where: { [Op.or]: [{ clientId: user.id }] },
-          attributes: ['name']
         },
         {
           model: User,
-          as: "Assignee",
-          attributes: ['name']
+          as: 'Assignee',
+          attributes: ['name'],
         },
         {
           model: User,
-          as: "Reporter"
-        }
+          as: 'Reporter',
+        },
       ],
     });
   }
@@ -83,7 +99,7 @@ const deleteBug = async (bug) => {
  */
 const resolveBug = async (bug, resolution) => {
   bug.resolution = resolution;
-  bug.status = "resolved";
+  bug.status = 'resolved';
   return await bug.save();
 };
 
@@ -94,11 +110,43 @@ const resolveBug = async (bug, resolution) => {
  * @returns {boolean} - Whether the user is authorized.
  */
 const isUserAuthorized = (user, bug) => {
-  // Admins are always authorized.
   if (user.role === 'admin') return true;
-  
-  // Check if the user is related to the bug via the project.
   return bug.Project && (bug.Project.clientId === user.id || bug.Project.freelancerId === user.id);
+};
+
+/**
+ * Get all bugs for a specific project.
+ * @param {number} projectId - The ID of the project.
+ * @param {boolean} include - Whether to include associated models (default: false).
+ * @returns {Promise<Array>} - A promise that resolves with an array of bugs for the project.
+ */
+const getBugsByProjectId = async (projectId, include = false) => {
+  const queryOptions = {
+    where: { projectId },
+    order: [['createdAt', 'DESC']], // Optional: Sort by creation date, newest first
+  };
+
+  if (include) {
+    queryOptions.include = [
+      {
+        model: Project,
+        as: 'Project',
+        attributes: ['id', 'name'], // Include minimal project details
+      },
+      {
+        model: User,
+        as: 'Assignee',
+        attributes: ['id', 'name'], // Include assignee details
+      },
+      {
+        model: User,
+        as: 'Reporter',
+        attributes: ['id', 'name'], // Include reporter details
+      },
+    ];
+  }
+
+  return await Bug.findAll(queryOptions);
 };
 
 module.exports = {
@@ -109,4 +157,5 @@ module.exports = {
   deleteBug,
   resolveBug,
   isUserAuthorized,
+  getBugsByProjectId, // Export the updated method
 };

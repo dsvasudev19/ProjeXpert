@@ -1,5 +1,5 @@
 // controllers/admin/bugController.js
-const { Bug, User } = require('../../models');
+const { Bug, User,Role } = require('../../models');
 const bugService = require('../../services/bugService');
 
 const getAllBugs = async (req, res) => {
@@ -14,6 +14,7 @@ const getAllBugs = async (req, res) => {
     const bugs = await bugService.getAllBugsForUser(user);
     return res.status(200).json(bugs);
   } catch (error) {
+    console.log(error)
     return res.status(500).json({ message: 'Internal server error.', error });
   }
 };
@@ -43,7 +44,7 @@ const createBug = async (req, res) => {
     const user = await User.findByPk(userId);
     if (!user) return res.status(404).json({ message: 'User not found.' });
 
-    const { title, description, status, priority, projectId, assigneeId } = req.body;
+    const { title, description, status, severity:priority, project:projectId, assignedTo:assigneeId,tags,dueDate } = req.body;
     // Optional: add validations or authorization checks regarding project here.
 
     const bug = await bugService.createBug({
@@ -52,7 +53,10 @@ const createBug = async (req, res) => {
       status,
       priority,
       projectId,
-      assigneeId
+      assigneeId,
+      tags,
+      dueDate:new Date(dueDate),
+      reportedById:req.user.id
     });
 
     return res.status(201).json({ message: 'Bug created successfully.', bug });
@@ -121,6 +125,26 @@ const resolveBug = async (req, res) => {
   }
 };
 
+const getProjectBugs = async (req, res) => {
+  try {
+    const projectId = parseInt(req.params.projectId, 10);
+    const include = req.query.include === 'true'; // Convert string 'true' to boolean
+    const bugs = await bugService.getBugsByProjectId(projectId, include);
+    return res.status(200).json({
+      success: true,
+      data: bugs,
+      message: 'Bugs retrieved successfully',
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      error: error.message,
+      message: 'Error retrieving bugs',
+    });
+  }
+};
+
+
 module.exports = {
   getAllBugs,
   getBugById,
@@ -128,4 +152,5 @@ module.exports = {
   updateBug,
   deleteBug,
   resolveBug,
+  getProjectBugs
 };
