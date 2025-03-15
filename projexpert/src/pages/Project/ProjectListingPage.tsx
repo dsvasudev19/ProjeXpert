@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Search, Calendar, Users, Star, Grid, List, DollarSign, Clock, Goal } from 'lucide-react';
+import { Search, Calendar, Users, Star, Grid, List, DollarSign, Clock, Goal, Loader } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 import { axiosInstance } from '../../axiosIntance';
@@ -12,6 +12,7 @@ const ProjectsListingPage = () => {
   const [filterType, setFilterType] = useState('All');
   const [projects,setProjects]=useState<any>([])
   const [filteredProjects,setFilteredProjects]=useState<any>([])
+  const [loading, setLoading] = useState(true);
   const projectTypes = ['All', 'Client', 'Internal'];
   
   const handleProjectClick = (projectId: number) => {
@@ -29,7 +30,31 @@ const ProjectsListingPage = () => {
     setFilteredProjects(filtered);
   }, [searchTerm, filterType, projects]);
 
-  // ... rest of the component code that u
+  const getAllProjects = async () => {
+    setLoading(true);
+    try {
+      const res = await axiosInstance.get("/admin/project");
+      if (res.status === 200) {
+        setProjects(res.data);
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    getAllProjects();
+  }, []);
+
+  const LoaderComponent = () => (
+    <div className="flex flex-col items-center justify-center h-full min-h-[400px]">
+      <Loader className="h-12 w-12 text-blue-600 animate-spin mb-4" />
+      <p className="text-lg text-gray-600 font-medium">Loading projects...</p>
+      <p className="text-sm text-gray-500 mt-2">Please wait while we fetch your projects</p>
+    </div>
+  );
   
   const getPriorityClass = (priority:any) => {
     switch(priority) {
@@ -77,21 +102,6 @@ const ProjectsListingPage = () => {
       maximumFractionDigits: 0
     }).format(amount);
   };
-
-  const getAllProjects=async()=>{
-    try {
-      const res=await axiosInstance.get("/admin/project")
-      if(res.status===200){
-        setProjects(res.data)
-      }
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
-  useEffect(()=>{
-    getAllProjects()
-  },[])
 
   return (
     <div className="bg-gradient-to-br from-blue-50 to-green-50 p-6 h-full overflow-auto mb-16">
@@ -144,138 +154,42 @@ const ProjectsListingPage = () => {
           ))}
         </div>
         
-        {filteredProjects.length === 0 ? (
-          <div className="text-center py-16 bg-white rounded-lg shadow-md">
-            <p className="text-xl text-gray-600">No projects found matching your criteria.</p>
-          </div>
-        ) : viewMode === 'grid' ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredProjects.map((project:any) => {
-              const progress = calculateProgress(project?.startDate, project?.endDate);
-              
-              return (
-                <div 
-                  key={project?.id} 
-                  className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow group cursor-pointer"
-                  onClick={() => handleProjectClick(project.id)}
-                >
-                  <div className="h-3 bg-gradient-to-r from-blue-500 to-green-500"></div>
-                  <div className="p-6">
-                    <div className="flex justify-between items-start mb-4">
-                      <h2 className="text-xl font-bold text-gray-800 group-hover:text-blue-600 transition-colors">{project?.name}</h2>
-                      <Star className="h-5 w-5 text-gray-400 hover:text-yellow-500 cursor-pointer" />
-                    </div>
-                    
-                    <p className="text-gray-600 mb-4 line-clamp-2">{project?.description}</p>
-                    
-                    {project?.Client && (
-                      <div className="mb-4 text-sm">
-                        <span className="font-medium text-gray-700">Client:</span>
-                        <span className="ml-2 text-gray-600">{project?.Client.name}</span>
-                      </div>
-                    )}
-                    
-                    <div className="mb-6">
-                      <div className="flex justify-between text-sm text-gray-500 mb-1">
-                        <span>Progress</span>
-                        <span>{progress}%</span>
-                      </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div 
-                          className="bg-gradient-to-r from-blue-500 to-green-500 h-2 rounded-full" 
-                          style={{ width: `${progress}%` }}
-                        ></div>
-                      </div>
-                    </div>
-                    
-                    <div className="flex flex-wrap gap-3 mb-4">
-                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${getPriorityClass(project?.priority)}`}>
-                        {project?.priority}
-                      </span>
-                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusClass(project?.status)}`}>
-                        {project?.status}
-                      </span>
-                      <span className="px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
-                        {project?.projectType}
-                      </span>
-                    </div>
-                    
-                    <div className="flex justify-between text-gray-500 text-sm">
-                      <div className="flex items-center">
-                        <Calendar className="h-4 w-4 mr-1" />
-                        <span>{new Date(project?.endDate).toLocaleDateString()}</span>
-                      </div>
-                      <div className="flex items-center">
-                        <Users className="h-4 w-4 mr-1" />
-                        <span>{project?.teamLength}</span>
-                      </div>
-                    </div>
-                    
-                    <div className="flex justify-between text-gray-500 text-sm mt-3">
-                      <div className="flex items-center">
-                        <DollarSign className="h-4 w-4 mr-1" />
-                        <span>{formatCurrency(project?.budget)}</span>
-                      </div>
-                      <div className="flex items-center">
-                        <Clock className="h-4 w-4 mr-1" />
-                        <span>{project?.estimatedDuration} days</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+        {loading ? (
+          <LoaderComponent />
         ) : (
-          <div className="bg-white rounded-xl shadow-md overflow-hidden">
-            {filteredProjects.map((project:any, index:any) => {
-              const progress = calculateProgress(project?.startDate, project?.endDate);
-              
-              return (
-                <div 
-                  key={project?.id}
-                  onClick={() => handleProjectClick(project.id)}
-                  className="cursor-pointer"
-                >
-                  <div className="p-6 hover:bg-blue-50 transition-colors flex flex-col sm:flex-row sm:items-center gap-4">
-                    <div className="flex-1">
-                      <h2 className="text-xl font-bold text-gray-800 mb-2">{project?.name}</h2>
-                      <p className="text-gray-600 mb-3">{project?.description}</p>
-                      
-                      {project?.Client && (
-                        <div className="mb-3 text-sm">
-                          <span className="font-medium text-gray-700">Client:</span>
-                          <span className="ml-2 text-gray-600">{project?.Client.name} ({project?.Client.email})</span>
+          <>
+            {filteredProjects.length === 0 ? (
+              <div className="text-center py-16 bg-white rounded-lg shadow-md">
+                <p className="text-xl text-gray-600">No projects found matching your criteria.</p>
+              </div>
+            ) : viewMode === 'grid' ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredProjects.map((project:any) => {
+                  const progress = calculateProgress(project?.startDate, project?.endDate);
+                  
+                  return (
+                    <div 
+                      key={project?.id} 
+                      className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow group cursor-pointer"
+                      onClick={() => handleProjectClick(project.id)}
+                    >
+                      <div className="h-3 bg-gradient-to-r from-blue-500 to-green-500"></div>
+                      <div className="p-6">
+                        <div className="flex justify-between items-start mb-4">
+                          <h2 className="text-xl font-bold text-gray-800 group-hover:text-blue-600 transition-colors">{project?.name}</h2>
+                          <Star className="h-5 w-5 text-gray-400 hover:text-yellow-500 cursor-pointer" />
                         </div>
-                      )}
-                      
-                      <div className="flex flex-wrap gap-2 mb-3">
-                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${getPriorityClass(project?.priority)}`}>
-                          {project?.priority}
-                        </span>
-                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusClass(project?.status)}`}>
-                          {project?.status}
-                        </span>
-                        <span className="px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
-                          {project?.projectType}
-                        </span>
-                      </div>
-                      
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-gray-600">
-                        <div className="flex items-center">
-                          <DollarSign className="h-4 w-4 mr-1 text-gray-500" />
-                          <span>Budget: {formatCurrency(project?.budget)}</span>
-                        </div>
-                        <div className="flex items-center">
-                          <DollarSign className="h-4 w-4 mr-1 text-gray-500" />
-                          <span>Revenue: {formatCurrency(project?.revenueProjection)}</span>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="flex flex-col sm:items-end gap-4">
-                    <div className="flex items-center gap-6">
-                        <div className="w-32">
+                        
+                        <p className="text-gray-600 mb-4 line-clamp-2">{project?.description}</p>
+                        
+                        {project?.Client && (
+                          <div className="mb-4 text-sm">
+                            <span className="font-medium text-gray-700">Client:</span>
+                            <span className="ml-2 text-gray-600">{project?.Client.name}</span>
+                          </div>
+                        )}
+                        
+                        <div className="mb-6">
                           <div className="flex justify-between text-sm text-gray-500 mb-1">
                             <span>Progress</span>
                             <span>{progress}%</span>
@@ -288,7 +202,19 @@ const ProjectsListingPage = () => {
                           </div>
                         </div>
                         
-                        <div className="flex items-center gap-4 text-sm text-gray-600">
+                        <div className="flex flex-wrap gap-3 mb-4">
+                          <span className={`px-3 py-1 rounded-full text-xs font-medium ${getPriorityClass(project?.priority)}`}>
+                            {project?.priority}
+                          </span>
+                          <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusClass(project?.status)}`}>
+                            {project?.status}
+                          </span>
+                          <span className="px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
+                            {project?.projectType}
+                          </span>
+                        </div>
+                        
+                        <div className="flex justify-between text-gray-500 text-sm">
                           <div className="flex items-center">
                             <Calendar className="h-4 w-4 mr-1" />
                             <span>{new Date(project?.endDate).toLocaleDateString()}</span>
@@ -297,28 +223,118 @@ const ProjectsListingPage = () => {
                             <Users className="h-4 w-4 mr-1" />
                             <span>{project?.teamLength}</span>
                           </div>
+                        </div>
+                        
+                        <div className="flex justify-between text-gray-500 text-sm mt-3">
+                          <div className="flex items-center">
+                            <DollarSign className="h-4 w-4 mr-1" />
+                            <span>{formatCurrency(project?.budget)}</span>
+                          </div>
                           <div className="flex items-center">
                             <Clock className="h-4 w-4 mr-1" />
-                            <span>{project?.estimatedDuration}d</span>
+                            <span>{project?.estimatedDuration} days</span>
                           </div>
                         </div>
                       </div>
-                      
-                      <div className="flex items-center gap-4 text-sm text-gray-600">
-                        <div className="flex items-center">
-                          <Goal className="h-4 w-4 mr-1" />
-                          <span>{project?.projectGoals}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="bg-white rounded-xl shadow-md overflow-hidden">
+                {filteredProjects.map((project:any, index:any) => {
+                  const progress = calculateProgress(project?.startDate, project?.endDate);
+                  
+                  return (
+                    <div 
+                      key={project?.id}
+                      onClick={() => handleProjectClick(project.id)}
+                      className="cursor-pointer"
+                    >
+                      <div className="p-6 hover:bg-blue-50 transition-colors flex flex-col sm:flex-row sm:items-center gap-4">
+                        <div className="flex-1">
+                          <h2 className="text-xl font-bold text-gray-800 mb-2">{project?.name}</h2>
+                          <p className="text-gray-600 mb-3">{project?.description}</p>
+                          
+                          {project?.Client && (
+                            <div className="mb-3 text-sm">
+                              <span className="font-medium text-gray-700">Client:</span>
+                              <span className="ml-2 text-gray-600">{project?.Client.name} ({project?.Client.email})</span>
+                            </div>
+                          )}
+                          
+                          <div className="flex flex-wrap gap-2 mb-3">
+                            <span className={`px-3 py-1 rounded-full text-xs font-medium ${getPriorityClass(project?.priority)}`}>
+                              {project?.priority}
+                            </span>
+                            <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusClass(project?.status)}`}>
+                              {project?.status}
+                            </span>
+                            <span className="px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
+                              {project?.projectType}
+                            </span>
+                          </div>
+                          
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-gray-600">
+                            <div className="flex items-center">
+                              <DollarSign className="h-4 w-4 mr-1 text-gray-500" />
+                              <span>Budget: {formatCurrency(project?.budget)}</span>
+                            </div>
+                            <div className="flex items-center">
+                              <DollarSign className="h-4 w-4 mr-1 text-gray-500" />
+                              <span>Revenue: {formatCurrency(project?.revenueProjection)}</span>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div className="flex flex-col sm:items-end gap-4">
+                        <div className="flex items-center gap-6">
+                            <div className="w-32">
+                              <div className="flex justify-between text-sm text-gray-500 mb-1">
+                                <span>Progress</span>
+                                <span>{progress}%</span>
+                              </div>
+                              <div className="w-full bg-gray-200 rounded-full h-2">
+                                <div 
+                                  className="bg-gradient-to-r from-blue-500 to-green-500 h-2 rounded-full" 
+                                  style={{ width: `${progress}%` }}
+                                ></div>
+                              </div>
+                            </div>
+                            
+                            <div className="flex items-center gap-4 text-sm text-gray-600">
+                              <div className="flex items-center">
+                                <Calendar className="h-4 w-4 mr-1" />
+                                <span>{new Date(project?.endDate).toLocaleDateString()}</span>
+                              </div>
+                              <div className="flex items-center">
+                                <Users className="h-4 w-4 mr-1" />
+                                <span>{project?.teamLength}</span>
+                              </div>
+                              <div className="flex items-center">
+                                <Clock className="h-4 w-4 mr-1" />
+                                <span>{project?.estimatedDuration}d</span>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div className="flex items-center gap-4 text-sm text-gray-600">
+                            <div className="flex items-center">
+                              <Goal className="h-4 w-4 mr-1" />
+                              <span>{project?.projectGoals}</span>
+                            </div>
+                          </div>
                         </div>
                       </div>
+                      {index < filteredProjects.length - 1 && (
+                        <div className="border-t border-gray-200"></div>
+                      )}
                     </div>
-                  </div>
-                  {index < filteredProjects.length - 1 && (
-                    <div className="border-t border-gray-200"></div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
+                  );
+                })}
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>

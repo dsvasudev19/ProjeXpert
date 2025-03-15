@@ -18,7 +18,7 @@ const ProtectedRoutes = () => {
         <Route path="/dashboard/*" element={<DashboardLayout />}>
           <Route path="analytics" element={<Analytics />} />
           <Route path="files" element={<Users />} />
-          <Route path="projects/files" element={<Files />} />
+          <Route path="files/p" element={<Files />} />
           <Route path="team" element={<Vendors />} />
           <Route path="project" element={<Turfs />} />
           <Route path="kanban" element={<Reviews />} />

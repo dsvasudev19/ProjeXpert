@@ -1,25 +1,59 @@
-import React, { useState } from 'react';
-import { CalendarIcon,  Edit, Eye, TagIcon, Trash, UserIcon } from 'lucide-react'; // Assuming you use lucide icons
+import React, { useEffect, useState } from 'react';
+import { CalendarIcon,  Edit, Eye, FolderCode, TagIcon, Trash, UserIcon } from 'lucide-react'; // Assuming you use lucide icons
 import DynamicTabularComponent from '../../components/shared/DynamicTabularComponent';
+import { axiosInstance } from '../../axiosIntance';
 
 // Define the Task interface
 interface Task {
   id: number;
+  refId: string;
   title: string;
   description: string;
   status: 'pending' | 'in_progress' | 'completed' | 'on_hold';
   priority: 'low' | 'medium' | 'high' | 'urgent';
-  assignee: string;
   dueDate: string;
-  createdAt: string;
+  assigneeId: number;
+  projectId: number;
+  bugId: number | null;
+  parentTaskId: number | null;
   progress: number;
-  tags: string[];
+  tags: string[]; // Stored as a comma-separated string
+  createdBy: number;
+  createdAt: string;
+  updatedAt: string;
+  userId: number | null;
+  Assignee: {
+    id: number;
+    name: string;
+  };
+  Project: {
+    id: number;
+    name: string;
+  };
+  ParentTask: Task | null;
+  SubTasks: Task[];
 }
+
 
 const TasksOverview: React.FC = () => {
   // State for handling pagination
   const [currentPage, setCurrentPage] = useState(1);
-  
+  const [tasks,setTasks]=useState<any>([])
+
+  const getAllTasks=async()=>{
+    try {
+      const res=await axiosInstance.get("/admin/task")
+      if(res?.status===200){
+        setTasks(res.data.map((task:any)=>{return {...task,tags:task.tags.split(',')}}))
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  useEffect(()=>{
+    getAllTasks()
+  },[])
   // Column definitions
   const columns = [
     {
@@ -33,6 +67,17 @@ const TasksOverview: React.FC = () => {
       sortable: true,
       render: (row: Task) => (
         <div className="font-medium">{row.title}</div>
+      ),
+    },
+    {
+      key: 'project',
+      header: 'Project',
+      sortable: true,
+      render: (row: Task) => (
+        <div className="flex items-center">
+          <FolderCode className="w-4 h-4 mr-1 text-gray-500" />
+          <span>{row?.Project?.name}</span>
+        </div>
       ),
     },
     {
@@ -94,7 +139,7 @@ const TasksOverview: React.FC = () => {
       render: (row: Task) => (
         <div className="flex items-center">
           <UserIcon className="w-4 h-4 mr-1 text-gray-500" />
-          <span>{row.assignee}</span>
+          <span>{row?.Assignee?.name}</span>
         </div>
       ),
     },
@@ -172,6 +217,17 @@ const TasksOverview: React.FC = () => {
   // Filter dropdowns
   const dropdowns = [
     {
+      label: 'Project',
+      key: 'project',
+      options: [
+        { value: 'all', label: 'All Projects' },
+        { value: 'pending', label: 'Pending' },
+        { value: 'in_progress', label: 'In Progress' },
+        { value: 'completed', label: 'Completed' },
+        { value: 'on_hold', label: 'On Hold' },
+      ],
+    },
+    {
       label: 'Status',
       key: 'status',
       options: [
@@ -194,107 +250,7 @@ const TasksOverview: React.FC = () => {
       ],
     },
   ];
-  
-  // Sample data
-  const tasks: Task[] = [
-    {
-      id: 1,
-      title: 'Implement user authentication',
-      description: 'Set up OAuth and JWT for user authentication system',
-      status: 'completed',
-      priority: 'high',
-      assignee: 'Sarah Johnson',
-      dueDate: '2025-03-10',
-      createdAt: '2025-02-28',
-      progress: 100,
-      tags: ['backend', 'security'],
-    },
-    {
-      id: 2,
-      title: 'Design landing page mockup',
-      description: 'Create Figma design for main landing page',
-      status: 'in_progress',
-      priority: 'medium',
-      assignee: 'Mike Chen',
-      dueDate: '2025-03-20',
-      createdAt: '2025-03-02',
-      progress: 60,
-      tags: ['design', 'ui/ux'],
-    },
-    {
-      id: 3,
-      title: 'Setup CI/CD pipeline',
-      description: 'Configure GitHub Actions for automatic deployment',
-      status: 'pending',
-      priority: 'high',
-      assignee: 'Alex Wong',
-      dueDate: '2025-03-25',
-      createdAt: '2025-03-05',
-      progress: 0,
-      tags: ['devops', 'infrastructure'],
-    },
-    {
-      id: 4,
-      title: 'Fix payment processing bug',
-      description: 'Resolve issue with Stripe integration',
-      status: 'in_progress',
-      priority: 'urgent',
-      assignee: 'Lisa Park',
-      dueDate: '2025-03-15',
-      createdAt: '2025-03-10',
-      progress: 30,
-      tags: ['backend', 'bugfix'],
-    },
-    {
-      id: 5,
-      title: 'Update privacy policy',
-      description: 'Update policy to comply with new regulations',
-      status: 'on_hold',
-      priority: 'low',
-      assignee: 'John Smith',
-      dueDate: '2025-04-01',
-      createdAt: '2025-03-08',
-      progress: 10,
-      tags: ['legal', 'documentation'],
-    },
-    {
-      id: 6,
-      title: 'Optimize database queries',
-      description: 'Improve performance of slow SQL queries',
-      status: 'pending',
-      priority: 'medium',
-      assignee: 'Emily Davis',
-      dueDate: '2025-03-28',
-      createdAt: '2025-03-12',
-      progress: 0,
-      tags: ['backend', 'performance'],
-    },
-    {
-      id: 7,
-      title: 'Implement dark mode',
-      description: 'Add dark mode theme to the application',
-      status: 'in_progress',
-      priority: 'low',
-      assignee: 'Ryan Lee',
-      dueDate: '2025-04-05',
-      createdAt: '2025-03-11',
-      progress: 45,
-      tags: ['frontend', 'ui/ux'],
-    },
-    {
-      id: 8,
-      title: 'Write API documentation',
-      description: 'Create comprehensive documentation for the REST API',
-      status: 'pending',
-      priority: 'medium',
-      assignee: 'Sarah Johnson',
-      dueDate: '2025-04-10',
-      createdAt: '2025-03-13',
-      progress: 0,
-      tags: ['documentation'],
-    },
-  ];
-  
+ 
   // Handle sorting
   const handleSort = (key: string, direction: 'ascending' | 'descending') => {
     console.log(`Sorting by ${key} in ${direction} order`);

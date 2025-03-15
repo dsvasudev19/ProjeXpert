@@ -1,25 +1,46 @@
-import React, { useState } from 'react';
-import { BugIcon, CalendarIcon, CheckIcon, UserIcon,  Edit, Eye, Trash2 } from 'lucide-react'; // Assuming Lucide icons
+import React, { useEffect, useState } from 'react';
+import { BugIcon, CalendarIcon, CheckIcon, UserIcon,  Edit, Eye, Trash2,FolderCode } from 'lucide-react'; // Assuming Lucide icons
 import DynamicTabularComponent from '../../components/shared/DynamicTabularComponent';
+import { axiosInstance } from '../../axiosIntance';
 
 // Define the Bug interface
 interface Bug {
-  id: number;
+  id?: number; // Assuming id is auto-generated and may not always be present
   title: string;
   description: string;
   status: 'open' | 'in_progress' | 'resolved' | 'closed';
-  severity: 'low' | 'medium' | 'high' | 'critical';
-  reporter: string;
-  assignee: string;
-  reportedDate: string;
+  priority: 'low' | 'medium' | 'high' | 'critical';
+  assignedTo: string; // Matches "assignedTo" from the object
   dueDate: string;
-  resolutionTime?: string; // Optional, only for resolved/closed bugs
-  tags: string[];
+  tags: string[]; // Kept as a comma-separated string
+  project: string; // Matches "project" from the object
+  reporter?: string; // Optional since it's missing from the provided object
+  reportedDate?: string; // Optional if it's not explicitly provided
+  resolutionTime?: string; // Optional, only for resolved/closed bugs,
+  Project?:any;
+  Assignee?:any;
+  Reporter?:any;
 }
+
 
 const BugsOverview: React.FC = () => {
   // State for handling pagination
   const [currentPage, setCurrentPage] = useState(1);
+  const [bugs,setBugs]=useState<any>([])
+
+  const getAllBugs=async()=>{
+    try {
+      const res = await axiosInstance.get("/admin/bug")
+      if(res.status===200){
+        setBugs(res.data.map((bug:any)=>{return {...bug,tags:bug.tags.split(",")}}))
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+  useEffect(()=>{
+    getAllBugs()
+  },[])
 
   // Column definitions
   const columns = [
@@ -37,44 +58,59 @@ const BugsOverview: React.FC = () => {
       ),
     },
     {
+      key: 'project',
+      header: 'Project',
+      sortable: true,
+      render: (row: Bug) => (
+        <div className="flex items-center">
+          <FolderCode className="w-4 h-4 mr-1 text-gray-500" />
+          <span>{row?.Project?.name}</span>
+        </div>
+      ),
+    },
+    {
       key: 'status',
       header: 'Status',
       sortable: true,
       render: (row: Bug) => {
         const statusClasses = {
           open: 'bg-red-100 text-red-800',
-          in_progress: 'bg-blue-100 text-blue-800',
+          "in-progress": 'bg-blue-100 text-blue-800',
           resolved: 'bg-green-100 text-green-800',
           closed: 'bg-gray-100 text-gray-800',
+          reopened:'bg-yellow-100 text-yellow-800'
         };
+        
         
         const statusLabels = {
           open: 'Open',
-          in_progress: 'In Progress',
+          "in-progress": 'Progress',
           resolved: 'Resolved',
           closed: 'Closed',
+          reopened:'Reopened'
         };
         
         return (
-          <span className={`px-2 py-1 rounded-full text-xs ${statusClasses[row.status]}`}>
-            {statusLabels[row.status]}
+          <span className={`px-2 py-1 rounded-full text-xs ${statusClasses[row.status as keyof typeof statusClasses]}`}>
+            {statusLabels[row.status as keyof typeof statusLabels]}
           </span>
         );
+        
       },
     },
     {
-      key: 'severity',
+      key: 'priority',
       header: 'Severity',
       sortable: true,
       render: (row: Bug) => {
-        const severityClasses = {
+        const severityClasses:any = {
           low: 'bg-green-100 text-green-800',
           medium: 'bg-yellow-100 text-yellow-800',
           high: 'bg-orange-100 text-orange-800',
           critical: 'bg-red-100 text-red-800',
         };
         
-        const severityLabels = {
+        const severityLabels:any = {
           low: 'Low',
           medium: 'Medium',
           high: 'High',
@@ -82,8 +118,8 @@ const BugsOverview: React.FC = () => {
         };
         
         return (
-          <span className={`px-2 py-1 rounded-full text-xs ${severityClasses[row.severity]}`}>
-            {severityLabels[row.severity]}
+          <span className={`px-2 py-1 rounded-full text-xs ${severityClasses[row.priority]}`}>
+            {severityLabels[row?.priority]}
           </span>
         );
       },
@@ -95,7 +131,7 @@ const BugsOverview: React.FC = () => {
       render: (row: Bug) => (
         <div className="flex items-center">
           <UserIcon className="w-4 h-4 mr-1 text-gray-500" />
-          <span>{row.reporter}</span>
+          <span>{row?.Reporter?.name}</span>
         </div>
       ),
     },
@@ -106,7 +142,7 @@ const BugsOverview: React.FC = () => {
       render: (row: Bug) => (
         <div className="flex items-center">
           <UserIcon className="w-4 h-4 mr-1 text-gray-500" />
-          <span>{row.assignee || 'Unassigned'}</span>
+          <span>{row?.Assignee?.name || 'Unassigned'}</span>
         </div>
       ),
     },
@@ -211,83 +247,6 @@ const BugsOverview: React.FC = () => {
     },
   ];
 
-  // Sample data
-  const bugs: Bug[] = [
-    {
-      id: 1,
-      title: 'Login page crash on invalid input',
-      description: 'App crashes when user enters invalid email format',
-      status: 'resolved',
-      severity: 'high',
-      reporter: 'John Doe',
-      assignee: 'Sarah Johnson',
-      reportedDate: '2025-03-01',
-      dueDate: '2025-03-10',
-      resolutionTime: '2025-03-08',
-      tags: ['frontend', 'crash'],
-    },
-    {
-      id: 2,
-      title: 'API returns 500 on large payload',
-      description: 'Server error when submitting large data sets',
-      status: 'in_progress',
-      severity: 'critical',
-      reporter: 'Mike Chen',
-      assignee: 'Alex Wong',
-      reportedDate: '2025-03-05',
-      dueDate: '2025-03-15',
-      tags: ['backend', 'api'],
-    },
-    {
-      id: 3,
-      title: 'UI misalignment in dark mode',
-      description: 'Buttons misaligned in dark theme on mobile',
-      status: 'open',
-      severity: 'medium',
-      reporter: 'Lisa Park',
-      assignee: 'Ryan Lee',
-      reportedDate: '2025-03-07',
-      dueDate: '2025-03-20',
-      tags: ['frontend', 'ui/ux'],
-    },
-    {
-      id: 4,
-      title: 'Database query timeout',
-      description: 'Slow query causes timeout on reports page',
-      status: 'in_progress',
-      severity: 'high',
-      reporter: 'Emily Davis',
-      assignee: 'Alex Wong',
-      reportedDate: '2025-03-09',
-      dueDate: '2025-03-18',
-      tags: ['backend', 'performance'],
-    },
-    {
-      id: 5,
-      title: 'Broken link in footer',
-      description: 'Privacy policy link returns 404',
-      status: 'closed',
-      severity: 'low',
-      reporter: 'John Smith',
-      assignee: 'Mike Chen',
-      reportedDate: '2025-03-10',
-      dueDate: '2025-03-12',
-      resolutionTime: '2025-03-11',
-      tags: ['frontend', 'bugfix'],
-    },
-    {
-      id: 6,
-      title: 'Payment gateway timeout',
-      description: 'Stripe payments fail intermittently',
-      status: 'open',
-      severity: 'critical',
-      reporter: 'Sarah Johnson',
-      assignee: '',
-      reportedDate: '2025-03-12',
-      dueDate: '2025-03-17',
-      tags: ['backend', 'payment'],
-    },
-  ];
 
   // Handle sorting
   const handleSort = (key: string, direction: 'ascending' | 'descending') => {

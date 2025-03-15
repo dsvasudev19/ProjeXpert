@@ -48,7 +48,7 @@ const AppRoutes = () => {
         <Route path="/dashboard/*" element={<DashboardLayout />}>
           <Route path="analytics" element={<Analytics />} />
           <Route path="files" element={<ProjectFileManagement />} />
-          <Route path="projects/files" element={<Files />} />
+          <Route path="files/p" element={<Files />} />
           <Route path="team" element={<Team />} />
           <Route path="project" element={<Projects />} />
           <Route path="kanban" element={<Kanban />} />
@@ -64,7 +64,7 @@ const AppRoutes = () => {
           <Route path="chat" element={<ChatPage />} />
           <Route path="test" element={<TestPage />} />
           <Route path="new-project" element={<MultiStepProjectForm />} />
-          <Route path="cal" element={<EmployeeCalendarView />} />
+          <Route path="calendar" element={<EmployeeCalendarView />} />
           <Route path="ai-chat" element={<ChatbotInterface />} />
           <Route path="project/*" element={<ProjectDashboardLayout />}>
             <Route path="analytics" element={<ProjectManagementDashboard />} />

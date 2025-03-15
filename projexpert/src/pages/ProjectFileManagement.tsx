@@ -65,7 +65,7 @@ const FileManagementMain: React.FC = () => {
           {projects?.map((project: any) => (
             <Link
               key={project.id}
-              to={`/dashboard/projects/files?projectId=${project.id}`}
+              to={`/dashboard/files/p?projectId=${project.id}`}
               className="group bg-white p-2 rounded-lg border border-gray-50 hover:border-blue-100 shadow-sm hover:shadow-md transition-all duration-300"
             >
               <div className="flex items-center gap-4 mb-4">

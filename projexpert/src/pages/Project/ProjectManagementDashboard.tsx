@@ -1,46 +1,118 @@
-import { Users, CheckSquare, Bug, FileText, } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Users, CheckSquare, Bug, FileText } from 'lucide-react';
+import { axiosInstance } from '../../axiosIntance';
 
 const ProjectManagementDashboard = () => {
+    const [isLoading, setIsLoading] = useState(true);
+    const [dashboardData, setDashboardData] = useState({
+        projectData: {
+            completedTasks: 0,
+            pendingTasks: 0,
+            totalProjects: 0,
+            activeProjects: 0,
+            bugsCritical: 0,
+            bugsHigh: 0,
+            bugsMedium: 0,
+            bugsLow: 0,
+            teamMembers: 0,
+            taskCompletionRate: 0,
+            upcomingDeadlines: 0,
+            projectsCompletedThisMonth: 0,
+            newTeamMembers: 0
+        },
+        projectProgress: [],
+        upcomingDeadlines: []
+    });
+    
+    const [timeRange, setTimeRange] = useState('last7days');
 
-    // Sample data for analytics    
-    console.log('hello')
-    const projectData = {
-        completedTasks: 287,
-        pendingTasks: 124,
-        totalProjects: 8,
-        activeProjects: 5,
-        bugsCritical: 7,
-        bugsHigh: 18,
-        bugsMedium: 35,
-        bugsLow: 22,
-        teamMembers: 12,
-        taskCompletionRate: 78,
-        upcomingDeadlines: 5
+    useEffect(() => {
+        const fetchDashboardData = async () => {
+            try {
+                setIsLoading(true);
+                const response = await axiosInstance.get('/admin/project-dashboard/dashboard', {
+                    params: { timeRange }
+                });
+                
+                if (response.data.success) {
+                    setDashboardData(response.data.data);
+                }
+            } catch (error) {
+                console.error('Error fetching dashboard data:', error);
+                // Handle error state here
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        
+        fetchDashboardData();
+    }, [timeRange]);
+    
+    // Format date for display
+    // const formatDate = (dateString:any) => {
+    //     const date = new Date(dateString);
+    //     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    // };
+    
+    // Get status color class
+    const getStatusColorClass = (status:any) => {
+        switch (status) {
+            case 'On Track':
+                return 'bg-green-100 text-green-800';
+            case 'At Risk':
+                return 'bg-yellow-100 text-yellow-800';
+            case 'Delayed':
+                return 'bg-red-100 text-red-800';
+            default:
+                return 'bg-gray-100 text-gray-800';
+        }
+    };
+    
+    // Get progress bar color class
+    const getProgressBarColorClass = (status:any) => {
+        switch (status) {
+            case 'On Track':
+                return 'bg-green-500';
+            case 'At Risk':
+                return 'bg-yellow-500';
+            case 'Delayed':
+                return 'bg-red-500';
+            default:
+                return 'bg-blue-500';
+        }
+    };
+    
+    const handleTimeRangeChange = (e:any) => {
+        setTimeRange(e.target.value);
     };
 
-    // Sample project progress data
-    const projectProgress = [
-        { name: 'Website Redesign', progress: 75, status: 'On Track' },
-        { name: 'Mobile App Development', progress: 45, status: 'At Risk' },
-        { name: 'API Integration', progress: 90, status: 'On Track' },
-        { name: 'Documentation', progress: 30, status: 'Delayed' }
-    ];
+    if (isLoading) {
+        return (
+            <div className="flex items-center justify-center h-full">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            </div>
+        );
+    }
+
+    const { projectData, projectProgress, upcomingDeadlines } = dashboardData;
 
     return (
         <div className="flex flex-col h-full bg-gray-50 overflow-auto mb-16">
-
             {/* Main Content */}
             <main className="flex-1 overflow-y-auto p-6">
-
                 <div className="space-y-6">
                     <div className="flex items-center justify-between">
                         <h2 className="text-xl font-bold text-gray-800">Project Analytics</h2>
                         <div className="flex space-x-3">
-                            <select className="rounded-md border border-gray-300 px-3 py-2 text-sm">
-                                <option>Last 7 days</option>
-                                <option>Last 30 days</option>
-                                <option>Last 90 days</option>
-                                <option>All time</option>
+                            <select 
+                                className="rounded-md border border-gray-300 px-3 py-2 text-sm"
+                                value={timeRange}
+                                onChange={handleTimeRangeChange}
+                            >
+                                <option value="last7days">Last 7 days</option>
+                                <option value="last30days">Last 30 days</option>
+                                <option value="last90days">Last 90 days</option>
+                                <option value="alltime">All time</option>
                             </select>
                             <button className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700">
                                 Export Report
@@ -61,7 +133,7 @@ const ProjectManagementDashboard = () => {
                                 </div>
                             </div>
                             <div className="mt-4 h-2 w-full bg-gray-200 rounded-full overflow-hidden">
-                                <div className="h-full bg-blue-600 rounded-full" style={{ width: `${projectData.taskCompletionRate}%` }}></div>
+                            <div className="h-full bg-blue-600 rounded-full" style={{ width: `${projectData.taskCompletionRate}%` }}></div>
                             </div>
                         </div>
 
@@ -75,7 +147,7 @@ const ProjectManagementDashboard = () => {
                                     <FileText className="h-6 w-6 text-green-600" />
                                 </div>
                             </div>
-                            <p className="mt-2 text-sm text-gray-500">2 projects completed this month</p>
+                            <p className="mt-2 text-sm text-gray-500">{projectData.projectsCompletedThisMonth} projects completed this month</p>
                         </div>
 
                         <div className="bg-white rounded-lg shadow p-6">
@@ -101,7 +173,7 @@ const ProjectManagementDashboard = () => {
                                     <Users className="h-6 w-6 text-purple-600" />
                                 </div>
                             </div>
-                            <p className="mt-2 text-sm text-gray-500">3 members joined this month</p>
+                            <p className="mt-2 text-sm text-gray-500">{projectData.newTeamMembers} members joined this month</p>
                         </div>
                     </div>
 
@@ -113,20 +185,15 @@ const ProjectManagementDashboard = () => {
                             </div>
                             <div className="p-6">
                                 <div className="space-y-6">
-                                    {projectProgress.map((project, index) => (
+                                    {projectProgress.map((project:any, index:any) => (
                                         <div key={index}>
                                             <div className="flex items-center justify-between mb-2">
                                                 <div>
-                                                    <span className="text-sm font-medium text-gray-800">{project.name}</span>
+                                                    <span className="text-sm font-medium text-gray-800">{project?.name}</span>
                                                 </div>
                                                 <div>
                                                     <span
-                                                        className={`text-xs font-medium px-2 py-1 rounded-full ${project.status === 'On Track'
-                                                                ? 'bg-green-100 text-green-800'
-                                                                : project.status === 'At Risk'
-                                                                    ? 'bg-yellow-100 text-yellow-800'
-                                                                    : 'bg-red-100 text-red-800'
-                                                            }`}
+                                                        className={`text-xs font-medium px-2 py-1 rounded-full ${getStatusColorClass(project.status)}`}
                                                     >
                                                         {project.status}
                                                     </span>
@@ -134,12 +201,7 @@ const ProjectManagementDashboard = () => {
                                             </div>
                                             <div className="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
                                                 <div
-                                                    className={`h-full rounded-full ${project.status === 'On Track'
-                                                            ? 'bg-green-500'
-                                                            : project.status === 'At Risk'
-                                                                ? 'bg-yellow-500'
-                                                                : 'bg-red-500'
-                                                        }`}
+                                                    className={`h-full rounded-full ${getProgressBarColorClass(project.status)}`}
                                                     style={{ width: `${project.progress}%` }}
                                                 ></div>
                                             </div>
@@ -199,46 +261,38 @@ const ProjectManagementDashboard = () => {
                             <span className="text-sm font-medium text-blue-600 cursor-pointer">View All</span>
                         </div>
                         <div className="divide-y divide-gray-200">
-                            <div className="p-6 flex items-center justify-between">
-                                <div className="flex items-center">
-                                    <div className="h-10 w-10 rounded-full bg-red-100 flex items-center justify-center mr-4">
-                                        <span className="text-sm font-bold text-red-600">15</span>
+                            {upcomingDeadlines.slice(0, 3).map((deadline:any, index:any) => (
+                                <div key={index} className="p-6 flex items-center justify-between">
+                                    <div className="flex items-center">
+                                        <div className={`h-10 w-10 rounded-full flex items-center justify-center mr-4 
+                                            ${deadline.status === 'critical' ? 'bg-red-100' : 
+                                              deadline.status === 'warning' ? 'bg-yellow-100' : 'bg-blue-100'}`}>
+                                            <span className={`text-sm font-bold 
+                                                ${deadline.status === 'critical' ? 'text-red-600' : 
+                                                  deadline.status === 'warning' ? 'text-yellow-600' : 'text-blue-600'}`}>
+                                                {deadline.day}
+                                            </span>
+                                        </div>
+                                        <div>
+                                            <h4 className="text-sm font-medium text-gray-800">{deadline.name}</h4>
+                                            <p className="text-xs text-gray-500 mt-1">Due: {deadline.dueDate}</p>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <h4 className="text-sm font-medium text-gray-800">Website Redesign - Phase 2</h4>
-                                        <p className="text-xs text-gray-500 mt-1">Due: Mar 15, 2025</p>
-                                    </div>
+                                    <span className={`text-xs font-medium 
+                                        ${deadline.status === 'critical' ? 'text-red-600' : 
+                                          deadline.status === 'warning' ? 'text-yellow-600' : 'text-blue-600'}`}>
+                                        {deadline.daysLeft} days left
+                                    </span>
                                 </div>
-                                <span className="text-xs text-red-600 font-medium">2 days left</span>
-                            </div>
-                            <div className="p-6 flex items-center justify-between">
-                                <div className="flex items-center">
-                                    <div className="h-10 w-10 rounded-full bg-yellow-100 flex items-center justify-center mr-4">
-                                        <span className="text-sm font-bold text-yellow-600">22</span>
-                                    </div>
-                                    <div>
-                                        <h4 className="text-sm font-medium text-gray-800">Mobile App Beta Release</h4>
-                                        <p className="text-xs text-gray-500 mt-1">Due: Mar 22, 2025</p>
-                                    </div>
+                            ))}
+                            {upcomingDeadlines.length === 0 && (
+                                <div className="p-6 text-center text-gray-500">
+                                    No upcoming deadlines in the next two weeks
                                 </div>
-                                <span className="text-xs text-yellow-600 font-medium">9 days left</span>
-                            </div>
-                            <div className="p-6 flex items-center justify-between">
-                                <div className="flex items-center">
-                                    <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center mr-4">
-                                        <span className="text-sm font-bold text-blue-600">28</span>
-                                    </div>
-                                    <div>
-                                        <h4 className="text-sm font-medium text-gray-800">Monthly Progress Report</h4>
-                                        <p className="text-xs text-gray-500 mt-1">Due: Mar 28, 2025</p>
-                                    </div>
-                                </div>
-                                <span className="text-xs text-blue-600 font-medium">15 days left</span>
-                            </div>
+                            )}
                         </div>
                     </div>
                 </div>
-
             </main>
         </div>
     );

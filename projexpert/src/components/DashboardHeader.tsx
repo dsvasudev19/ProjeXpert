@@ -1,4 +1,4 @@
-import { Settings, HelpCircle, Search, LogOut, CheckCircle2 } from 'lucide-react';
+import { Settings, HelpCircle, Search, LogOut, CheckCircle2, Timer } from 'lucide-react';
 import NotificationPopup from '../modals/NotificationDialog';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -6,11 +6,13 @@ import ConfirmationModal from '../modals/ConfirmationDialog';
 import { useState } from 'react';
 import InfoModal from '../modals/ProjectInfo';
 import { useConfig } from '../contexts/ConfigurationsContext';
+import TimerModal from '../modals/TimerModal';
 
 const DashboardHeader = () => {
     const { user, logout } = useAuth();
     const [logOutModal, setLogOutModal] = useState(false);
     const [infoModal, setInfoModal] = useState(false);
+    const [timerModal, setTimerModal] = useState(false);
     const { config } = useConfig();
     return (
         <>
@@ -49,6 +51,12 @@ const DashboardHeader = () => {
                             </button>}
                             <button className="p-2 rounded-lg hover:bg-slate-100 text-slate-600 hover:text-purple-600 transition-all duration-300" onClick={() => setInfoModal(true)}>
                                 <HelpCircle className="w-5 h-5" />
+                            </button>
+                            <button
+                                className="p-2 rounded-lg hover:bg-slate-100 text-slate-600 hover:text-teal-600 transition-all duration-300"
+                                onClick={() => setTimerModal(true)}
+                            >
+                                <Timer className="w-5 h-5" />
                             </button>
                             <button
                                 className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-gradient-to-r from-amber-100 to-yellow-100 hover:from-amber-200 hover:to-yellow-200 text-amber-700 border border-amber-200 transition-all duration-300 shadow-sm hover:shadow-md"
@@ -101,6 +109,9 @@ const DashboardHeader = () => {
                     onClose={() => setInfoModal(false)}
                 />
             )}
+
+            {timerModal && <TimerModal isOpen={timerModal} onClose={() => setTimerModal(false)} />}
+
         </>
     );
 };

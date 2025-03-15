@@ -4,12 +4,13 @@ import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 import { axiosInstance } from '../axiosIntance';
 import { useAuth } from '../contexts/AuthContext';
+import TeamsListingPage from './Project/Team';
 
 
 const Analytics = () => {
   const [selectedView, setSelectedView] = useState('overview');
   const [loading, setLoading] = useState(false)
-  const {user}=useAuth();
+  const { user } = useAuth();
 
   const projectStats = {
     totalProjects: 24,
@@ -56,55 +57,6 @@ const Analytics = () => {
     }
   ];
 
-  // const upcomingDeadlines = [
-  //   {
-  //     id: 1,
-  //     project: 'E-commerce Platform',
-  //     deadline: '2024-02-15',
-  //     progress: 65,
-  //     priority: 'High'
-  //   },
-  //   {
-  //     id: 2,
-  //     project: 'Mobile App Phase 2',
-  //     deadline: '2024-02-20',
-  //     progress: 40,
-  //     priority: 'Medium'  
-  //   },
-  //   {
-  //     id: 3,
-  //     project: 'Dashboard Redesign',
-  //     deadline: '2024-02-25',
-  //     progress: 85,
-  //     priority: 'Low'
-  //   }
-  // ];
-
-
-
-  const teamPerformance = [
-    {
-      id: 1,
-      name: 'Design Team',
-      tasksCompleted: 45,
-      efficiency: 92,
-      activeTasks: 8
-    },
-    {
-      id: 2,
-      name: 'Development Team',
-      tasksCompleted: 78,
-      efficiency: 88,
-      activeTasks: 12
-    },
-    {
-      id: 3,
-      name: 'QA Team',
-      tasksCompleted: 34,
-      efficiency: 95,
-      activeTasks: 5
-    }
-  ];
 
   const getDashboardOverview = async () => {
     setLoading(true)
@@ -115,7 +67,7 @@ const Analytics = () => {
       }
     } catch (error) {
       console.log(error)
-    }finally{
+    } finally {
       setLoading(false)
     }
   }
@@ -124,6 +76,13 @@ const Analytics = () => {
     getDashboardOverview()
 
   }, [])
+
+
+  useEffect(() => {
+    const storedTab = localStorage.getItem("analytics_tab");
+    setSelectedView(storedTab ? storedTab : "overview");
+  }, []);
+  
 
   const renderContent = () => {
     switch (selectedView) {
@@ -227,7 +186,7 @@ const Analytics = () => {
                       </div>
                     </div>
                   )}
-    
+
                   {loading ? (
                     <div className="bg-gray-200 rounded-2xl p-6 animate-pulse">
                       <div className="flex items-center justify-between">
@@ -426,30 +385,10 @@ const Analytics = () => {
 
       case 'team':
         return (
-          <div className="bg-white rounded-2xl shadow-sm p-6">
-            <h3 className="text-lg font-semibold mb-6">Team Performance</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {teamPerformance.map(team => (
-                <div key={team.id} className="bg-gray-50 rounded-xl p-4">
-                  <h4 className="font-medium text-lg mb-3">{team.name}</h4>
-                  <div className="space-y-2">
-                    <div className="flex justify-between">
-                      <span className="text-gray-500">Tasks Completed</span>
-                      <span className="font-medium">{team.tasksCompleted}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-500">Efficiency Rate</span>
-                      <span className="font-medium text-green-600">{team.efficiency}%</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-500">Active Tasks</span>
-                      <span className="font-medium text-blue-600">{team.activeTasks}</span>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+
+          <TeamsListingPage />
+
+          
         );
 
       default:
@@ -463,7 +402,10 @@ const Analytics = () => {
         {/* View Selection Tabs */}
         <div className="flex space-x-4 mb-6">
           <button
-            onClick={() => setSelectedView('overview')}
+            onClick={() => {
+              setSelectedView('overview')
+              localStorage.setItem("analytics_tab","overview")
+            }}
             className={`flex items-center px-4 py-2 rounded-lg ${selectedView === 'overview'
               ? 'bg-blue-600 text-white'
               : 'bg-white text-gray-600 hover:bg-gray-100'
@@ -473,7 +415,7 @@ const Analytics = () => {
             Overview
           </button>
           <button
-            onClick={() => setSelectedView('activity')}
+            onClick={() => {setSelectedView('activity');localStorage.setItem("analytics_tab","activity")}}
             className={`flex items-center px-4 py-2 rounded-lg ${selectedView === 'activity'
               ? 'bg-blue-600 text-white'
               : 'bg-white text-gray-600 hover:bg-gray-100'
@@ -483,7 +425,7 @@ const Analytics = () => {
             Activity
           </button>
           <button
-            onClick={() => setSelectedView('team')}
+            onClick={() => {setSelectedView('team');localStorage.setItem("analytics_tab","team")}}
             className={`flex items-center px-4 py-2 rounded-lg ${selectedView === 'team'
               ? 'bg-blue-600 text-white'
               : 'bg-white text-gray-600 hover:bg-gray-100'

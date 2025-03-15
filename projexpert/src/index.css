@@ -36,6 +36,7 @@
 /* Update your scrollbar styles */
 ::-webkit-scrollbar {
   width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -84,4 +85,44 @@
 
 .animate-pulse-slow {
   animation: pulse-slow 2s infinite;
+}
+
+
+.react-select__control {
+  border-radius: 0.5rem;
+  border: 1px solid #e5e7eb; /* border-gray-200 */
+  min-height: 38px;
+  font-size: 0.875rem; /* text-sm */
+}
+
+.react-select__control--is-focused {
+  border-color: #4ade80; /* green-400 */
+  box-shadow: 0 0 0 2px rgba(74, 222, 128, 0.5); /* focus:ring-green-400 */
+  outline: none;
+}
+
+.react-select__control--is-focused:hover {
+  border-color: #4ade80;
+}
+
+.react-select__menu {
+  font-size: 0.875rem; /* text-sm */
+}
+
+.react-select__option--is-focused {
+  background-color: #f3f4f6; /* gray-100 */
+}
+
+.react-select__option--is-selected {
+  background-color: #4ade80; /* green-400 */
+  color: white;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  display: none; /* Hide scrollbar for Chrome, Safari */
+}
+
+.custom-scrollbar {
+  -ms-overflow-style: none;  /* Hide scrollbar for IE and Edge */
+  scrollbar-width: none;  /* Hide scrollbar for Firefox */
 }
