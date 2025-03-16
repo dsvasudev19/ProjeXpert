@@ -10,9 +10,9 @@ const generateJitsiMeetingId = (title) => {
   return `${sanitizedTitle}-${timestamp}-${securityKey}`;
 };
 
-const JAAS_API_KEY = 'vpaas-magic-cookie-66c75979a8af47e8b86628738528e944'; // Your JaaS app ID
-const JAAS_SECRET = 'your-jaas-secret'; // Your JaaS secret (from 8x8 JaaS dashboard)
-const KID = 'vpaas-magic-cookie-66c75979a8af47e8b86628738528e944/fb0664-SAMPLE_APP'; // Your key ID
+const JAAS_API_KEY = process.env.JAAS_API_KEY; // Your JaaS app ID
+const JAAS_SECRET = process.env.JAAS_SECRET; // Your JaaS secret (from 8x8 JaaS dashboard)
+const KID = process.env.KID; // Your key ID
 
 const generateJitsiJWT = (userId, userName, email, roomName) => {
   const payload = {
