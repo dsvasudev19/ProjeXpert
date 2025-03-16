@@ -1,11 +1,51 @@
 const { sequelize, Meeting, Task,  Bug, MeetingParticipant ,User} = require('../../models');
 const { Op } = require('sequelize');
 
+const jwt = require('jsonwebtoken');
 
 const generateJitsiMeetingId = (title) => {
   const sanitizedTitle = title.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
   const timestamp = new Date().getTime();
   return `${sanitizedTitle}-${timestamp}`;
+};
+
+const JAAS_API_KEY = 'vpaas-magic-cookie-66c75979a8af47e8b86628738528e944'; // Your JaaS app ID
+const JAAS_SECRET = 'your-jaas-secret'; // Your JaaS secret (from 8x8 JaaS dashboard)
+const KID = 'vpaas-magic-cookie-66c75979a8af47e8b86628738528e944/fb0664-SAMPLE_APP'; // Your key ID
+
+const generateJitsiJWT = (userId, userName, email, roomName) => {
+  const payload = {
+    aud: 'jitsi',
+    iss: 'chat',
+    iat: Math.floor(Date.now() / 1000),
+    exp: Math.floor(Date.now() / 1000) + 7200, // 2 hours
+    nbf: Math.floor(Date.now() / 1000) - 5,
+    sub: JAAS_API_KEY,
+    context: {
+      features: {
+        livestreaming: false,
+        'outbound-call': false,
+        'sip-outbound-call': false,
+        transcription: false,
+        recording: false,
+      },
+      user: {
+        'hidden-from-recorder': false,
+        moderator: true, // Adjust based on role
+        name: userName,
+        id: userId,
+        email: email,
+      },
+    },
+    room: roomName || '*',
+  };
+
+  const header = {
+    kid: KID,
+    typ: 'JWT',
+  };
+
+  return jwt.sign(payload, JAAS_SECRET, { header });
 };
 
 
@@ -193,6 +233,35 @@ class TimeController {
     }
   }
 
+  // async getMeetingById(req, res, next) {
+  //   try {
+  //     const meeting = await Meeting.findByPk(req.params.id, {
+  //       include: [
+  //         {
+  //           model: MeetingParticipant,
+  //           include: [{ model: User, attributes: ['id', 'name', 'email'] }],
+  //           attributes: ['id', 'userId'],
+  //         },
+  //       ],
+  //     });
+  //     if (meeting) {
+  //       const jwtToken = generateJitsiJWT(
+  //         req.user.id, // Assuming authenticated user
+  //         req.user.name,
+  //         req.user.email,
+  //         meeting.jitsiMeetingId // Use meeting-specific room name
+  //       );
+  //       return res.status(200).json({
+  //         ...meeting.toJSON(),
+  //         jwt: jwtToken,
+  //       });
+  //     }
+  //     return res.status(404).json({ success: false, message: 'Meeting not found' });
+  //   } catch (error) {
+  //     console.log(error);
+  //     next(error);
+  //   }
+  // }
 
   /**
    * Create a new meeting
