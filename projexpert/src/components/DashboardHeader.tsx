@@ -1,19 +1,22 @@
-import { Settings, HelpCircle, Search, LogOut, CheckCircle2, Timer } from 'lucide-react';
+import { Settings, HelpCircle, LogOut, CheckCircle2, Timer, Bot } from 'lucide-react';
 import NotificationPopup from '../modals/NotificationDialog';
 import { useAuth } from '../contexts/AuthContext';
-
+import SearchMenu from './../modals/SearchMenu'; // Import the new component
 import ConfirmationModal from '../modals/ConfirmationDialog';
 import { useState } from 'react';
 import InfoModal from '../modals/ProjectInfo';
 import { useConfig } from '../contexts/ConfigurationsContext';
 import TimerModal from '../modals/TimerModal';
+import { useNavigate } from 'react-router-dom';
 
 const DashboardHeader = () => {
     const { user, logout } = useAuth();
     const [logOutModal, setLogOutModal] = useState(false);
     const [infoModal, setInfoModal] = useState(false);
     const [timerModal, setTimerModal] = useState(false);
+    const navigate = useNavigate();
     const { config } = useConfig();
+
     return (
         <>
             <nav className="fixed top-0 left-0 right-0 z-50 h-14 bg-white/80 backdrop-blur-xl shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] border-b border-slate-200/70">
@@ -28,17 +31,10 @@ const DashboardHeader = () => {
                         </div>
                     </div>
 
-                    {/* Search Bar */}
-                    <div className="flex-1 max-w-2xl px-3">
-                        <div className="relative">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-                            <input
-                                type="text"
-                                placeholder="Search projects, tasks, or team members..."
-                                className="w-full pl-12 pr-4 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-300"
-                            />
-                        </div>
-                    </div>
+                    {/* Search Menu - replaced with new component */}
+                    {
+                        user?.user?.userType === "admin" && <SearchMenu />
+                    }
 
                     {/* Right Navigation Items */}
                     <div className="flex items-center gap-2">
@@ -69,15 +65,27 @@ const DashboardHeader = () => {
                                     <span className="text-xs font-bold text-white">3</span>
                                 </div>
                             </button>
+                            <button
+                                className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-gradient-to-r from-purple-100 to-indigo-100 hover:from-purple-200 hover:to-indigo-200 text-purple-700 border border-purple-200 transition-all duration-300 shadow-sm hover:shadow-md"
+                                onClick={() => navigate('/dashboard/ai-chat')}
+                            >
+                                <Bot className="w-5 h-5" />
+                                <span className="text-sm font-medium">AI Assistant</span>
+                            </button>
                         </div>
 
                         {/* User Profile */}
                         <div className="flex items-center gap-3">
                             <button className="flex items-center gap-3 p-1.5 pl-3 rounded-xl transition-all duration-300 hover:bg-slate-100 group" onClick={() => window.location.href = '/dashboard/u/profile'}>
                                 <div className="flex flex-col items-end">
-                                    <span className="text-sm font-semibold text-slate-700 group-hover:text-slate-900">{user?.user?.name}</span>
-                                    <span className="text-xs text-slate-500">{user?.user?.Roles[0]?.name.toUpperCase()}</span>
+                                    <span className="text-sm font-semibold text-slate-700 group-hover:text-slate-900">
+                                        {user?.user?.name?.split(" ").slice(-1)[0]}
+                                    </span>
+                                    <span className="text-xs text-slate-500">
+                                        {user?.user?.Roles[0]?.name.toUpperCase()}
+                                    </span>
                                 </div>
+
                                 <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-green-500 to-blue-500 flex items-center justify-center shadow-lg shadow-blue-200/50">
                                     <span className="text-sm font-medium text-white">{user?.user?.name?.charAt(0)}</span>
                                 </div>
@@ -112,7 +120,6 @@ const DashboardHeader = () => {
             )}
 
             {timerModal && <TimerModal isOpen={timerModal} onClose={() => setTimerModal(false)} />}
-
         </>
     );
 };

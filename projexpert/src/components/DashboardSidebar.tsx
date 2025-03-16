@@ -165,7 +165,7 @@
 
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, ChevronLeft, ChevronRight, UserCog, FolderGit2, CalendarCheck2, FileCog, SquareKanban, CheckCircle2, Clock, AlertCircle, CalendarClock } from 'lucide-react';
+import { Home, ChevronLeft, ChevronRight, UserCog, FolderGit2, FileCog, SquareKanban, CheckCircle2, Clock, AlertCircle, CalendarClock, MessageSquareLock } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { axiosInstance } from '../axiosIntance';
 
@@ -183,7 +183,7 @@ const DashboardSidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
     const menuItems = [
         { icon: Home, label: 'Overview', href: '/dashboard/analytics' },
         { icon: FolderGit2, label: 'Projects', href: '/dashboard/project/analytics' }, // Adjusted to match partial paths
-        { icon: CalendarCheck2, label: 'Tasks', href: '/dashboard/task' },
+        { icon: MessageSquareLock, label: 'Communications', href: '/dashboard/chat' },
         { icon: CalendarClock, label: 'Timeline', href: '/dashboard/calendar' },
         { icon: FileCog, label: 'Files', href: '/dashboard/files' },
         { icon: SquareKanban, label: 'Kanban', href: '/dashboard/kanban' },
@@ -194,8 +194,10 @@ const DashboardSidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
     const clientMenuItems = [
         { icon: Home, label: 'Overview', href: '/dashboard/analytics' },
         { icon: FolderGit2, label: 'Projects', href: '/dashboard/project/analytics' },
-        { icon: CalendarCheck2, label: 'Tasks', href: '/dashboard/task' },
+        { icon: MessageSquareLock, label: 'Communications', href: '/dashboard/chat' },
+        { icon: CalendarClock, label: 'Timeline', href: '/dashboard/calendar' },
         { icon: FileCog, label: 'Files', href: '/dashboard/files' },
+        { icon: SquareKanban, label: 'Kanban', href: '/dashboard/kanban' },
     ];
 
     const getAnalyticsData = async () => {

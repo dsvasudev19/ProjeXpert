@@ -1,6 +1,7 @@
 import { Search, MoreVertical, Plus } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'react-hot-toast';
+import { axiosInstance } from '../../axiosIntance';
 
 const ChatSidebar = ({ chats, activeChat, setActiveChat }:any) => {
   console.log(chats)
@@ -9,21 +10,28 @@ const ChatSidebar = ({ chats, activeChat, setActiveChat }:any) => {
   const [participantEmail, setParticipantEmail] = useState('');
   const [suggestions, setSuggestions] = useState<string[]>([]);
 
-  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleEmailChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setParticipantEmail(value);
-    
-    // Mock suggestions - replace with actual API call
+
     if (value.length > 0) {
-      setSuggestions([
-        `${value}@gmail.com`,
-        `${value}@outlook.com`,
-        `${value}@yahoo.com`
-      ]);
+        try {
+            const response = await axiosInstance.get('/admin/client/chat/participants', {
+                params: { searchTerm: value }
+            });
+
+            const users = response.data.data; // Assuming response structure
+
+            // Extracting emails from response and setting suggestions
+            setSuggestions(users.map((user: { email: string }) => user.email));
+        } catch (error) {
+            console.error("Error fetching suggestions:", error);
+            setSuggestions([]); // Fallback to empty suggestions in case of error
+        }
     } else {
-      setSuggestions([]);
+        setSuggestions([]); // Clear suggestions when input is empty
     }
-  };
+};
 
   const handleStartChat = () => {
     if (!chatName || !participantEmail) {

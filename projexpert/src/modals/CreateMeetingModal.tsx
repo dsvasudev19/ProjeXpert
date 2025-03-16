@@ -176,12 +176,21 @@ const CreateMeetingModal = ({ isOpen, onClose, selectedDate, onMeetingCreated, i
     }
   };
 
+  // const handleJoinMeeting = () => {
+  //   if (data?.id) {
+  //       window.open(`/dashboard/meeting-room/${data.id}`, '_blank'); // Opens in a new tab
+  //   }
+  // };
+
   const handleJoinMeeting = () => {
-    if (data?.id) {
-        window.open(`/dashboard/meeting-room/${data.id}`, '_blank'); // Opens in a new tab
+    if (data?.jitsiMeetingLink) {
+      window.open(data.jitsiMeetingLink, '_blank');
+    } else {
+      console.error('No Jitsi meeting link available');
+      setError('No meeting link available for this meeting.');
     }
   };
-
+  
   if (!isOpen) return null;
 
   return (

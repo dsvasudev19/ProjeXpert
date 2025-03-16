@@ -78,7 +78,7 @@ const MessageInput = ({
                 ref={fileInputRef}
                 onChange={handleFileChange}
                 className="hidden"
-                accept="image/*,.pdf,.doc,.docx"
+                accept="image/*,.png,.jpeg,.webp"
               />
             </>
           )}
