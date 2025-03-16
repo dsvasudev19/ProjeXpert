@@ -1,12 +1,13 @@
 const { sequelize, Meeting, Task,  Bug, MeetingParticipant ,User} = require('../../models');
 const { Op } = require('sequelize');
-
+const crypto=require("crypto")
 const jwt = require('jsonwebtoken');
 
 const generateJitsiMeetingId = (title) => {
   const sanitizedTitle = title.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
   const timestamp = new Date().getTime();
-  return `${sanitizedTitle}-${timestamp}`;
+  const securityKey=crypto.randomBytes(6).toString("hex");
+  return `${sanitizedTitle}-${timestamp}-${securityKey}`;
 };
 
 const JAAS_API_KEY = 'vpaas-magic-cookie-66c75979a8af47e8b86628738528e944'; // Your JaaS app ID
@@ -224,7 +225,10 @@ class TimeController {
         ],
       });
       if (meeting) {
-        return res.status(200).json(meeting);
+        return res.status(200).json({
+          ...meeting.toJSON(),
+          jitsiMeetingLink: `https://meet.jit.si/${meeting.jitsiMeetingId}`, 
+        });
       }
       return res.status(404).json({ success: false, message: 'Meeting not found' });
     } catch (error) {

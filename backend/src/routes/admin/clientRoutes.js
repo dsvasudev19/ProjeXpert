@@ -29,4 +29,6 @@ router.patch("/bio",authenticateUser,userController.updateUserBio)
 
 router.patch("/password",authenticateUser,userController.updateCredentials)
 
+router.get("/chat/participants",authenticateUser,userController.getAllInternalAndExternalClientForChat)
+
 module.exports = router;

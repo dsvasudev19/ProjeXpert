@@ -319,6 +319,35 @@ const updateCredentials=async(req,res,next)=>{
     }
 }
 
+const getAllInternalAndExternalClientForChat = async (req, res, next) => {
+    try {
+        const { searchTerm } = req.query;
+
+        let whereCondition = {
+            id: {
+                [Op.ne]: req.user.id, 
+            },
+        };
+
+        if (searchTerm) {
+            whereCondition[Op.or] = [
+                { name: { [Op.like]: `%${searchTerm}%` } }, 
+                { email: { [Op.like]: `%${searchTerm}%` } } 
+            ];
+        }
+
+        const users = await User.findAll({
+            where: whereCondition,
+            attributes: ['id', 'name', 'email'],
+        });
+
+        res.status(200).json({ success: true, data: users, message: "Successfully fetched all the users" });
+    } catch (error) {
+        console.error(error);
+        next(error);
+    }
+};
+
 module.exports = {
     getAllUsers,
     getUserById,
@@ -332,5 +361,6 @@ module.exports = {
     getTeamOnlyMembers,
     getAllAdmins,
     updateUserBio,
-    updateCredentials
+    updateCredentials,
+    getAllInternalAndExternalClientForChat
 };
