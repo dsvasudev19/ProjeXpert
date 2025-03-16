@@ -1,6 +1,14 @@
 const { sequelize, Meeting, Task,  Bug, MeetingParticipant ,User} = require('../../models');
 const { Op } = require('sequelize');
 
+
+const generateJitsiMeetingId = (title) => {
+  const sanitizedTitle = title.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+  const timestamp = new Date().getTime();
+  return `${sanitizedTitle}-${timestamp}`;
+};
+
+
 class TimeController {
   /**
    * Get all events for the current user's calendar
@@ -68,7 +76,9 @@ class TimeController {
         employeeId: userId,
         type: 'meeting',
         description: meeting.description,
-        status: meeting.status
+        status: meeting.status,
+        jitsiMeetingId: meeting.jitsiMeetingId,
+        jitsiMeetingLink: meeting.jitsiMeetingLink,
       }));
 
       // Format tasks into calendar events
@@ -136,58 +146,50 @@ class TimeController {
     try {
       const { employeeId } = req.params;
       const { start, end, type } = req.query;
-      
-      // Verify user has permission to view this employee's calendar
-      // This would involve checking if the requesting user is a manager or admin
-      // For now, we'll assume they have permission
 
-      // Rest of the logic is similar to getCalendarEvents
-      // but filtered for the specific employee
       const startDate = start ? new Date(start) : new Date();
       const endDate = end ? new Date(end) : new Date(startDate);
       endDate.setMonth(endDate.getMonth() + 1);
 
-      // Similar queries as getCalendarEvents but for the specified employee
-      // ...
-
+      // Implement permission check and event fetching here if needed
       return res.status(200).json({
         success: true,
-        data: [] // Replace with actual event data
+        data: [],
       });
     } catch (error) {
       console.error('Error fetching employee events:', error);
       return res.status(500).json({
         success: false,
         message: 'Failed to fetch employee events',
-        error: error.message
+        error: error.message,
       });
     }
   }
 
 
-  async getMeetingById(req,res,next){
+  async getMeetingById(req, res, next) {
     try {
-        const meeting=await Meeting.findByPk(req.params.id,{
-            include:[
-                {
-                    model:MeetingParticipant,
-                    include:[
-                        {
-                            model:User,
-                            attributes:["id","name","email"]
-                        }
-                    ],
-                    attributes:["id","userId"]
-                }
-            ]
-        })
-        if(meeting){
-            return res.status(200).json(meeting)
-        }
-        return res.status(404).json({success:false,message:"Meeting not found"})
+      const meeting = await Meeting.findByPk(req.params.id, {
+        include: [
+          {
+            model: MeetingParticipant,
+            include: [
+              {
+                model: User,
+                attributes: ['id', 'name', 'email'],
+              },
+            ],
+            attributes: ['id', 'userId'],
+          },
+        ],
+      });
+      if (meeting) {
+        return res.status(200).json(meeting);
+      }
+      return res.status(404).json({ success: false, message: 'Meeting not found' });
     } catch (error) {
-        console.log(error)
-        next(error)
+      console.log(error);
+      next(error);
     }
   }
 
@@ -199,18 +201,20 @@ class TimeController {
    */
   async createMeeting(req, res) {
     try {
-      const { title, description, startTime, endTime, participants,roomName } = req.body;
+      const { title, description, startTime, endTime, participants, roomName } = req.body;
       const createdBy = req.user.id;
 
-      // Validate input
       if (!title || !startTime || !endTime) {
         return res.status(400).json({
           success: false,
-          message: 'Missing required fields'
+          message: 'Missing required fields',
         });
       }
 
-      // Create meeting
+      // Generate Jitsi details
+      const jitsiMeetingId = generateJitsiMeetingId(title);
+      const jitsiMeetingLink = `https://meet.jit.si/${jitsiMeetingId}`; // Adjust domain if using custom Jitsi server
+
       const meeting = await Meeting.create({
         title,
         description,
@@ -218,38 +222,44 @@ class TimeController {
         endTime,
         createdBy,
         status: 'scheduled',
-        roomName
+        roomName: roomName || jitsiMeetingId, // Use provided roomName or jitsiMeetingId
+        jitsiMeetingId,
+        jitsiMeetingLink,
       });
 
-      // Add participants
       if (participants && Array.isArray(participants)) {
-        await Promise.all(participants.map(userId => 
+        await Promise.all(participants.map(userId =>
           MeetingParticipant.create({
             meetingId: meeting.id,
             userId,
-            status: 'invited'
+            status: 'invited',
           })
         ));
       }
 
-      // Add creator as participant
       await MeetingParticipant.create({
         meetingId: meeting.id,
         userId: createdBy,
-        status: 'accepted'
+        status: 'accepted',
       });
 
       return res.status(201).json({
         success: true,
         message: 'Meeting created successfully',
-        data: meeting
+        data: {
+          id: meeting.id,
+          title: meeting.title,
+          startTime: meeting.startTime,
+          endTime: meeting.endTime,
+          jitsiMeetingLink: meeting.jitsiMeetingLink,
+        },
       });
     } catch (error) {
       console.error('Error creating meeting:', error);
       return res.status(500).json({
         success: false,
         message: 'Failed to create meeting',
-        error: error.message
+        error: error.message,
       });
     }
   }
@@ -265,69 +275,76 @@ class TimeController {
       const { title, description, startTime, endTime, participants, status } = req.body;
       const userId = req.user.id;
 
-      // Find the meeting
       const meeting = await Meeting.findByPk(id);
       if (!meeting) {
         return res.status(404).json({
           success: false,
-          message: 'Meeting not found'
+          message: 'Meeting not found',
         });
       }
 
-      // Check if user has permission to update
       if (meeting.createdBy !== userId) {
-        // Check if user is an admin or has other permissions
-        // For now, we'll just check if they're the creator
         return res.status(403).json({
           success: false,
-          message: 'You do not have permission to update this meeting'
+          message: 'You do not have permission to update this meeting',
         });
       }
 
-      // Update meeting
+      // Regenerate Jitsi details if title changes
+      let jitsiMeetingId = meeting.jitsiMeetingId;
+      let jitsiMeetingLink = meeting.jitsiMeetingLink;
+      if (title && title !== meeting.title) {
+        jitsiMeetingId = generateJitsiMeetingId(title);
+        jitsiMeetingLink = `https://meet.jit.si/${jitsiMeetingId}`;
+      }
+
       await meeting.update({
         title: title || meeting.title,
         description: description || meeting.description,
         startTime: startTime || meeting.startTime,
         endTime: endTime || meeting.endTime,
-        status: status || meeting.status
+        status: status || meeting.status,
+        jitsiMeetingId,
+        jitsiMeetingLink,
       });
 
-      // Update participants if provided
       if (participants && Array.isArray(participants)) {
-        // Remove existing participants
         await MeetingParticipant.destroy({
-          where: { meetingId: id }
+          where: { meetingId: id },
         });
 
-        // Add new participants
-        await Promise.all(participants.map(userId => 
+        await Promise.all(participants.map(userId =>
           MeetingParticipant.create({
             meetingId: id,
             userId,
-            status: 'invited'
+            status: 'invited',
           })
         ));
 
-        // Add creator as participant
         await MeetingParticipant.create({
           meetingId: id,
           userId: meeting.createdBy,
-          status: 'accepted'
+          status: 'accepted',
         });
       }
 
       return res.status(200).json({
         success: true,
         message: 'Meeting updated successfully',
-        data: meeting
+        data: {
+          id: meeting.id,
+          title: meeting.title,
+          startTime: meeting.startTime,
+          endTime: meeting.endTime,
+          jitsiMeetingLink: meeting.jitsiMeetingLink,
+        },
       });
     } catch (error) {
       console.error('Error updating meeting:', error);
       return res.status(500).json({
         success: false,
         message: 'Failed to update meeting',
-        error: error.message
+        error: error.message,
       });
     }
   }
@@ -342,42 +359,37 @@ class TimeController {
       const { id } = req.params;
       const userId = req.user.id;
 
-      // Find the meeting
       const meeting = await Meeting.findByPk(id);
       if (!meeting) {
         return res.status(404).json({
           success: false,
-          message: 'Meeting not found'
+          message: 'Meeting not found',
         });
       }
 
-      // Check if user has permission to delete
       if (meeting.createdBy !== userId) {
-        // Check if user is an admin or has other permissions
         return res.status(403).json({
           success: false,
-          message: 'You do not have permission to delete this meeting'
+          message: 'You do not have permission to delete this meeting',
         });
       }
 
-      // Delete meeting participants
       await MeetingParticipant.destroy({
-        where: { meetingId: id }
+        where: { meetingId: id },
       });
 
-      // Delete meeting
       await meeting.destroy();
 
       return res.status(200).json({
         success: true,
-        message: 'Meeting deleted successfully'
+        message: 'Meeting deleted successfully',
       });
     } catch (error) {
       console.error('Error deleting meeting:', error);
       return res.status(500).json({
         success: false,
         message: 'Failed to delete meeting',
-        error: error.message
+        error: error.message,
       });
     }
   }

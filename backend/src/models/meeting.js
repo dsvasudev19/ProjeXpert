@@ -25,7 +25,9 @@ module.exports = (sequelize, DataTypes) => {
     createdBy: DataTypes.INTEGER,
     isRecurring: DataTypes.BOOLEAN,
     recurrencePattern: DataTypes.STRING,
-    status: DataTypes.STRING
+    status: DataTypes.STRING,
+    jitsiMeetingId: DataTypes.STRING, 
+    jitsiMeetingLink: DataTypes.STRING, 
   }, {
     sequelize,
     modelName: 'Meeting',
