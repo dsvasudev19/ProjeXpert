@@ -53,10 +53,11 @@ const DashboardHeader = () => {
                                 <HelpCircle className="w-5 h-5" />
                             </button>
                             <button
-                                className="p-2 rounded-lg hover:bg-slate-100 text-slate-600 hover:text-teal-600 transition-all duration-300"
+                                className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-gradient-to-r from-teal-100 to-cyan-100 hover:from-teal-200 hover:to-cyan-200 text-teal-700 border border-teal-200 transition-all duration-300 shadow-sm hover:shadow-md"
                                 onClick={() => setTimerModal(true)}
                             >
                                 <Timer className="w-5 h-5" />
+                                <span className="text-sm font-medium">Timer</span>
                             </button>
                             <button
                                 className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-gradient-to-r from-amber-100 to-yellow-100 hover:from-amber-200 hover:to-yellow-200 text-amber-700 border border-amber-200 transition-all duration-300 shadow-sm hover:shadow-md"

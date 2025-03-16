@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
-import { X, UserPlus, Calendar, Clock } from 'lucide-react';
+import { X, UserPlus, Calendar, Clock, Video, Trash2, Save } from 'lucide-react';
 import { format } from 'date-fns';
 import { axiosInstance } from '../axiosIntance';
 
-// Validation schema using Yup
 const meetingSchema = Yup.object().shape({
   title: Yup.string().required('Title is required'),
   description: Yup.string(),
@@ -39,7 +38,8 @@ const CreateMeetingModal = ({ isOpen, onClose, selectedDate, onMeetingCreated, i
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<any>(null);
   const [showParticipantSearch, setShowParticipantSearch] = useState(false);
-  const [data,setData]=useState<any>({})
+  const [data, setData] = useState<any>({});
+  const [cancelConfirm, setCancelConfirm] = useState(false);
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -55,23 +55,25 @@ const CreateMeetingModal = ({ isOpen, onClose, selectedDate, onMeetingCreated, i
 
     if (isOpen) {
       fetchUsers();
+      setCancelConfirm(false);
     }
   }, [isOpen]);
 
-  const getMeetingById=async(id:any)=>{
+  const getMeetingById = async (id: any) => {
     try {
-      const res=await axiosInstance.get(`/admin/timeline/meetings/${id}`)
-      if(res.status===200){
-        setData(res.data)
+      const res = await axiosInstance.get(`/admin/timeline/meetings/${id}`);
+      if (res.status === 200) {
+        setData(res.data);
       }
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
+  };
 
-  useEffect(()=>{
-    getMeetingById(id)
-  },[id])
+  useEffect(() => {
+    if (id) getMeetingById(id);
+    else setData({});
+  }, [id]);
 
   const filteredUsers = searchTerm
     ? users.filter((user: any) =>
@@ -80,13 +82,12 @@ const CreateMeetingModal = ({ isOpen, onClose, selectedDate, onMeetingCreated, i
       )
     : users;
 
-  // Determine initial values based on whether data is provided (edit mode) or not (create mode)
-  const initialValues = data
+  const initialValues: any = data && Object.keys(data).length > 0
     ? {
-        title: data.title || '',
+        title: data?.title || '',
         description: data.description || '',
-        startTime: data.startTime ? format(new Date(data.startTime), "yyyy-MM-dd'T'HH:mm") : format(new Date(), "yyyy-MM-dd'T'HH:mm"),
-        endTime: data.endTime ? format(new Date(data.endTime), "yyyy-MM-dd'T'HH:mm") : format(new Date(), "yyyy-MM-dd'T'HH:mm"),
+        startTime: data.startTime ? format(new Date(data.startTime), "yyyy-MM-dd'T'HH:mm") : '',
+        endTime: data.endTime ? format(new Date(data.endTime), "yyyy-MM-dd'T'HH:mm") : '',
         roomName: data.roomName || '',
         password: data.password || '',
         isRecurring: data.isRecurring || false,
@@ -102,9 +103,7 @@ const CreateMeetingModal = ({ isOpen, onClose, selectedDate, onMeetingCreated, i
         title: '',
         description: '',
         startTime: selectedDate ? format(new Date(selectedDate), "yyyy-MM-dd'T'HH:mm") : '',
-        endTime: selectedDate
-          ? format(new Date(new Date(selectedDate).setHours(new Date(selectedDate).getHours() + 1)), "yyyy-MM-dd'T'HH:mm")
-          : '',
+        endTime: selectedDate ? format(new Date(new Date(selectedDate).setHours(new Date(selectedDate).getHours() + 1)), "yyyy-MM-dd'T'HH:mm") : '',
         roomName: '',
         password: '',
         isRecurring: false,
@@ -133,17 +132,15 @@ const CreateMeetingModal = ({ isOpen, onClose, selectedDate, onMeetingCreated, i
 
       let response;
       if (data?.id) {
-        // Update existing meeting
         response = await axiosInstance.put(`/admin/timeline/meetings/${data.id}`, meetingData);
       } else {
-        // Create new meeting
         response = await axiosInstance.post('/admin/timeline/meetings', meetingData);
       }
 
       if (response.data.success) {
         onMeetingCreated(response.data.data);
         onClose();
-        if (!data?.id) resetForm(); // Reset form only for create mode
+        if (!data?.id) resetForm();
       } else {
         setError(response.data.message || `Failed to ${data?.id ? 'update' : 'create'} meeting`);
       }
@@ -156,6 +153,35 @@ const CreateMeetingModal = ({ isOpen, onClose, selectedDate, onMeetingCreated, i
     }
   };
 
+  const handleCancelMeeting = async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await axiosInstance.delete(`/admin/timeline/meetings/${data.id}`);
+      
+      if (response.data.success) {
+        onMeetingCreated(null);
+        onClose();
+      } else {
+        setError(response.data.message || "Failed to cancel meeting");
+        setCancelConfirm(false);
+      }
+    } catch (err: any) {
+      setError("Error canceling meeting: " + (err.response?.data?.message || err.message));
+      console.error("Error canceling meeting:", err);
+      setCancelConfirm(false);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleJoinMeeting = () => {
+    if (data?.id) {
+        window.open(`/dashboard/meeting-room/${data.id}`, '_blank'); // Opens in a new tab
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -164,14 +190,58 @@ const CreateMeetingModal = ({ isOpen, onClose, selectedDate, onMeetingCreated, i
       <div className="absolute inset-y-0 right-0 max-w-full flex">
         <div className="w-screen max-w-xl transform transition ease-in-out duration-300">
           <div className="h-full flex flex-col bg-white shadow-xl">
-            <div className="flex items-center justify-between px-4 py-6 border-b border-gray-200">
-              <h2 className="text-lg font-medium text-gray-900">
-                {data?.id ? 'Edit Meeting' : 'Create Meeting'}
+            <div className="flex items-center justify-between px-4 py-4 border-b border-gray-200">
+              <h2 className="text-md font-medium text-gray-900">
+                {data?.id ? 'Meeting Details' : 'Create Meeting'}
               </h2>
               <button className="text-gray-400 hover:text-gray-500" onClick={onClose}>
                 <X className="h-6 w-6" />
               </button>
             </div>
+
+            {data?.id && (
+              <div className="px-4 py-3 bg-gray-50 border-b border-gray-200 flex items-center space-x-2">
+                {data?.jitsiMeetingLink && (
+                  <button
+                    type="button"
+                    onClick={handleJoinMeeting} // Navigate to new page
+                    className="flex-1 inline-flex justify-center items-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-400"
+                  >
+                    <Video className="w-4 h-4 mr-2" />
+                    Join Meeting
+                  </button>
+                )}
+                {!cancelConfirm ? (
+                  <button
+                    type="button"
+                    onClick={() => setCancelConfirm(true)}
+                    className="inline-flex justify-center items-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-500 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-400"
+                  >
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    Cancel Meeting
+                  </button>
+                ) : (
+                  <div className="flex items-center space-x-2">
+                    <span className="text-sm text-red-600 font-medium">Confirm cancellation?</span>
+                    <button
+                      type="button"
+                      onClick={handleCancelMeeting}
+                      disabled={loading}
+                      className="inline-flex justify-center py-1 px-3 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-400"
+                    >
+                      Yes
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setCancelConfirm(false)}
+                      className="inline-flex justify-center py-1 px-3 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400"
+                    >
+                      No
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
 
             <div className="flex-1 overflow-y-auto p-6">
               {error && (
@@ -188,7 +258,7 @@ const CreateMeetingModal = ({ isOpen, onClose, selectedDate, onMeetingCreated, i
               >
                 {({ values, setFieldValue, errors }) => (
                   <Form>
-                    {/* Title */}
+                    {/* Form fields remain unchanged */}
                     <div className="mb-4">
                       <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
                         Title <span className="text-red-500">*</span>
@@ -199,15 +269,12 @@ const CreateMeetingModal = ({ isOpen, onClose, selectedDate, onMeetingCreated, i
                           type="text"
                           id="title"
                           name="title"
-                          className={`w-full pl-10 pr-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-400 ${
-                            errors.title ? 'border-red-300' : 'border-gray-200'
-                          }`}
+                          className={`w-full pl-10 pr-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-400 ${errors.title ? 'border-red-300' : 'border-gray-200'}`}
                         />
                       </div>
                       <ErrorMessage name="title" component="div" className="text-red-600 text-xs mt-1" />
                     </div>
 
-                    {/* Description */}
                     <div className="mb-4">
                       <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
                         Description
@@ -217,14 +284,11 @@ const CreateMeetingModal = ({ isOpen, onClose, selectedDate, onMeetingCreated, i
                         id="description"
                         name="description"
                         rows={3}
-                        className={`w-full pl-3 pr-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-400 ${
-                          errors.description ? 'border-red-300' : 'border-gray-200'
-                        }`}
+                        className={`w-full pl-3 pr-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-400 ${errors.description ? 'border-red-300' : 'border-gray-200'}`}
                       />
                       <ErrorMessage name="description" component="div" className="text-red-600 text-xs mt-1" />
                     </div>
 
-                    {/* Date & Time */}
                     <div className="mb-4 grid grid-cols-2 gap-4">
                       <div>
                         <label htmlFor="startTime" className="block text-sm font-medium text-gray-700 mb-1">
@@ -236,14 +300,11 @@ const CreateMeetingModal = ({ isOpen, onClose, selectedDate, onMeetingCreated, i
                             type="datetime-local"
                             id="startTime"
                             name="startTime"
-                            className={`w-full pl-10 pr-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-400 ${
-                              errors.startTime ? 'border-red-300' : 'border-gray-200'
-                            }`}
+                            className={`w-full pl-10 pr-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-400 ${errors.startTime ? 'border-red-300' : 'border-gray-200'}`}
                           />
                         </div>
                         <ErrorMessage name="startTime" component="div" className="text-red-600 text-xs mt-1" />
                       </div>
-
                       <div>
                         <label htmlFor="endTime" className="block text-sm font-medium text-gray-700 mb-1">
                           End Time <span className="text-red-500">*</span>
@@ -254,16 +315,13 @@ const CreateMeetingModal = ({ isOpen, onClose, selectedDate, onMeetingCreated, i
                             type="datetime-local"
                             id="endTime"
                             name="endTime"
-                            className={`w-full pl-10 pr-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-400 ${
-                              errors.endTime ? 'border-red-300' : 'border-gray-200'
-                            }`}
+                            className={`w-full pl-10 pr-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-400 ${errors.endTime ? 'border-red-300' : 'border-gray-200'}`}
                           />
                         </div>
                         <ErrorMessage name="endTime" component="div" className="text-red-600 text-xs mt-1" />
                       </div>
                     </div>
 
-                    {/* Room Name & Password */}
                     <div className="mb-4 grid grid-cols-2 gap-4">
                       <div>
                         <label htmlFor="roomName" className="block text-sm font-medium text-gray-700 mb-1">
@@ -275,14 +333,11 @@ const CreateMeetingModal = ({ isOpen, onClose, selectedDate, onMeetingCreated, i
                             type="text"
                             id="roomName"
                             name="roomName"
-                            className={`w-full pl-10 pr-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-400 ${
-                              errors.roomName ? 'border-red-300' : 'border-gray-200'
-                            }`}
+                            className={`w-full pl-10 pr-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-400 ${errors.roomName ? 'border-red-300' : 'border-gray-200'}`}
                           />
                         </div>
-                        <ErrorMessage name="roomName" component="div" className="text-red-600 text-xs mt-1" />
+                        <ErrorMessage name="roomName" component="div" className="text-red	defaultValue-600 text-xs mt-1" />
                       </div>
-
                       <div>
                         <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
                           Password
@@ -293,16 +348,13 @@ const CreateMeetingModal = ({ isOpen, onClose, selectedDate, onMeetingCreated, i
                             type="text"
                             id="password"
                             name="password"
-                            className={`w-full pl-10 pr-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-400 ${
-                              errors.password ? 'border-red-300' : 'border-gray-200'
-                            }`}
+                            className={`w-full pl-10 pr-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-400 ${errors.password ? 'border-red-300' : 'border-gray-200'}`}
                           />
                         </div>
                         <ErrorMessage name="password" component="div" className="text-red-600 text-xs mt-1" />
                       </div>
                     </div>
 
-                    {/* Recurring Meeting */}
                     <div className="mb-4">
                       <div className="flex items-center">
                         <Field
@@ -318,7 +370,6 @@ const CreateMeetingModal = ({ isOpen, onClose, selectedDate, onMeetingCreated, i
                       <ErrorMessage name="isRecurring" component="div" className="text-red-600 text-xs mt-1" />
                     </div>
 
-                    {/* Recurrence Pattern */}
                     {values.isRecurring && (
                       <div className="mb-4">
                         <label htmlFor="recurrencePattern" className="block text-sm font-medium text-gray-700 mb-1">
@@ -328,9 +379,7 @@ const CreateMeetingModal = ({ isOpen, onClose, selectedDate, onMeetingCreated, i
                           as="select"
                           id="recurrencePattern"
                           name="recurrencePattern"
-                          className={`w-full pl-3 pr-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-400 ${
-                            errors.recurrencePattern ? 'border-red-300' : 'border-gray-200'
-                          }`}
+                          className={`w-full pl-3 pr-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-400 ${errors.recurrencePattern ? 'border-red-300' : 'border-gray-200'}`}
                         >
                           <option value="">Select pattern...</option>
                           <option value="daily">Daily</option>
@@ -342,7 +391,6 @@ const CreateMeetingModal = ({ isOpen, onClose, selectedDate, onMeetingCreated, i
                       </div>
                     )}
 
-                    {/* Participants */}
                     <div className="mb-4">
                       <label className="block text-sm font-medium text-gray-700 mb-2">Participants</label>
                       <div className="mb-3">
@@ -368,7 +416,6 @@ const CreateMeetingModal = ({ isOpen, onClose, selectedDate, onMeetingCreated, i
                           <p className="text-sm text-gray-500">No participants added</p>
                         )}
                       </div>
-
                       <button
                         type="button"
                         className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-400"
@@ -377,7 +424,6 @@ const CreateMeetingModal = ({ isOpen, onClose, selectedDate, onMeetingCreated, i
                         <UserPlus className="h-4 w-4 mr-2" />
                         {showParticipantSearch ? 'Hide' : 'Add Participants'}
                       </button>
-
                       {showParticipantSearch && (
                         <div className="mt-3 border border-gray-200 rounded-md shadow-sm">
                           <div className="p-3 border-b border-gray-200">
@@ -426,14 +472,18 @@ const CreateMeetingModal = ({ isOpen, onClose, selectedDate, onMeetingCreated, i
                       )}
                     </div>
 
-                    {/* Submit Button */}
-                    <div className="mt-6">
+                    <div className="mt-6 flex space-x-3">
+                      <button
+                        type="button"
+                        onClick={onClose}
+                        className="flex-1 inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400"
+                      >
+                        Cancel
+                      </button>
                       <button
                         type="submit"
                         disabled={loading}
-                        className={`w-full inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white 
-                          ${loading ? 'bg-gradient-to-r from-blue-400 to-green-400 cursor-not-allowed' : 'bg-gradient-to-r from-blue-600 to-green-500 hover:from-blue-700 hover:to-green-600'} 
-                          focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-400`}
+                        className={`flex-1 inline-flex justify-center items-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white ${loading ? 'bg-green-400 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700'} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-400`}
                       >
                         {loading ? (
                           <span className="flex items-center">
@@ -444,7 +494,10 @@ const CreateMeetingModal = ({ isOpen, onClose, selectedDate, onMeetingCreated, i
                             {data?.id ? 'Updating...' : 'Creating...'}
                           </span>
                         ) : (
-                          data?.id ? 'Update Meeting' : 'Create Meeting'
+                          <>
+                            <Save className="w-4 h-4 mr-2" />
+                            {data?.id ? 'Update Meeting' : 'Create Meeting'}
+                          </>
                         )}
                       </button>
                     </div>

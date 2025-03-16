@@ -38,6 +38,7 @@ import ReportBugPage from "../pages/Project/ReportBug";
 
 import AddTaskPage from "../pages/Project/AddTask";
 import ProjectDetails from "../pages/Project/ProjectDetails";
+import MeetingRoom from "../pages/MeetingRoom";
 
 
 
@@ -66,6 +67,7 @@ const AppRoutes = () => {
           <Route path="new-project" element={<MultiStepProjectForm />} />
           <Route path="calendar" element={<EmployeeCalendarView />} />
           <Route path="ai-chat" element={<ChatbotInterface />} />
+          <Route path="meeting-room/:id" element={<MeetingRoom />} />
           <Route path="project/*" element={<ProjectDashboardLayout />}>
             <Route path="analytics" element={<ProjectManagementDashboard />} />
             <Route path="tasks/list" element={<TaskManagement />} />

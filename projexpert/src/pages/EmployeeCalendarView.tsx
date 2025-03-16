@@ -152,16 +152,20 @@ const EmployeeCalendarView = () => {
 
   // Handle meeting creation
   const handleMeetingCreated = (newMeeting: any) => {
-    setEvents((prevEvents: any) => [
-      ...prevEvents,
-      {
-        id: newMeeting.id,
-        title: newMeeting.title,
-        start: new Date(newMeeting.startTime),
-        end: new Date(newMeeting.endTime),
-        type: 'meeting',
-      }
-    ]);
+    if(newMeeting == null){
+      fetchEvents()
+    }else{
+      setEvents((prevEvents: any) => [
+        ...prevEvents,
+        {
+          id: newMeeting.id,
+          title: newMeeting.title,
+          start: new Date(newMeeting.startTime),
+          end: new Date(newMeeting.endTime),
+          type: 'meeting',
+        }
+      ]);
+    }
   };
 
   return (
