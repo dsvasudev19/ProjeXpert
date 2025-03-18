@@ -13,6 +13,7 @@ const ProfileSettings = () => {
         email: '',
         bio: '',
         avatar: '/profile.png',
+        editableEmail:false
     });
     const handleProfileUpdate = async (e:any) => {
         e.preventDefault()
@@ -35,7 +36,9 @@ const ProfileSettings = () => {
                 email: user?.user?.email || '',
                 bio: user?.user?.bio || 'No bio available',
                 avatar: user?.user?.avatar || '/profile.png',
-            });
+                editableEmail:user?.user?.email!==''
+            })
+
         }
     }, [user, loading]);
     return (
@@ -119,7 +122,7 @@ const ProfileSettings = () => {
                             <input
                                 type="email"
                                 value={profile.email}
-                                disabled={profile.email?true:false}
+                                disabled={!profile.editableEmail}
                                 onChange={(e) => setProfile({ ...profile, email: e.target.value })}
                                 className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500"
                             />

@@ -86,22 +86,22 @@ const TasksOverview: React.FC = () => {
       sortable: true,
       render: (row: Task) => {
         const statusClasses = {
-          pending: 'bg-yellow-100 text-yellow-800',
-          in_progress: 'bg-blue-100 text-blue-800',
-          completed: 'bg-green-100 text-green-800',
-          on_hold: 'bg-gray-100 text-gray-800',
+          "pending": 'bg-yellow-100 text-yellow-800',
+          "in-progress": 'bg-blue-100 text-blue-800',
+          "completed": 'bg-green-100 text-green-800',
+          "on_hold": 'bg-gray-100 text-gray-800',
         };
         
         const statusLabels = {
-          pending: 'Pending',
-          in_progress: 'In Progress',
-          completed: 'Completed',
-          on_hold: 'On Hold',
+          "pending": 'Pending',
+          "in-progress": 'InProgress',
+          "completed": 'Completed',
+          "on_hold": 'On Hold',
         };
         
         return (
-          <span className={`px-2 py-1 rounded-full text-xs ${statusClasses[row.status]}`}>
-            {statusLabels[row.status]}
+          <span className={`px-2 py-1 rounded-full text-xs ${statusClasses[row.status as keyof typeof statusClasses]}`}>
+            {statusLabels[row.status as keyof typeof statusLabels]}
           </span>
         );
       },
@@ -114,8 +114,9 @@ const TasksOverview: React.FC = () => {
         const priorityClasses = {
           low: 'bg-green-100 text-green-800',
           medium: 'bg-blue-100 text-blue-800',
-          high: 'bg-orange-100 text-orange-800',
+          high: 'bg-yellow-100 text-yellow-800',
           urgent: 'bg-red-100 text-red-800',
+          critical:'bg-orange-100 text-orange-800'
         };
         
         const priorityLabels = {
@@ -123,6 +124,7 @@ const TasksOverview: React.FC = () => {
           medium: 'Medium',
           high: 'High',
           urgent: 'Urgent',
+          critical:'Critical'
         };
         
         return (

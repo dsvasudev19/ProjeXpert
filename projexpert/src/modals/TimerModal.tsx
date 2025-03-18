@@ -506,7 +506,7 @@ const TimerModal = ({ isOpen, onClose }: TimerModalProps) => {
 
   const taskOptions = tasks.map((task: any) => ({
     value: task.id,
-    label: task.name || `Task ${task.id}`,
+    label: task.title || `Task ${task.id}`,
   }));
 
   const startTimerInitialValues = {

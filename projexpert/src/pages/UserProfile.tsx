@@ -9,7 +9,7 @@ import PermissionRequests from '../components/Profile/PermissionRequests';
 export default function UserProfilePage() {
   const { loading } = useAuth();
   const [activeTab, setActiveTab] = useState('profile');
-
+  
   
 
 

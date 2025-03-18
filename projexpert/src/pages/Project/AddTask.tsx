@@ -82,9 +82,9 @@ const AddTaskPage: React.FC = () => {
     }
     
     try {
-      const res = await axiosInstance.get(`/admin/bug/project/${projectId}`);
+      const res = await axiosInstance.get(`/admin/bug/project/${projectId}?include=false`);
       if (res.status === 200) {
-        setBugs(res.data);
+        setBugs(res.data.data);
       }
     } catch (error) {
       console.log(error);
@@ -257,7 +257,7 @@ const AddTaskPage: React.FC = () => {
                   }`}
                 >
                   <option value="">Select a project</option>
-                  {projects.map((project:any) => (
+                  {projects?.map((project:any) => (
                     <option key={project.id} value={project.id}>{project.name}</option>
                   ))}
                 </select>
@@ -281,9 +281,9 @@ const AddTaskPage: React.FC = () => {
                   disabled={!formData.project}
                 >
                   <option value="">No Related Bug</option>
-                  {bugs.map((bug: any) => (
-                    <option key={bug.id} value={bug.id}>
-                      {bug.title || `Bug #${bug.id}`}
+                  {bugs && bugs?.map((bug: any) => (
+                    <option key={bug?.id} value={bug?.id}>
+                      {bug?.title || `Bug #${bug?.id}`}
                     </option>
                   ))}
                 </select>
