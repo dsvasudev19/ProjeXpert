@@ -8,25 +8,26 @@ import toast from "react-hot-toast";
 const ProfileSettings = () => {
     const [isEditing, setIsEditing] = useState(false);
     const { user, loading } = useAuth();
+    const [enableEmailEdit, setEnableEmailEdit] = useState(false); // Moved to state
     const [profile, setProfile] = useState({
         name: '',
         email: '',
         bio: '',
         avatar: '/profile.png',
-        editableEmail:false
     });
+
     const handleProfileUpdate = async (e:any) => {
-        e.preventDefault()
-       try {
-         const res=await axiosInstance.patch("/admin/client/bio",profile)
-         if(res.status === 200){
-            toast.success("Profile updated successfully")
-         }
-       } catch (error) {
-        console.log(error)
-       }finally{
-        setIsEditing(false)
-       }
+        e.preventDefault();
+        try {
+            const res = await axiosInstance.patch("/admin/client/bio", profile);
+            if (res.status === 200) {
+                toast.success("Profile updated successfully");
+            }
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setIsEditing(false);
+        }
     };
 
     useEffect(() => {
@@ -36,11 +37,12 @@ const ProfileSettings = () => {
                 email: user?.user?.email || '',
                 bio: user?.user?.bio || 'No bio available',
                 avatar: user?.user?.avatar || '/profile.png',
-                editableEmail:user?.user?.email!==''
-            })
-
+            });
+            // Set enableEmailEdit based on whether email exists
+            setEnableEmailEdit(!user?.user?.email); // true if email is empty/undefined, false if it exists
         }
     }, [user, loading]);
+
     return (
         <div className="space-y-6">
             <div className="flex justify-between items-center">
@@ -122,7 +124,7 @@ const ProfileSettings = () => {
                             <input
                                 type="email"
                                 value={profile.email}
-                                disabled={!profile.editableEmail}
+                                disabled={!enableEmailEdit} // Disabled if enableEmailEdit is false
                                 onChange={(e) => setProfile({ ...profile, email: e.target.value })}
                                 className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500"
                             />

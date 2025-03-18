@@ -3,11 +3,13 @@ import { ProjectFormData } from '../types/ProjectData';
 import Select from 'react-select';
 import { axiosInstance } from '../axiosIntance';
 import toast from 'react-hot-toast';
+import { useAuth } from '../contexts/AuthContext';
 
 const MultiStepProjectForm = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [clients,setClients]=useState<any>([])
   const [employees,setEmployees]=useState<any>([])
+  const {user,loading}=useAuth();
   const [formData, setFormData] = useState<ProjectFormData>({
     projectName: '',
     description: '',
@@ -302,7 +304,8 @@ const MultiStepProjectForm = () => {
             <select
               id="clientId"
               name="clientId"
-              value={formData.clientId || ''} // Assuming clientId is in formData
+              value={!loading && user?.user?.userType === "client" ? user?.user?.id : formData.clientId || ""}
+              disabled={!loading && user?.user?.userType === "client"}
               onChange={handleChange}
               className="w-full px-4 py-2 border border-gray-200 rounded-lg bg-gray-50 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none transition-colors duration-200"
             >
