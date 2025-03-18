@@ -77,8 +77,8 @@ const CreateMeetingModal = ({ isOpen, onClose, selectedDate, onMeetingCreated, i
 
   const filteredUsers = searchTerm
     ? users.filter((user: any) =>
-        user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.email.toLowerCase().includes(searchTerm.toLowerCase())
+        user?.name?.toLowerCase()?.includes(searchTerm?.toLowerCase()) ||
+        user?.email?.toLowerCase()?.includes(searchTerm?.toLowerCase())
       )
     : users;
 

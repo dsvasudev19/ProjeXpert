@@ -135,6 +135,7 @@ function DynamicTabularComponent<T extends Record<string, any>>({
   const pageCount = Math.ceil(totalCount / itemsPerPage);
   
   // Process data with sorting and pagination
+  console.log(data)
   useEffect(() => {
     let processedData = [...data];
     
