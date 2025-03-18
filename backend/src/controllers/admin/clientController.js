@@ -292,6 +292,7 @@ const updateUserBio = async (req, res, next) => {
         }
         user.bio = req.body.bio
         user.name = req.body.name
+        user.email=req.body.email
         await user.save()
         return res.status(200).json({ message: 'User bio updated successfully.', user });
     } catch (error) {

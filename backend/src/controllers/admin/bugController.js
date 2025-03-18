@@ -127,7 +127,7 @@ const resolveBug = async (req, res) => {
 
 const getProjectBugs = async (req, res) => {
   try {
-    const projectId = parseInt(req.params.projectId, 10);
+    const projectId = parseInt(req.params.id, 10);
     const include = req.query.include === 'true'; // Convert string 'true' to boolean
     const bugs = await bugService.getBugsByProjectId(projectId, include);
     return res.status(200).json({
@@ -136,6 +136,7 @@ const getProjectBugs = async (req, res) => {
       message: 'Bugs retrieved successfully',
     });
   } catch (error) {
+    console.log(error)
     return res.status(500).json({
       success: false,
       error: error.message,

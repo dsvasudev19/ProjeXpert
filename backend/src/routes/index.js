@@ -25,7 +25,7 @@ router.use("/todo",personalTodoRoutes)
 const chatRoutes=require("./chatRoutes")
 router.use("/rooms",chatRoutes)
 
-const configRoutes=require("./configRoutes")
-router.use("/config",configRoutes)
+// const configRoutes=require("./configRoutes")
+// router.use("/config",configRoutes)
 
 module.exports=router;

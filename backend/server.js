@@ -172,6 +172,15 @@ const io = new Server(server, {
 
 const onlineUsers = new Map(); // Map to track online users
 
+app.get("/", (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+})
+
+app.get("/status", (req, res) => {
+    res.send("Hey Mr., I'm fine...Just chill and Relaxxxxxxxxx.")
+})
+
+
 io.on("connection", (socket) => {
     console.log("A user Connected", socket.id);
 
