@@ -3,47 +3,51 @@ import { useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { axiosInstance } from '../../axiosIntance';
 
-const ChatSidebar = ({ chats, activeChat, setActiveChat }:any) => {
-  console.log(chats)
+const ChatSidebar = ({ chats, activeChat, setActiveChat,refreshChats }: any) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [chatName, setChatName] = useState('');
-  const [participantEmail, setParticipantEmail] = useState('');
+  const [participantId, setParticipantId] = useState('');
   const [suggestions, setSuggestions] = useState<string[]>([]);
+
 
   const handleEmailChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    setParticipantEmail(value);
-
+    setParticipantId(value)
     if (value.length > 0) {
-        try {
-            const response = await axiosInstance.get('/admin/client/chat/participants', {
-                params: { searchTerm: value }
-            });
+      try {
+        const response = await axiosInstance.get('/admin/client/chat/participants', {
+          params: { searchTerm: value }
+        });
 
-            const users = response.data.data; // Assuming response structure
+        const users = response.data.data; // Assuming response structure
 
-            // Extracting emails from response and setting suggestions
-            setSuggestions(users.map((user: { email: string }) => user.email));
-        } catch (error) {
-            console.error("Error fetching suggestions:", error);
-            setSuggestions([]); // Fallback to empty suggestions in case of error
-        }
+        // Extracting emails from response and setting suggestions
+        setSuggestions(users.map((user: { email: string, id: string }) => ({ email: user.email, id: user.id })));
+      } catch (error) {
+        console.error("Error fetching suggestions:", error);
+        setSuggestions([]); // Fallback to empty suggestions in case of error
+      }
     } else {
-        setSuggestions([]); // Clear suggestions when input is empty
+      setSuggestions([]); // Clear suggestions when input is empty
     }
-};
+  };
 
-  const handleStartChat = () => {
-    if (!chatName || !participantEmail) {
+  const handleStartChat = async () => {
+    if (!chatName || !participantId) {
       toast.error('Please fill in all fields');
       return;
     }
-    
-    // Add your chat creation logic here
-    toast.success('New chat created!');
-    setIsModalOpen(false);
-    setChatName('');
-    setParticipantEmail('');
+
+    const res = await axiosInstance.post("/rooms", { participantId: participantId,chatName })
+    console.log(res);
+    if (res?.status === 200) {
+      toast.success('New chat created!');
+      setIsModalOpen(false);
+      setChatName('');
+      setParticipantId('');
+      refreshChats();
+    }
+
   };
 
   return (
@@ -72,7 +76,7 @@ const ChatSidebar = ({ chats, activeChat, setActiveChat }:any) => {
             className="w-full pl-11 pr-4 py-2.5 bg-white/70 rounded-xl border border-blue-200 focus:outline-none focus:border-blue-300 focus:ring-1 focus:ring-blue-300 transition-all"
           />
           <Search className="w-5 h-5 text-blue-400 absolute left-4 top-3" />
-          <button 
+          <button
             onClick={() => setIsModalOpen(true)}
             className="absolute right-4 p-1.5 hover:bg-blue-100/50 rounded-lg transition-colors"
           >
@@ -101,23 +105,24 @@ const ChatSidebar = ({ chats, activeChat, setActiveChat }:any) => {
                 <label className="block text-sm font-medium text-gray-700 mb-1">Participant Email</label>
                 <input
                   type="email"
-                  value={participantEmail}
+                  value={participantId}
                   onChange={handleEmailChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-300"
                   placeholder="Enter email"
                 />
                 {suggestions.length > 0 && (
                   <div className="absolute w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg">
-                    {suggestions.map((suggestion, index) => (
+                    {suggestions.map((suggestion: any, index: any) => (
                       <div
                         key={index}
                         className="px-3 py-2 hover:bg-blue-50 cursor-pointer"
                         onClick={() => {
-                          setParticipantEmail(suggestion);
+                          console.log(suggestion)
+                          setParticipantId(suggestion.id);
                           setSuggestions([]);
                         }}
                       >
-                        {suggestion}
+                        {suggestion?.email}
                       </div>
                     ))}
                   </div>
@@ -144,8 +149,8 @@ const ChatSidebar = ({ chats, activeChat, setActiveChat }:any) => {
 
       {/* Chat List */}
       <div className="flex-1 overflow-y-auto">
-        {chats.length>0 && chats?.map((chat:any) => (
-          <div 
+        {chats.length > 0 && chats?.map((chat: any) => (
+          <div
             key={chat.id}
             onClick={() => setActiveChat(chat)}
             className={`flex items-center p-4 cursor-pointer hover:bg-blue-50/50 transition-all
@@ -153,7 +158,7 @@ const ChatSidebar = ({ chats, activeChat, setActiveChat }:any) => {
           >
             <div className="relative">
               <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-green-400 flex items-center justify-center shadow-md">
-                <span className="text-white font-medium">{chat.name.charAt(0)}</span>
+                <span className="text-white font-medium">{chat?.name?.charAt(0)}</span>
               </div>
               {chat.online && (
                 <div className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-teal-400 rounded-full border-2 border-white"></div>

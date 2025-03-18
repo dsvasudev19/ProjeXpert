@@ -433,7 +433,7 @@ const ChatPage = () => {
           Reconnecting...
         </div>
       )}
-      <ChatSidebar chats={chats} activeChat={activeChat} setActiveChat={setActiveChat} />
+      <ChatSidebar chats={chats} activeChat={activeChat} setActiveChat={setActiveChat} refreshChats={getAllChats} />
       {!activeChat ? (
         <div className="flex-1 flex items-center justify-center bg-[#f0f2f5]">
           <p className="text-gray-500">Select a chat to start messaging</p>
