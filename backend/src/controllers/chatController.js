@@ -42,7 +42,7 @@ const getUserChats = async (req, res) => {
 // Create a new chat room or get existing one
 const createOrGetChatRoom = async (req, res) => {
     try {
-        const { participantId } = req.body;
+        const { participantId,chatName } = req.body;
         const userId = req.user.id;
 
         // Check if chat room already exists
@@ -67,11 +67,12 @@ const createOrGetChatRoom = async (req, res) => {
 
         // Create new chat room
         const newRoom = await ChatRoom.create({
+            name:chatName,
             participant1Id: userId,
             participant2Id: participantId
         });
 
-        res.json(newRoom);
+        res.status(200).json(newRoom);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

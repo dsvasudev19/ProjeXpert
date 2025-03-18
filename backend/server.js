@@ -163,10 +163,11 @@ app.use((err, req, res, next) => {
 
 const io = new Server(server, {
     cors: {
-        origin: ["http://localhost:5173", "https://chatter.interactweb.agency"],
+        origin: ["http://localhost:5173", "https://chatter.interactweb.agency","https://projexpert.vercel.app"],
         methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
         credentials: true,
     },
+    "destroy upgrade": false,
 });
 
 const onlineUsers = new Map(); // Map to track online users
