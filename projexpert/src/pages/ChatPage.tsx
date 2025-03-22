@@ -230,7 +230,7 @@
 
 // export default ChatPage;
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import {  useCallback, useEffect, useRef, useState } from 'react';
 import MessageList from '../components/Chat/MessageList';
 import MessageInput from '../components/Chat/MessageInput';
 import ChatHeader from '../components/Chat/ChatHeader';
@@ -368,6 +368,7 @@ const ChatPage = () => {
   };
 
   useEffect(() => {
+    console.log(activeChat)
     if (!activeChat?.id || !user?.user?.id) return;
     socket?.emit('join', { chatRoomId: activeChat.id, userId: user.user.id });
     setOffset(0);
@@ -446,7 +447,7 @@ const ChatPage = () => {
         <div className="flex-1 flex flex-col bg-[#f0f2f5]">
           <ChatHeader name={activeChat?.name || 'Unknown'} online={activeChat?.online || false} />
           <div
-            className="flex-1 overflow-y-auto p-4 space-y-3"
+            className="flex-1 overflow-y-auto space-y-0"
             ref={chatContainerRef}
             style={{ backgroundImage: 'url("/chat-bg.png")' }}
           >

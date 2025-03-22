@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { CalendarIcon,  Edit, Eye, FolderCode, TagIcon, Trash, UserIcon } from 'lucide-react'; // Assuming you use lucide icons
 import DynamicTabularComponent from '../../components/shared/DynamicTabularComponent';
 import { axiosInstance } from '../../axiosIntance';
+import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 // Define the Task interface
 interface Task {
@@ -37,6 +39,7 @@ interface Task {
 
 const TasksOverview: React.FC = () => {
   // State for handling pagination
+  const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const [tasks,setTasks]=useState<any>([])
 
@@ -51,6 +54,19 @@ const TasksOverview: React.FC = () => {
     }
   }
 
+  const deleteTaskById=async(id:any)=>{
+    try {
+      const res=await axiosInstance.delete(`/admin/task/${id}`)
+      if(res.status===200){
+        toast.success("Task Deleted Successfully")
+        tasks.filter((task:any)=>task.id!=id)
+      }
+    } catch (error:any) {
+      console.log(error)
+      toast.error(error.response.data.error)
+    }
+  }
+
   useEffect(()=>{
     getAllTasks()
   },[])
@@ -60,13 +76,14 @@ const TasksOverview: React.FC = () => {
       key: 'id',
       header: 'ID',
       sortable: true,
+      render:(row:Task)=>( <a href={`/dashboard/project/tasks/details/${row.id}`}>{row.id}</a>)
     },
     {
       key: 'title',
       header: 'Task Name',
       sortable: true,
       render: (row: Task) => (
-        <div className="font-medium">{row.title}</div>
+        <div className="font-medium" onClick={()=>{navigate(`/dashboard/project/tasks/details/${row.id}`)}}>{row.title}</div>
       ),
     },
     {
@@ -191,27 +208,20 @@ const TasksOverview: React.FC = () => {
       type: 'edit',
       label: 'Edit',
       icon:<Edit className='w-4 h-4' />,
-      onClick: (row: Task) => {
-        console.log('Edit task', row.id);
-        // Implement your edit functionality here
-      },
+      onClick: (row: Task) => {console.log(row);navigate(`/dashboard/project/tasks/details/${row.id}?e=true`)},
     },
     {
       type: 'view',
       label: 'View',
       icon:<Eye className='w-4 h-4' />,
-      onClick: (row: Task) => {
-        console.log('View task', row.id);
-        // Implement your view functionality here
-      },
+      onClick: (row: Task) => {console.log(row);navigate(`/dashboard/project/tasks/details/${row.id}`)},
     },
     {
       type: 'delete',
       label: 'Delete',
       icon:<Trash className='w-4 h-4' />,
       onClick: (row: Task) => {
-        console.log('Delete task', row.id);
-        // Implement your delete functionality here
+        deleteTaskById(row.id)
       },
     },
   ];

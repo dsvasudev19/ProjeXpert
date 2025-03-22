@@ -806,6 +806,7 @@ const MultiStepProjectForm = () => {
             type="checkbox"
             id="createGithubRepo"
             name="createGithubRepo"
+            disabled={!loading && user?.user?.userType!=="admin"}
             checked={formData.createGithubRepo}
             onChange={handleGithubToggle}
             className="h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"

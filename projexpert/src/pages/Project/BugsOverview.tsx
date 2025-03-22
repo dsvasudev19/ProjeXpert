@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { BugIcon, CalendarIcon, CheckIcon, UserIcon,  Edit, Eye, Trash2,FolderCode } from 'lucide-react'; // Assuming Lucide icons
 import DynamicTabularComponent from '../../components/shared/DynamicTabularComponent';
 import { axiosInstance } from '../../axiosIntance';
+import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 // Define the Bug interface
 interface Bug {
@@ -28,6 +30,8 @@ const BugsOverview: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [bugs,setBugs]=useState<any>([])
 
+  const navigate=useNavigate();
+
   const getAllBugs=async()=>{
     try {
       const res = await axiosInstance.get("/admin/bug")
@@ -42,12 +46,30 @@ const BugsOverview: React.FC = () => {
     getAllBugs()
   },[])
 
+
+  const deleteBugById=async(id:any)=>{
+    try {
+      const res=await axiosInstance.delete(`/admin/bug/${id}`)
+      if (res.status === 200) {
+        toast.success("Bug Deleted Successfully");
+        setBugs((prev: any) => {
+            return prev.filter((bug: any) => bug.id !== id);
+        });
+    }
+    
+    } catch (error:any) {
+      console.log(error)
+      toast.error(error.response.data.error)
+    }
+  }
+
   // Column definitions
   const columns = [
     {
       key: 'id',
       header: 'ID',
       sortable: true,
+      render:(row:Bug)=>(<a href={`/dashboard/project/bugs/details/${row.id}`}>{row.id}</a>)
     },
     {
       key: 'title',
@@ -197,8 +219,7 @@ const BugsOverview: React.FC = () => {
       label: 'Edit',
       icon:<Edit className='w-4 h-4' />,
       onClick: (row: Bug) => {
-        console.log('Edit bug', row.id);
-        // Implement edit functionality here
+        navigate(`/dashboard/project/bugs/details/${row?.id}?e=true`)
       },
     },
     {
@@ -206,8 +227,7 @@ const BugsOverview: React.FC = () => {
       label: 'View',
       icon:<Eye className='w-4 h-4' />,
       onClick: (row: Bug) => {
-        console.log('View bug', row.id);
-        // Implement view functionality here
+        navigate(`/dashboard/project/bugs/details/${row?.id}`)
       },
     },
     {
@@ -215,8 +235,7 @@ const BugsOverview: React.FC = () => {
       label: 'Delete',
       icon:<Trash2 className='w-4 h-4' />,
       onClick: (row: Bug) => {
-        console.log('Delete bug', row.id);
-        // Implement delete functionality here
+        deleteBugById(row?.id)
       },
     },
   ];

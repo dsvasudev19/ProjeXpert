@@ -165,7 +165,7 @@
 
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, ChevronLeft, ChevronRight, UserCog, FolderGit2, FileCog, SquareKanban, CheckCircle2, Clock, AlertCircle, CalendarClock, MessageSquareLock } from 'lucide-react';
+import { Home, ChevronLeft, ChevronRight, UserCog, FolderGit2, Tickets,FileCog, SquareKanban, CheckCircle2, Clock, AlertCircle, CalendarClock, MessageSquareLock } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { axiosInstance } from '../axiosIntance';
 
@@ -189,6 +189,7 @@ const DashboardSidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
         { icon: SquareKanban, label: 'Kanban', href: '/dashboard/kanban' },
         { icon: UserCog, label: 'Team', href: '/dashboard/team' },
         { icon: UserCog, label: 'Client', href: '/dashboard/client' },
+        { icon: Tickets, label:"Tickets", href:"/dashboard/ticket"}
     ];
 
     const clientMenuItems = [

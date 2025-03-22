@@ -26,7 +26,7 @@ const FileManagementMain: React.FC = () => {
   }, []);
 
   return (
-    <div className="p-4 min-h-screen">
+    <div className="p-4 h-full overflow-auto">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-2xl font-medium text-gray-700">
           Projects

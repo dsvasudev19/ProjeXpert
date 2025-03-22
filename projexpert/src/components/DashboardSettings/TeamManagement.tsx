@@ -67,6 +67,7 @@ const TeamManagement = () => {
             setLoadingStates(prev => ({ ...prev, getRoles: true }))
             const res = await axiosInstance.get("/admin/role")
             if (res.status === 200) {
+                console.log(res.data)
                 setRoles(res.data)
             }
         } catch (error) {

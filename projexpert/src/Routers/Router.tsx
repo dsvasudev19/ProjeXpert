@@ -39,6 +39,9 @@ import ReportBugPage from "../pages/Project/ReportBug";
 import AddTaskPage from "../pages/Project/AddTask";
 import ProjectDetails from "../pages/Project/ProjectDetails";
 import MeetingRoom from "../pages/MeetingRoom";
+import TaskDetailsPage from "../DetailsComponents/Task/TaskDetails";
+import BugDetailsPage from "../DetailsComponents/Bug/BugDetails";
+import TicketingDashboard from "../pages/TicketingSystem/TicketsDashboard";
 
 
 
@@ -68,12 +71,15 @@ const AppRoutes = () => {
           <Route path="calendar" element={<EmployeeCalendarView />} />
           <Route path="ai-chat" element={<ChatbotInterface />} />
           <Route path="meeting-room/:id" element={<MeetingRoom />} />
+          <Route path="ticket" element={<TicketingDashboard />} />
           <Route path="project/*" element={<ProjectDashboardLayout />}>
             <Route path="analytics" element={<ProjectManagementDashboard />} />
             <Route path="tasks/list" element={<TaskManagement />} />
+            <Route path="tasks/details/:taskId" element={<TaskDetailsPage />} />
             <Route path="tasks/add" element={<AddTaskPage />} />
             <Route path="settings" element={<SettingsPage />} />
             <Route path="bugs/list" element={<BugsOverview />} />
+            <Route path="bugs/details/:bugId" element={<BugDetailsPage />} />
             <Route path="bugs/report" element={<ReportBugPage />} />
             <Route path="projects/list" element={<ProjectsListingPage />} />
             <Route path="projects/add" element={<MultiStepProjectForm />} />
