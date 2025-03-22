@@ -3,7 +3,7 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class User extends Model {
+  class UserPermission extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -11,12 +11,28 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      this.belongsToMany(models.Role, { through: models.UserRole,foreignKey:'userId' });
-      this.hasMany(models.Project, { as: 'ClientProjects', foreignKey: 'clientId' });
-      this.hasMany(models.Bug, { as: 'ReportedBugs', foreignKey: 'reportedById' });
-      this.hasMany(models.Bug, { as: 'AssignedBugs', foreignKey: 'assigneeId' });
-      this.hasOne(models.TeamMember, { foreignKey: 'userId', as: 'TeamMember' });
-      this.hasMany(models.Task,{
+    }
+  }
+  UserPermission.init({
+  }, {
+    sequelize,
+    modelName: 'UserPermission',
+  });
+  return UserPermission;
+};models.User,{through:models.UserPermission,foreignKey:'permissionId'})
+    }
+  }
+  Permission.init({
+    name: DataTypes.STRING,
+    description: DataTypes.STRING,
+    resource: DataTypes.STRING,
+    action: DataTypes.STRING
+  }, {
+    sequelize,
+    modelName: 'Permission',
+  });
+  return Permission;
+};Many(models.Task,{
         foreignKey:'userId',
         as:"Tasks"
       })

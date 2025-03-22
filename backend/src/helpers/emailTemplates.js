@@ -77,7 +77,7 @@ const registrationSuccess = (user) => `
             <a href="${user.verificationLink}" class="button">Verify Email Address</a>
         </div>
         <p class="text" style="font-style: italic; font-size: 14px;">If the button appears inactive, kindly utilize this link:</p>
-        <p style="color: #1d4ed8; word-break: break-all; margin-bottom: 24px; font-size: 14px;">${user.verificationLink}</p>
+        <a style="color: #1d4ed8; word-break: break-all; margin-bottom: 24px; font-size: 14px;" href="${user.verificationLink}">Verification Link</a>
         <div class="footer">
             <p>Should you not have initiated this account creation, please disregard this correspondence.</p>
         </div>

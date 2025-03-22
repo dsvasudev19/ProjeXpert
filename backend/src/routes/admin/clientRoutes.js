@@ -17,6 +17,7 @@ router.put('/:id/roles', authenticateUser, userController.updateUserRole); // Up
 
 // Routes to get projects and bugs for a user
 router.get('/:id/projects', authenticateUser,userController.getUserProjects); // Get projects for a user
+
 router.get('/:id/bugs', authenticateUser, userController.getUserBugs); // Get bugs for a user
 
 router.get("/users/clients",authenticateUser,userController.getAllClients)
@@ -30,5 +31,7 @@ router.patch("/bio",authenticateUser,userController.updateUserBio)
 router.patch("/password",authenticateUser,userController.updateCredentials)
 
 router.get("/chat/participants",authenticateUser,userController.getAllInternalAndExternalClientForChat)
+
+router.put("/team/role/:id",authenticateUser,checkRole(['admin']),userController.updateRoleOfAdmin)
 
 module.exports = router;

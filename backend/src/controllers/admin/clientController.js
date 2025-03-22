@@ -80,10 +80,12 @@ const createUser = async (req, res) => {
             await newUser.setRoles(roleInstances);
         }
         const verificationLink = `${process.env.FRONTEND_URL}/verify-email?token=${newUser.id}`
+
         const emailData = {
             to: newUser.email,
             subject: "Welcome to Projexpert!",
-            html: registrationSuccess({ ...newUser, verificationLink, tempPassword })
+            html: registrationSuccess({ email: newUser?.email || 'Not provided', // Explicitly pass email
+        name: newUser?.name || 'User', verificationLink, tempPassword })
         }
         await sendEmail(emailData.to, emailData.subject, emailData.html)
 
@@ -349,6 +351,35 @@ const getAllInternalAndExternalClientForChat = async (req, res, next) => {
     }
 };
 
+const updateRoleOfAdmin=async(req,res,next)=>{
+    try {
+        const userId=req.params.id;
+        const user=await User.findByPk(userId,{
+            include:[
+                {
+                    model:Role
+                }
+            ]
+        })
+        if(!user){
+            return res.status(404).json({success:false,message:`User or Client not found with Id ${userId}`})
+        }
+        user.userType=req.body.role;
+        const roleInstance=await Role.findOne({
+            where:{
+                name:req.body.role
+            }
+        })
+        await user.setRoles(roleInstance)
+        await user.save()
+        return res.status(200).json({success:true,message:"User Role Update Successfully"})
+
+    } catch (error) {
+        console.log(error)
+        next(error)
+    }
+}
+
 module.exports = {
     getAllUsers,
     getUserById,
@@ -363,5 +394,6 @@ module.exports = {
     getAllAdmins,
     updateUserBio,
     updateCredentials,
-    getAllInternalAndExternalClientForChat
+    getAllInternalAndExternalClientForChat,
+    updateRoleOfAdmin
 };

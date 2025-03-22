@@ -60,4 +60,11 @@ router.use("/department",departmentRoutes)
 const timeEntryRoutes=require("./admin/timeentryRoutes")
 router.use("/timers",timeEntryRoutes)
 
+
+const kanbanRoutes=require("./admin/kanbanRoutes")
+router.use("/kanban",kanbanRoutes)
+
+const ticketingRoutes=require("./admin/ticketRoutes")
+router.use("/ticket",ticketingRoutes)
+
 module.exports=router; 

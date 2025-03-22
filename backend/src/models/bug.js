@@ -2,6 +2,7 @@
 const {
   Model
 } = require('sequelize');
+const crypto=require("crypto")
 module.exports = (sequelize, DataTypes) => {
   class Bug extends Model {
     /**
@@ -21,6 +22,10 @@ module.exports = (sequelize, DataTypes) => {
   Bug.init({
     title: DataTypes.STRING,
     description: DataTypes.STRING,
+    refId:{
+      type:DataTypes.STRING,
+      defaultValue:crypto.randomBytes(3).toString("hex").toUpperCase()
+    },
     status: {
       type:DataTypes.ENUM,
       values:['open','in-progress','resolved','closed','reopened']

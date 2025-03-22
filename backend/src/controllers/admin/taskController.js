@@ -49,7 +49,14 @@ const getAllTasks = async (req, res) => {
 
 const getTaskById = async (req, res) => {
     try {
-        const task = await Task.findByPk(req.params.id);
+        const task = await Task.findByPk(req.params.id,{
+            include:[
+                { model: User, as: 'Assignee',attributes:['id','name'] },
+                { model: Project ,attributes:['id','name']},
+                { model: Task, as: 'ParentTask' },
+                { model: Task, as: 'SubTasks' }
+            ]
+        });
         if (task) {
             res.json(task);
         } else {
@@ -93,18 +100,19 @@ const createTask = async (req, res) => {
 
 const updateTask = async (req, res) => {
     try {
-        const [updated] = await Task.update(req.body, { where: { id: req.params.id } });
-        if (updated) {
-            const updatedTask = await Task.findByPk(req.params.id);
-            res.json(updatedTask);
-        } else {
-            res.status(404).json({ message: 'Task not found' });
-        }
+      const [updated] = await Task.update(req.body, { where: { id: req.params.id } });
+      if (updated) {
+        const updatedTask = await Task.findByPk(req.params.id);
+        res.json(updatedTask);
+      } else {
+        res.status(404).json({ message: 'Task not found' });
+      }
     } catch (error) {
-        console.log(error);
-        res.status(400).json({ error: error.message });
+      console.log(error);
+      res.status(400).json({ error: error.message });
     }
-}
+  };
+  
 const deleteTask = async (req, res) => {
     try {
         const deleted = await Task.destroy({ where: { id: req.params.id } });

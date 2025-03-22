@@ -2,37 +2,39 @@
 const {
   Model
 } = require('sequelize');
-const crypto=require("crypto")
 module.exports = (sequelize, DataTypes) => {
-  class Task extends Model {
+  class TicketHistory extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
-      this.belongsTo(models.Project,{
-        foreignKey:"projectId",
-        onDelete:'CASCADE'
-      })
-      this.belongsTo(models.User,{
-        foreignKey:'assigneeId',
-        as:"Assignee",
-        onDelete:'CASCADE'
-      })
-      // this.belongsTo(models.Bug,{
-      //   foreignKey:'bugId'
-      // })
-      this.belongsTo(models.Task, {
-        foreignKey: 'parentTaskId', 
-        as: 'ParentTask' ,
-        allowNull: true ,
-        onDelete:'CASCADE'
-      });
-
-      this.hasMany(models.Task, {
-        foreignKey: 'parentTaskId', 
+      this.belongsTo(models.Ticket, { foreignKey: 'ticketId', as: 'ticket' });
+      this.belongsTo(models.User, { foreignKey: 'changedBy', as: 'actor' });
+    }
+  }
+  TicketHistory.init({
+    ticketId: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    changedBy: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    fieldChanged: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    oldValue: DataTypes.STRING,
+    newValue: DataTypes.STRING
+  }, {
+    sequelize,
+    modelName: 'TicketHistory',
+  });
+  return TicketHistory;
+};foreignKey: 'parentTaskId', 
         as: 'SubTasks' ,
         allowNull: true ,
         onDelete:'CASCADE'

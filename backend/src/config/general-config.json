@@ -1,7 +1,7 @@
 {
-  "appName": "Fusora",
+  "appName": "Projexpert.com",
   "appUrl": "https://projexpert.vercel.app",
-  "supportEmail": "support@fusora.com",
+  "supportEmail": "support@projexpert.com",
   "maxFileSize": 20,
   "sessionTimeout": 60
 }

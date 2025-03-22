@@ -62,4 +62,24 @@ module.exports = (sequelize, DataTypes) => {
     modelName: 'Task',
   });
   return Task;
+};ype: DataTypes.INTEGER,
+      allowNull: false
+    },
+    assignedTo: {
+      type: DataTypes.INTEGER
+    },
+    projectId: {
+      type: DataTypes.INTEGER
+    },
+    resolution: {
+      type: DataTypes.TEXT
+    },
+    resolvedAt: {
+      type: DataTypes.DATE
+    }
+  }, {
+    sequelize,
+    modelName: 'Ticket',
+  });
+  return Ticket;
 };
