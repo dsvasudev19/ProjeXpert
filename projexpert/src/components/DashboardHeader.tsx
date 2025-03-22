@@ -70,24 +70,25 @@ const DashboardHeader = () => {
                                 onClick={() => navigate('/dashboard/ai-chat')}
                             >
                                 <Bot className="w-5 h-5" />
-                                <span className="text-sm font-medium">AI Assistant</span>
+                                <span className="text-sm font-medium">AI</span>
                             </button>
                         </div>
 
                         {/* User Profile */}
                         <div className="flex items-center gap-3">
-                            <button className="flex items-center gap-3 p-1.5 pl-3 rounded-xl transition-all duration-300 hover:bg-slate-100 group" onClick={() => window.location.href = '/dashboard/u/profile'}>
-                                <div className="flex flex-col items-end">
-                                    <span className="text-sm font-semibold text-slate-700 group-hover:text-slate-900">
-                                        {user?.user?.name?.split(" ").slice(-1)[0]}
-                                    </span>
-                                    <span className="text-xs text-slate-500">
-                                        {user?.user?.Roles[0]?.name.toUpperCase()}
-                                    </span>
-                                </div>
+                            
+                            <button
+                                className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-gradient-to-r from-emerald-100 to-blue-100 hover:from-emerald-200 hover:to-blue-200 text-emerald-700 border border-emerald-200 transition-all duration-300 shadow-sm hover:shadow-md"
+                                onClick={() => window.location.href = '/dashboard/u/profile'}
+                            >
+                                <span className="text-sm font-medium">
+                                    {user?.user?.name?.split(" ").slice(-1)[0]}
+                                </span>
 
-                                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-green-500 to-blue-500 flex items-center justify-center shadow-lg shadow-blue-200/50">
-                                    <span className="text-sm font-medium text-white">{user?.user?.name?.charAt(0)}</span>
+                                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-500 to-blue-500 flex items-center justify-center ml-1 shadow-sm">
+                                    <span className="text-xs font-bold text-white">
+                                        {user?.user?.name?.charAt(0)}
+                                    </span>
                                 </div>
                             </button>
                             <div className="h-8 w-px bg-slate-200"></div>

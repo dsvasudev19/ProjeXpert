@@ -42,6 +42,7 @@ import MeetingRoom from "../pages/MeetingRoom";
 import TaskDetailsPage from "../DetailsComponents/Task/TaskDetails";
 import BugDetailsPage from "../DetailsComponents/Bug/BugDetails";
 import TicketingDashboard from "../pages/TicketingSystem/TicketsDashboard";
+import RaiseTicket from "../pages/RaiseTicket";
 
 
 
@@ -72,6 +73,7 @@ const AppRoutes = () => {
           <Route path="ai-chat" element={<ChatbotInterface />} />
           <Route path="meeting-room/:id" element={<MeetingRoom />} />
           <Route path="ticket" element={<TicketingDashboard />} />
+          <Route path="raise-ticket" element={<RaiseTicket />} />
           <Route path="project/*" element={<ProjectDashboardLayout />}>
             <Route path="analytics" element={<ProjectManagementDashboard />} />
             <Route path="tasks/list" element={<TaskManagement />} />

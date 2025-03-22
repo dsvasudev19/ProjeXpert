@@ -2,8 +2,10 @@
 
 import { Activity, AlertCircle, BarChart2, CheckCircle, Clock, FileText, MessageSquare, PieChart, TrendingUp } from 'lucide-react';
 import { tickets } from './../../data/tickets';
+import { useAuth } from '../../contexts/AuthContext';
 
 const AnalyticsDashboard = () => {
+    const { user, loading } = useAuth();
     const openTickets = tickets.filter(t => t.status === 'Open').length;
     const inProgressTickets = tickets.filter(t => t.status === 'In Progress').length;
     const resolvedTickets = tickets.filter(t => t.status === 'Resolved').length;
@@ -112,38 +114,42 @@ const AnalyticsDashboard = () => {
                     </div>
                 </div>
 
-                <div className="rounded-xl border border-gray-100 p-4">
-                    <h3 className="text-sm font-medium text-gray-700 mb-3">Recent Activity</h3>
-                    <div className="space-y-3">
-                        <div className="flex items-start gap-2">
-                            <div className="bg-blue-100 p-1.5 rounded-full text-blue-500">
-                                <Clock className="h-3 w-3" />
-                            </div>
-                            <div className="flex-1">
-                                <div className="text-xs text-gray-500">Just Now</div>
-                                <div className="text-sm text-gray-800">Ticket #3 priority changed to Critical</div>
+                {
+                    !loading && user?.user?.userType === "admin" && (
+                        <div className="rounded-xl border border-gray-100 p-4">
+                            <h3 className="text-sm font-medium text-gray-700 mb-3">Recent Activity</h3>
+                            <div className="space-y-3">
+                                <div className="flex items-start gap-2">
+                                    <div className="bg-blue-100 p-1.5 rounded-full text-blue-500">
+                                        <Clock className="h-3 w-3" />
+                                    </div>
+                                    <div className="flex-1">
+                                        <div className="text-xs text-gray-500">Just Now</div>
+                                        <div className="text-sm text-gray-800">Ticket #3 priority changed to Critical</div>
+                                    </div>
+                                </div>
+                                <div className="flex items-start gap-2">
+                                    <div className="bg-green-100 p-1.5 rounded-full text-green-500">
+                                        <CheckCircle className="h-3 w-3" />
+                                    </div>
+                                    <div className="flex-1">
+                                        <div className="text-xs text-gray-500">2 hours ago</div>
+                                        <div className="text-sm text-gray-800">Ticket #4 was resolved by Robert Kim</div>
+                                    </div>
+                                </div>
+                                <div className="flex items-start gap-2">
+                                    <div className="bg-purple-100 p-1.5 rounded-full text-purple-500">
+                                        <MessageSquare className="h-3 w-3" />
+                                    </div>
+                                    <div className="flex-1">
+                                        <div className="text-xs text-gray-500">Yesterday</div>
+                                        <div className="text-sm text-gray-800">New comment on Ticket #1</div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div className="flex items-start gap-2">
-                            <div className="bg-green-100 p-1.5 rounded-full text-green-500">
-                                <CheckCircle className="h-3 w-3" />
-                            </div>
-                            <div className="flex-1">
-                                <div className="text-xs text-gray-500">2 hours ago</div>
-                                <div className="text-sm text-gray-800">Ticket #4 was resolved by Robert Kim</div>
-                            </div>
-                        </div>
-                        <div className="flex items-start gap-2">
-                            <div className="bg-purple-100 p-1.5 rounded-full text-purple-500">
-                                <MessageSquare className="h-3 w-3" />
-                            </div>
-                            <div className="flex-1">
-                                <div className="text-xs text-gray-500">Yesterday</div>
-                                <div className="text-sm text-gray-800">New comment on Ticket #1</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                    )
+                }
             </div>
         </div>
     );

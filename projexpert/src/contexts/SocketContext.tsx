@@ -17,7 +17,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     if (user?.user?.id) {
       // Initialize socket connection
-      const newSocket = io(import.meta.env.VITE_RUNTIME == "production" ? import.meta.env.VITE_API_SOCKET_PROD_URL : import.meta.env.VITE_API_URL, {
+      const newSocket = io(import.meta.env.VITE_RUNTIME == "production" ? import.meta.env.VITE_API_SOCKET_PROD_URL : import.meta.env.VITE_API_SOCKET_DEV_URL, {
         withCredentials: true,
       });
 
