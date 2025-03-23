@@ -199,6 +199,7 @@ const DashboardSidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
         { icon: CalendarClock, label: 'Timeline', href: '/dashboard/calendar' },
         { icon: FileCog, label: 'Files', href: '/dashboard/files' },
         { icon: SquareKanban, label: 'Kanban', href: '/dashboard/kanban' },
+        { icon: Tickets, label:"Tickets", href:"/dashboard/ticket"}
     ];
 
     const getAnalyticsData = async () => {

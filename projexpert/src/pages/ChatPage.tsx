@@ -254,9 +254,23 @@ const ChatPage = () => {
   const [hasMore, setHasMore] = useState(false);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const { socket, isConnected } = useSocket();
-  const { user } = useAuth();
+  const { user,loading } = useAuth();
   const messagesEndRef = useRef<any>(null);
   const chatContainerRef = useRef<any>(null);
+  
+  const currentUserId = !loading && user?.user?.id;
+
+  const getOtherParticipantName = (chat: any) => {
+    
+    if (!currentUserId || !chat) return chat?.name || 'Unknown';
+    
+    // Determine which participant is the other user
+    if (chat.participant1Id === currentUserId) {
+      return chat.participant2?.name || 'Unknown User';
+    } else {
+      return chat.participant1?.name || 'Unknown User';
+    }
+  };
 
   const isAtBottom = () => {
     if (chatContainerRef.current) {
@@ -388,7 +402,7 @@ const ChatPage = () => {
       setIsLoading(true);
       setError(null);
       const res = await axiosInstance.get(`/rooms/${activeChat.id}/messages`, {
-        params: { limit: newOffset === 0 ? 15 : 100, offset: newOffset }
+        params: { limit: newOffset === 0 ? 15 : 30, offset: newOffset }
       });
       if (res.status === 200) {
         setMessages((prev) => newOffset === 0 ? res.data.messages : [...res.data.messages, ...prev]);
@@ -436,16 +450,16 @@ const ChatPage = () => {
       )}
       <ChatSidebar chats={chats} activeChat={activeChat} setActiveChat={setActiveChat} refreshChats={getAllChats} />
       {!activeChat ? (
-        <div className="flex-1 flex items-center justify-center bg-[#f0f2f5]">
-          <p className="text-gray-500">Select a chat to start messaging</p>
-        </div>
+        <div className="flex-1 flex items-center justify-center bg-[#fffcef]">
+        <p className="text-[#5c899D] font-medium">Select a chat to start messaging</p>
+      </div>
       ) : isLoading && offset === 0 ? (
         <div className="flex-1 flex items-center justify-center">Loading messages...</div>
       ) : error ? (
         <div className="flex-1 flex items-center justify-center text-red-500">{error}</div>
       ) : (
         <div className="flex-1 flex flex-col bg-[#f0f2f5]">
-          <ChatHeader name={activeChat?.name || 'Unknown'} online={activeChat?.online || false} />
+          <ChatHeader name={getOtherParticipantName(activeChat) || 'Unknown'} online={activeChat?.online || false} />
           <div
             className="flex-1 overflow-y-auto space-y-0"
             ref={chatContainerRef}

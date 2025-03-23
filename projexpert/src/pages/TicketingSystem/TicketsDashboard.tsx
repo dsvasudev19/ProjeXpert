@@ -91,12 +91,44 @@ const TicketManagementApp = () => {
                                 onSelectTicket={(id: any) => setSelectedTicketId(id)}
                             />
                         </div>
+
                         <div className="md:col-span-2">
                             {selectedTicket ? (
                                 <TicketDetail ticket={selectedTicket} updateTicket={getTicketDetailsById} />
                             ) : (
-                                <div className="h-full flex items-center justify-center text-gray-500">
-                                    Select any ticket to view details
+                                <div className="h-full flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-green-50 rounded-xl shadow-lg border border-blue-100 p-8 transition-all duration-300 hover:shadow-xl">
+                                    <div className="text-center space-y-4">
+                                        {/* Ticket Icon */}
+                                        <svg
+                                            className="mx-auto h-16 w-16 text-blue-400 animate-float"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                        >
+                                            <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                strokeWidth="2"
+                                                d="M3 7h18M3 11h18M3 15h18M7 3v18M17 3v18M5 7v10c0 1.1.9 2 2 2h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2z"
+                                            />
+                                        </svg>
+
+                                        {/* Main Text */}
+                                        <h3 className="text-xl font-semibold text-blue-700 tracking-tight">
+                                            Select a Ticket to View Details
+                                        </h3>
+
+                                        {/* Subtext */}
+                                        <p className="text-sm text-gray-500 leading-relaxed max-w-xs mx-auto">
+                                            Choose any ticket from the list to explore its details in this space.
+                                        </p>
+
+                                        {/* Decorative Element */}
+                                        <div className="mt-2 flex justify-center">
+                                            <span className="h-1 w-16 bg-gradient-to-r from-blue-300 to-green-300 rounded-full" />
+                                        </div>
+                                    </div>
                                 </div>
                             )}
                         </div>

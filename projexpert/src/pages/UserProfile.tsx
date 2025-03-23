@@ -5,6 +5,7 @@ import ProfileSettings from '../components/Profile/UserInfo';
 import ChangePassword from '../components/Profile/CredentialSettings';
 import ResourceRequests from '../components/Profile/ResourceRequests';
 import PermissionRequests from '../components/Profile/PermissionRequests';
+import RaiseTicket from './RaiseTicket';
 
 export default function UserProfilePage() {
   const { loading } = useAuth();
@@ -20,6 +21,7 @@ export default function UserProfilePage() {
     { id: 'password', name: 'Change Password', icon: <Lock className="w-5 h-5" /> },
     { id: 'resources', name: 'Resource Requests', icon: <FolderIcon className="w-5 h-5" /> },
     { id: 'permissions', name: 'Permission Requests', icon: <ShieldCheckIcon className="w-5 h-5" /> },
+    { id: 'tickets', name: 'Raise a Ticket', icon: <ShieldCheckIcon className="w-5 h-5" /> },
   ];
 
 
@@ -74,6 +76,13 @@ export default function UserProfilePage() {
                 {activeTab === 'permissions' && (
                   <PermissionRequests />
                 )}
+
+                {
+                  activeTab === "tickets" && (
+                    <RaiseTicket />
+                  )
+                }
+
               </div>
             </div>
           </div>

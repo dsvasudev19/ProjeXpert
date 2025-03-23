@@ -3,11 +3,14 @@ import * as Yup from 'yup';
 import { axiosInstance } from '../../axiosIntance';
 import { Mail, Lock, ArrowRight, Briefcase, LockOpen } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useConfig } from '../../contexts/ConfigurationsContext';
+import { useAuth } from '../../contexts/AuthContext';
+import Spinner from '../../components/spinners/Spinner';
 const SignInPage = () => {
   const initialValues = { email: '', password: '' };
   const [isLocked, setIsLocked] = useState(true);
+  const { loading, user } = useAuth();
   const { config } = useConfig();
   const validationSchema = Yup.object({
     email: Yup.string().email('Invalid email address').required('Required'),
@@ -34,13 +37,43 @@ const SignInPage = () => {
   };
 
   const handleGitHubLogin = async () => {
-    
+
     setIsLocked(true);
     await new Promise(resolve => setTimeout(resolve, 800));
     const baseURL = import.meta.env.VITE_RUNTIME == "production" ? import.meta.env.VITE_API_PROD_URL : import.meta.env.VITE_API_URL;
     window.location.href = `${baseURL}/auth/github`;
     setIsLocked(false);
-  }; 
+  };
+
+  useEffect(() => {
+
+    if (user) {
+      window.location.href = "/dashboard/analytics";
+    }
+  }, [user, loading]);
+
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-blue-50 to-white p-8">
+        <div className="bg-white p-10 rounded shadow-xl max-w-md w-full space-y-6 text-center">
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <Briefcase className="w-10 h-10 text-blue-600" />
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
+              {config.appName}
+            </h1>
+          </div>
+          
+          <Spinner className="h-16 w-16 text-blue-600 mx-auto" />
+          
+          <div className="space-y-2">
+            <h2 className="text-xl font-semibold text-gray-800">Checking your session</h2>
+            <p className="text-gray-500">Please wait while we keep you connected...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex bg-gradient-to-br from-blue-50 to-white">
@@ -104,9 +137,8 @@ const SignInPage = () => {
                       id="email"
                       name="email"
                       type="email"
-                      className={`appearance-none block w-full pl-10 px-3 py-3 border ${
-                        errors.email && touched.email ? 'border-red-500' : 'border-gray-300'
-                      } rounded shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+                      className={`appearance-none block w-full pl-10 px-3 py-3 border ${errors.email && touched.email ? 'border-red-500' : 'border-gray-300'
+                        } rounded shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
                       placeholder="Enter your email"
                     />
                   </div>
@@ -127,9 +159,8 @@ const SignInPage = () => {
                       id="password"
                       name="password"
                       type="password"
-                      className={`appearance-none block w-full pl-10 px-3 py-3 border ${
-                        errors.password && touched.password ? 'border-red-500' : 'border-gray-300'
-                      } rounded shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+                      className={`appearance-none block w-full pl-10 px-3 py-3 border ${errors.password && touched.password ? 'border-red-500' : 'border-gray-300'
+                        } rounded shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
                       placeholder="Enter your password"
                     />
                   </div>
@@ -150,8 +181,8 @@ const SignInPage = () => {
                       Remember me
                     </label>
                   </div>
-                  <button 
-                    type="button" 
+                  <button
+                    type="button"
                     className="text-sm font-medium text-blue-600 hover:text-blue-500"
                     onClick={() => window.location.href = '/auth/forgot-password'}
                   >

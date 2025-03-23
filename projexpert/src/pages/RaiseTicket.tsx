@@ -662,7 +662,7 @@ const RaiseTicket: React.FC = () => {
                   </div>
                 </div>
                 <button 
-                  onClick={() => navigate('/dashboard/tickets')}
+                  onClick={() => navigate('/dashboard/ticket')}
                   className="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-md transition-colors duration-200 backdrop-blur-sm"
                 >
                   My Tickets
