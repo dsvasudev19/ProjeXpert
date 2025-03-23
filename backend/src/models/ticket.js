@@ -33,7 +33,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false
     },
     category: {
-      type: DataTypes.ENUM('Technical', 'Billing', 'Feature Request', 'Bug', 'Other'),
+      type: DataTypes.ENUM('Technical', 'Billing', 'Feature Request','Account','Bug','Resources','Permission','Other'),
       allowNull: false
     },
     priority: {
