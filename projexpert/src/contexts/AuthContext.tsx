@@ -39,10 +39,17 @@ export const AuthProvider = ({ children }: any) => {
     }
   }, []);
 
-  const logout = useCallback(() => {
-    localStorage.removeItem("__auth");
-    setUser(null);
-    window.location.href = "/auth/login";
+  const logout = useCallback(async () => {
+    try {
+      const res = await axiosInstance.post("/auth/logout", {})
+      if (res.status === 200) {
+        localStorage.removeItem("__auth");
+        setUser(null);
+        window.location.href = "/auth/login";
+      }
+    } catch (error) {
+      console.log(error)
+    }
   }, []);
 
   useEffect(() => {
