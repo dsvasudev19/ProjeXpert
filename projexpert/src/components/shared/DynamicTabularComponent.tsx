@@ -25,6 +25,7 @@ interface Dropdown {
   key: string;
   options: { value: string | number; label: string }[];
   color?: string;
+  action?: (value: string | number) => void;
 }
 
 // Define props interface with generic type parameter for data
@@ -282,6 +283,12 @@ function DynamicTabularComponent<T extends Record<string, any>>({
                   className={`px-0.5 py-1 border rounded text-xs ${
                     dropdown.color ? `bg-${dropdown.color}-100` : 'bg-white'
                   }`}
+                  onChange={(e) => {
+                    // Call the action function if it exists, passing the selected value
+                    if (dropdown.action) {
+                      dropdown.action(e.target.value);
+                    }
+                  }}
                 >
                   {dropdown.options.map((option) => (
                     <option key={option.value} value={option.value}>

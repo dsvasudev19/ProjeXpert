@@ -41,11 +41,13 @@ const TasksOverview: React.FC = () => {
   // State for handling pagination
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedStatus,setSelectedStatus]=useState("")
   const [tasks,setTasks]=useState<any>([])
+
 
   const getAllTasks=async()=>{
     try {
-      const res=await axiosInstance.get("/admin/task")
+      const res=await axiosInstance.get(`/admin/task?status=${selectedStatus}`)
       if(res?.status===200){
         setTasks(res.data.map((task:any)=>{return {...task,tags:task.tags.split(',')}}))
       }
@@ -69,7 +71,7 @@ const TasksOverview: React.FC = () => {
 
   useEffect(()=>{
     getAllTasks()
-  },[])
+  },[selectedStatus])
   // Column definitions
   const columns = [
     {
@@ -106,14 +108,14 @@ const TasksOverview: React.FC = () => {
           "pending": 'bg-yellow-100 text-yellow-800',
           "in-progress": 'bg-blue-100 text-blue-800',
           "completed": 'bg-green-100 text-green-800',
-          "on_hold": 'bg-gray-100 text-gray-800',
+          "on-hold": 'bg-gray-100 text-gray-800',
         };
         
         const statusLabels = {
           "pending": 'Pending',
           "in-progress": 'InProgress',
           "completed": 'Completed',
-          "on_hold": 'On Hold',
+          "on-hold": 'On Hold',
         };
         
         return (
@@ -234,10 +236,13 @@ const TasksOverview: React.FC = () => {
       options: [
         { value: 'all', label: 'All Projects' },
         { value: 'pending', label: 'Pending' },
-        { value: 'in_progress', label: 'In Progress' },
+        { value: 'in-progress', label: 'In Progress' },
         { value: 'completed', label: 'Completed' },
-        { value: 'on_hold', label: 'On Hold' },
+        { value: 'on-hold', label: 'On Hold' },
       ],
+      action: (value:any) => {
+        console.log(`Selected Project: ${value}`);
+      },
     },
     {
       label: 'Status',
@@ -245,10 +250,14 @@ const TasksOverview: React.FC = () => {
       options: [
         { value: 'all', label: 'All Statuses' },
         { value: 'pending', label: 'Pending' },
-        { value: 'in_progress', label: 'In Progress' },
+        { value: 'in-progress', label: 'In Progress' },
         { value: 'completed', label: 'Completed' },
-        { value: 'on_hold', label: 'On Hold' },
+        { value: 'on-hold', label: 'On Hold' },
       ],
+      action: (value:any) => {
+        console.log(value)
+        setSelectedStatus(value)
+      },
     },
     {
       label: 'Priority',
@@ -260,6 +269,9 @@ const TasksOverview: React.FC = () => {
         { value: 'high', label: 'High' },
         { value: 'urgent', label: 'Urgent' },
       ],
+      action: (value:any) => {
+        console.log(`Selected Priority: ${value}`);
+      },
     },
   ];
  
