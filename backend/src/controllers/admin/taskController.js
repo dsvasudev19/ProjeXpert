@@ -2,9 +2,15 @@ const { Task, User, Project, Role } = require('../../models');
 const { sequelize } = require("../../models")
 const { Op } = require("sequelize")
 const crypto=require("crypto")
+
+
+
+
 const getAllTasks = async (req, res) => {
     try {
         const userId = req.user.id;
+
+        const { dueDate, status, projectId, priority } = req.query;
 
         const user = await User.findOne({
             where: { id: userId },
@@ -29,6 +35,25 @@ const getAllTasks = async (req, res) => {
                 { createdBy: userId }
             ];
         }
+
+        if (dueDate) {
+            whereCondition.dueDate = dueDate;
+        }
+
+        if (status) {
+            // Override the default "not Completed" condition if status is explicitly provided
+            delete whereCondition.status;
+            whereCondition.status = status;
+        }
+
+        if (projectId) {
+            whereCondition.projectId = parseInt(projectId); // Convert to integer since projectId is INTEGER in model
+        }
+
+        if (priority) {
+            whereCondition.priority = priority;
+        }
+        
 
         const tasks = await Task.findAll({
             where: whereCondition,
