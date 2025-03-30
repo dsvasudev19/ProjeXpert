@@ -9,45 +9,89 @@ const { Op } = require('sequelize');
  * @param {Object} user - The user object.
  * @returns {Promise<Array>} - A promise that resolves with an array of bugs.
  */
-const getAllBugsForUser = async (user) => {
-  if (user.role === 'admin') {
-    return await Bug.findAll({
-      include: [{
-        model: Project,
-        as: 'Project',
-        attributes: ['name'],
-      },
-      {
-        model: User,
-        as: 'Assignee',
-        attributes: ['name'],
-      },
-      {
-        model: User,
-        as: 'Reporter',
-        attributes: ['name'],
-      }],
-    });
-  } else {
-    return await Bug.findAll({
-      include: [
-        {
-          model: Project,
-          as: 'Project',
-          attributes: ['name'],
-          where: { [Op.or]: [{ clientId: user.id }] },
-        },
-        {
-          model: User,
-          as: 'Assignee',
-          attributes: ['name'],
-        },
-        {
-          model: User,
-          as: 'Reporter',
-        },
-      ],
-    });
+const getAllBugsForUser = async (user, params) => {
+  try {
+    const { projectId, status, severity } = params;
+
+    // Base where condition
+    let whereCondition = {};
+
+    if (user.role === 'admin') {
+      // Admin sees all bugs, apply filters if provided
+      if (projectId && projectId !== "all") {
+        whereCondition.projectId = parseInt(projectId);
+      }
+      
+      if (status && status !== "all") {
+        whereCondition.status = status;
+      }
+      
+      if (severity && severity !== "all") {
+        whereCondition.priority = severity; // severity frontend = priority backend
+      }
+
+      return await Bug.findAll({
+        where: whereCondition,
+        include: [
+          {
+            model: Project,
+            as: 'Project',
+            attributes: ['id','name'],
+          },
+          {
+            model: User,
+            as: 'Assignee',
+            attributes: ['name'],
+          },
+          {
+            model: User,
+            as: 'Reporter',
+            attributes: ['name'],
+          }
+        ],
+      });
+    } else {
+      // Non-admin users see bugs related to their clientId
+      whereCondition = {
+        '$Project.clientId$': user.id // Using Sequelize dot notation for nested condition
+      };
+
+      if (projectId && projectId !== "all") {
+        whereCondition.projectId = parseInt(projectId);
+      }
+      
+      if (status) {
+        whereCondition.status = status;
+      }
+      
+      if (severity && severity !== "all") {
+        whereCondition.priority = severity; // severity frontend = priority backend
+      }
+
+      return await Bug.findAll({
+        where: whereCondition,
+        include: [
+          {
+            model: Project,
+            as: 'Project',
+            attributes: ['name'],
+          },
+          {
+            model: User,
+            as: 'Assignee',
+            attributes: ['name'],
+          },
+          {
+            model: User,
+            as: 'Reporter',
+            attributes: ['name'],
+          }
+        ],
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    throw new Error(error.message); // Throwing error to be handled by caller
   }
 };
 

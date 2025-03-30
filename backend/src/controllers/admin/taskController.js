@@ -46,11 +46,11 @@ const getAllTasks = async (req, res) => {
             whereCondition.status = status;
         }
 
-        if (projectId) {
+        if (projectId && projectId!="all") {
             whereCondition.projectId = parseInt(projectId); // Convert to integer since projectId is INTEGER in model
         }
 
-        if (priority) {
+        if (priority && priority!="all") {
             whereCondition.priority = priority;
         }
         

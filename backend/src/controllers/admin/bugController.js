@@ -10,8 +10,8 @@ const getAllBugs = async (req, res) => {
     });
     user.role=user.Roles[0].name
     if (!user) return res.status(404).json({ message: 'User not found.' });
-
-    const bugs = await bugService.getAllBugsForUser(user);
+    const { projectId, status, severity } = req.query;
+    const bugs = await bugService.getAllBugsForUser(user,{ projectId, status, severity });
     return res.status(200).json(bugs);
   } catch (error) {
     console.log(error)
