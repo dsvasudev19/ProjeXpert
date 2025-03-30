@@ -43,12 +43,24 @@ const TasksOverview: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedStatus,setSelectedStatus]=useState("")
   const [tasks,setTasks]=useState<any>([])
-
+  const [selectedPriority,setSelectedPriority]=useState("")
+  const [selectedProject,setSelectedProject]=useState<any>("all")
+  
+  const [projectOptions, setProjectOptions] = useState([
+    { value: 'all', label: 'All Projects' }
+  ]);
 
   const getAllTasks=async()=>{
     try {
-      const res=await axiosInstance.get(`/admin/task?status=${selectedStatus}`)
+      const res=await axiosInstance.get(`/admin/task?status=${selectedStatus}&priority=${selectedPriority}&projectId=${selectedProject}`)
       if(res?.status===200){
+        setProjectOptions([
+          { value: 'all', label: 'All Projects' },
+          ...res.data.map((task: any) => ({
+            value: task.Project.id,
+            label: task.Project.name
+          }))
+        ]);
         setTasks(res.data.map((task:any)=>{return {...task,tags:task.tags.split(',')}}))
       }
     } catch (error) {
@@ -71,7 +83,7 @@ const TasksOverview: React.FC = () => {
 
   useEffect(()=>{
     getAllTasks()
-  },[selectedStatus])
+  },[selectedStatus,selectedPriority,selectedProject])
   // Column definitions
   const columns = [
     {
@@ -233,15 +245,10 @@ const TasksOverview: React.FC = () => {
     {
       label: 'Project',
       key: 'project',
-      options: [
-        { value: 'all', label: 'All Projects' },
-        { value: 'pending', label: 'Pending' },
-        { value: 'in-progress', label: 'In Progress' },
-        { value: 'completed', label: 'Completed' },
-        { value: 'on-hold', label: 'On Hold' },
-      ],
+      options: projectOptions,
       action: (value:any) => {
         console.log(`Selected Project: ${value}`);
+        setSelectedProject(value)
       },
     },
     {
@@ -271,6 +278,7 @@ const TasksOverview: React.FC = () => {
       ],
       action: (value:any) => {
         console.log(`Selected Priority: ${value}`);
+        setSelectedPriority(value)
       },
     },
   ];

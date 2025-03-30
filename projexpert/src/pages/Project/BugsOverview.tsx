@@ -10,7 +10,7 @@ interface Bug {
   id?: number; // Assuming id is auto-generated and may not always be present
   title: string;
   description: string;
-  status: 'open' | 'in_progress' | 'resolved' | 'closed';
+  status: 'open' | 'in-progress' | 'resolved' | 'closed';
   priority: 'low' | 'medium' | 'high' | 'critical';
   assignedTo: string; // Matches "assignedTo" from the object
   dueDate: string;
@@ -29,13 +29,27 @@ const BugsOverview: React.FC = () => {
   // State for handling pagination
   const [currentPage, setCurrentPage] = useState(1);
   const [bugs,setBugs]=useState<any>([])
+  const [selectedProject,setSelectedProject]=useState<any>("all")
+  const [selectedSeverity,setSelectedSeverity]=useState("all")
+  const [selectedStatus,setSelectedStatus]=useState("all")
+
+  const [projectOptions, setProjectOptions] = useState([
+    { value: 'all', label: 'All Projects' }
+  ]);
 
   const navigate=useNavigate();
 
   const getAllBugs=async()=>{
     try {
-      const res = await axiosInstance.get("/admin/bug")
+      const res = await axiosInstance.get(`/admin/bug?projectId=${selectedProject}&status=${selectedStatus}&severity=${selectedSeverity}`)
       if(res.status===200){
+        setProjectOptions([
+          { value: 'all', label: 'All Projects' },
+          ...res.data.map((task: any) => ({
+            value: task.Project.id,
+            label: task.Project.name
+          }))
+        ]);
         setBugs(res.data.map((bug:any)=>{return {...bug,tags:bug.tags.split(",")}}))
       }
     } catch (error) {
@@ -44,7 +58,7 @@ const BugsOverview: React.FC = () => {
   }
   useEffect(()=>{
     getAllBugs()
-  },[])
+  },[selectedProject,selectedSeverity,selectedStatus])
 
 
   const deleteBugById=async(id:any)=>{
@@ -243,15 +257,28 @@ const BugsOverview: React.FC = () => {
   // Filter dropdowns
   const dropdowns = [
     {
+      label: 'Project',
+      key: 'project',
+      options: projectOptions,
+      action: (value:any) => {
+        console.log(`Selected Project: ${value}`);
+        setSelectedProject(value)
+      },
+    },
+    {
       label: 'Status',
       key: 'status',
       options: [
         { value: 'all', label: 'All Statuses' },
         { value: 'open', label: 'Open' },
-        { value: 'in_progress', label: 'In Progress' },
+        { value: 'in-progress', label: 'In Progress' },
         { value: 'resolved', label: 'Resolved' },
         { value: 'closed', label: 'Closed' },
       ],
+      action: (value:any) => {
+        console.log(`Selected status: ${value}`);
+        setSelectedStatus(value)
+      },
     },
     {
       label: 'Severity',
@@ -263,6 +290,10 @@ const BugsOverview: React.FC = () => {
         { value: 'high', label: 'High' },
         { value: 'critical', label: 'Critical' },
       ],
+      action: (value:any) => {
+        console.log(`Selected severity: ${value}`);
+        setSelectedSeverity(value)
+      },
     },
   ];
 
