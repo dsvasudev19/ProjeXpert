@@ -134,6 +134,57 @@ const TicketManagementApp = () => {
                         </div>
                     </div>
                 )}
+
+
+                {tickets.length === 0 && !showAnalytics && (
+                    <div className="h-full flex items-center justify-center">
+                        <div className="w-full max-w-lg p-8 rounded-2xl bg-gradient-to-br from-indigo-50 via-white to-sky-50 border border-indigo-100/50 shadow-xl shadow-blue-100/20">
+                            <div className="text-center space-y-6">
+                                {/* Modern Empty State Illustration */}
+                                <div className="relative mx-auto w-28 h-28">
+                                    <div className="absolute inset-0 bg-blue-100/50 rounded-full animate-pulse"></div>
+                                    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                                        <svg className="h-16 w-16 text-indigo-400" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M20 7L12 3L4 7V17L12 21L20 17V7Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                            <path d="M12 12L12 21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                            <path d="M4 7L12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                            <path d="M20 7L12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                        </svg>
+                                    </div>
+                                </div>
+
+                                {/* Title with modern typography */}
+                                <h2 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-blue-500 text-transparent bg-clip-text">
+                                    No Tickets Found
+                                </h2>
+
+                                {/* Description with clean typography */}
+                                <p className="text-gray-500 text-sm leading-relaxed">
+                                    Your support queue is currently empty. When customers submit requests, they'll appear here.
+                                </p>
+
+                                {/* Action buttons with modern design */}
+                                <div className="flex gap-3 justify-center pt-2">
+                                    <button onClick={() => navigate('/dashboard/raise-ticket')} className="px-4 py-2 text-sm font-medium rounded-lg bg-indigo-50 text-indigo-600 hover:bg-indigo-100 transition-all duration-200">
+                                        Create Ticket
+                                    </button>
+                                    <button onClick={() => setShowAnalytics(!showAnalytics)} className="px-4 py-2 text-sm font-medium rounded-lg bg-gradient-to-r from-indigo-500 to-blue-600 text-white hover:shadow-lg hover:shadow-blue-200 transition-all duration-200">
+                                        View Analytics
+                                    </button>
+                                </div>
+
+                                {/* Modern decorative elements */}
+                                <div className="pt-4 flex justify-center gap-1.5">
+                                    <span className="block h-1.5 w-1.5 rounded-full bg-indigo-300"></span>
+                                    <span className="block h-1.5 w-3 rounded-full bg-indigo-400"></span>
+                                    <span className="block h-1.5 w-6 rounded-full bg-indigo-500"></span>
+                                    <span className="block h-1.5 w-3 rounded-full bg-indigo-400"></span>
+                                    <span className="block h-1.5 w-1.5 rounded-full bg-indigo-300"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );
