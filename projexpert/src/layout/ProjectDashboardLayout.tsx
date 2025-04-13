@@ -388,7 +388,7 @@ const ProjectDashboardLayout = () => {
               </button>
               {renderSubmenu('bugs', bugsSubmenuItems)}
             </li>
-            <li>
+            {/* <li>
               <Link
                 to="/dashboard/project/team"
                 className={`flex items-center px-1 py-4 text-sm font-medium border-b-2 ${
@@ -400,7 +400,7 @@ const ProjectDashboardLayout = () => {
                 <Users className="mr-2 h-4 w-4" />
                 Team
               </Link>
-            </li>
+            </li> */}
             
           </ul>
         </nav>
