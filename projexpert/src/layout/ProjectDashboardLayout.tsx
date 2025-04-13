@@ -205,7 +205,7 @@
 
 // export default ProjectDashboardLayout;
 
-import { BarChart, Users, CheckSquare, Bug, FileText, PlusCircle, List, BugIcon, BugPlay } from 'lucide-react';
+import { BarChart, CheckSquare, Bug, FileText, PlusCircle, List, BugIcon, BugPlay } from 'lucide-react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
 
